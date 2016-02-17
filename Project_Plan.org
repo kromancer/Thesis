@@ -1,0 +1,764 @@
+#+TITLE: Project Title: Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
+#+OPTIONS: toc:nil email:nil title:nil author:nil date:nil
+#+STARTUP: overview
+
+#+BEGIN_LaTex
+\author{
+        \textsc{Konstantinos Sotiropoulos}
+        \mbox{}\\
+        \normalsize
+            \texttt{konstantinos.sotiropoulos}
+        \normalsize
+            \texttt{@intel.com}
+}
+
+\date{\today}
+
+\maketitle
+
+\tableofcontents
+
+\clearpage
+#+END_LaTex
+
+* Acronyms 							   
+| *DE*:    | Discrete Event                      |
+| *DES*:   | Discrete Event Simulator/Simulation |
+| *ESL*:   | Electronic System-Level Design      |
+| *HPC*:   | High Performance Computing          |
+| *MoC*:   | Model of Computation                |
+| *MPSoC*: | Multicore System on Chips           |
+| *OoO*:   | Out-of-Order                        |
+| *PDES*:  | Parallel Discrete Event Simulation  |
+| *SLDL*:  | System-Level Design Language        |
+| *SMP*:   | Symmetric Multiprocessing           |
+| *SoC*:   | System on Chip                      |
+| *SR*:    | Synchronous Reactive                |
+| *TLM*:   | Transaction Level Modeling          |
+\clearpage
+
+
+* Organization
+This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
+Mr. Bjorn Runaker (bjorn.runaker@intel.com) is the project's supervisor from the company's side, while professor Ingo Sanders (ingo@kth.se) is the examiner from the university. 
+The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company 
+(document title: "Statement of Terms and Conditions of Fixed Term Employment"). 
+
+The scope of this project has been and is being mutually determined by all parties. 
+It is subject to the company's needs and the scientific context a Master's Thesis must expose and cultivate.
+ 
+All the necessary equipment (software and hardware) has been kindly provided by the company.
+The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
+but will conform to the general context dictated by the documents that have been already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
+
+
+
+
+* Background
+SystemC is considered to be a System-Level Design Language (SLDL), that is implemented as a C++ class library.
+The major advantage SystemC provides to the designer is that a component's functionality can be easily expressed in C/C++, the dominating languages for in systems programming (e.g. Operating System and Device Driver development).
+As a result SystemC models are executable: the designer can directly simulate the behavior of a system modeled in SystemC.
+The language has been demanded and supported by the semiconductor industry, in its collaborative effort to push Electronic Design Automation (EDA) into higher abstraction layers, thus giving birth to a trend
+referred to as Electronic System-Level Design (ESLD).
+
+The rest of this section is devoted into presenting the theoretical/scientific ground on which we will cultivate this projcet.
+To avoid confusion by being precise, fundamental terms and concepts of computer science are being defined and redefined, even at the risk of being pedantic.  
+Facing a labyrinth of abstraction layers, we will begin unraveling Ariadne's thread at the simple observation that SystemC is a System Level Design *Language*.
+
+** Models of Computation
+A *language* is a set of symbols, rules for combining them (its syntax), and rules for interpreting combinations of symbols (its semantics). 
+Two approaches to semantics have evolved: denotational and operational.
+Operational semantics, which dates back to Turing machines, gives the meaning of a language in terms of actions taken by some abstract machine. 
+How the abstract machine in an operational semantics can behave is a feature of what we call the *Model of Computation (MoC)* \cite{Edwards1997}.
+This definition implies that languages are not computational models themselves, but have underlying computational models \cite{Jantsch2005}.
+
+How can this definition make sense for SLDLs and what do we expect a SLDL to be able to do? 
+A SLDL should be able to describe a system as a hierarchical network of interacting components.
+A MoC is therefore a collection of rules to define what constitutes a component and what are the semantics of execution, communication and concurrency of the abstract machine that will execute the model \cite{Jantsch2005} \cite{Editor2014}.
+To ensure meaningful simulations the MoC of the abstract machine that simulates a model must be equivalent with that of the abstract machine that will realize the system.
+
+#+CAPTION: Categorization of three of the most explored MoCs: State Machine, Synchronous Dataflow and Discrete Event(adopted from \cite{Editor2014})
+#+NAME: fig:MoCs
+[[file:Figures/MoCs.pdf]]
+
+
+** The Discrete Event Model of Computation
+The dominant MoC that underlies most industry standard EDA languages (VHDL, Verilog, SystemC) is called *Discrete Event (DE)*.
+The components of a DE system are called *processes*.
+In this context processes usually model the behavior and functionality of hardware entities.
+The execution of processes is concurrent and the communication is achieved through *events*.
+An event can be considered as an exchange of a timestamped value.
+
+Concurrent execution does not imply parallel/simultaneous execution. 
+The notion of *concurrency* is more abstract. 
+It can be realized as either parallel/simultaneous execution or as sequential interleaved execution, depending on the actual machine's computational resources.
+
+Systems whose semantics are meant to be interpreted by a DE MoC, in order to be realizable, must have a *causal* behaviour: they must process events in a chronological order, 
+while any output events produced by a process are required to be no earlier in time than the input events that were consumed \cite{Editor2014}.
+At any moment in real time, the model's time is determined by the last event processed.
+
+In figure [[fig:MoCs]] one can observe that the DE MoC is also considered to be *Synchronous-Reactive (SR)*. 
+This demonstrates the possibility of the MoC to "understand" entities with zero execution time, where output events are produced at the same time input events are consumed.
+We can also extend/rephrase the previous definitions and say that Synchronous-Reactive MoCs are able to handle systems where events happen at the same time, instantaneously, in a causal way.
+The DE MoC handles the aforementioned situations by extending timestamps(the notion of model time) with the introduction of delta delays (also referred to as cycles or microsteps).
+A delta delay signifies an infinitesimal unit of time and no amount of delta delays, if summed, can result in time progression.
+A timestamp is therefore represented as a tuple of values, $(t,n)$ where $t$ indicates the model time and $n$ the number of delta delays that have advanced at $t$.
+
+
+
+
+** The Discrete Event Simulation(or)
+A realization of the DE abstract machine is called a *Discrete Event Simulator (DES)*.
+SystemC's reference implementation of the DES is referred to as the *SystemC kernel* \cite{OpenSystemCInitiative2012}.
+
+Concurrency of the system's processes is achieved through the co-routine mechanism (also known as co-operative multitasking). 
+Processes execute without interruption. In a single core machine that means that only a single process can be running at any real time, 
+and no other process instance can execute until the currently executing process instance has yielded control to the kernel.
+A process shall not preempt or interrupt the execution of another process \cite{OpenSystemCInitiative2012}.
+
+To avoid quantization errors and the non-uniform distribution of floating point values, time is expressed as an integer multiple of a real value referred to as the time resolution. 
+
+The kernel maintains a *centralized event queue* that is sorted by timestamp and knows which process is *running*, which processes are waiting for events and which are *runnable*.
+Runnable processes have had events to which they are sensitive triggered and are waiting for the running process to yield to the kernel so that they can be scheduled.
+The kernel controls the execution order by selecting the earliest event in the event queue and making its timestamp the current simulation time.
+It then determines the process the event is destined for, and finds all other events in the event queue with the same timestamp that are destined for the same process \cite{Black2010}.
+The operation of the kernel is exemplified in Alg \ref{alg:kernel}.
+
+#+BEGIN_LATEX
+\begin{algorithm}
+\caption{SystemC event loop, adopted from \cite{Schumacher2010}}
+\label{alg:kernel}
+\begin{algorithmic}[1]
+
+   \While{timed events to process exist}  \Comment{Simulation time progression}
+      \State trigger events at that time
+      \While {runnable processes exist}   \Comment{Delta cycle progression}
+         \While {runnable processes exist}
+	     \State run all triggered processes
+             \State trigger all immediate notifications
+         \EndWhile
+         \State update values of changed channels
+	 \State trigger all delta time events
+       \EndWhile
+       \State advance time to next event time
+   \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+#+END_LATEX
+
+
+** The Parallel Discrete Event Simulation(or)
+The previous section has made evident that the reference implementation of the SystemC kernel assumes sequential execution and therefore can not utilize modern massively parallel host platforms. 
+The most logical step in achieving faster simulations is to realize concurrency, from interleaving process execution to actual simultaneous/parallel execution.
+By assigning each process to a different processing unit of the host platform (core or hardware thread) we enter the domain of *Parallel Discrete Event Simulation (PDES)*.
+SystemC as a SLDL remains the same while the implementation of the DES is radically different.
+
+By allowing processes to execute simultaneously one can allow each process to have its own perception of simulation time, determined by the last event it received.
+This approach is referred to as *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}.
+Examples of OoO PDES simulators are the SystemC-SMP \cite{Mello2010} and SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
+
+For PDES implementations that enforce global simulation time, the term Synchronous PDES has been coined in the parSC simulator\cite{Schumacher2010}.
+In Synchronous PDES, parallel execution of processes is performed within a delta cycle. 
+With respect to Alg \ref{alg:kernel}, we can say that a Synchronous PDES parallelizes the execution of the innermost loop (line 4).
+However, as we will see in the following section, this approach will bare no fruits in the simulation of TLM Loosely Timed simulations, since delta cycles are rarely triggered \cite{Chen2012}.
+
+Finally, before committing into modifying the SystemC DES, we should mention the existence of less intrusive approaches, that instead of redesigning extend the reference kernel.
+The example of the sc-during SystemC library \cite{Moy} is characteristic. 
+To exploit parallelism, each process must be redefined as a sequence of atomic tasks that have duration (in simulation time).
+The term atomic is used to represent the fact that these tasks are insensitive to input/output events for their duration.
+Thus, the kernel can safely assign them to a different operating system thread and allow them to execute independently from the rest of the simulation.
+
+
+
+** TODO Transaction Level Modeling 				   :noexport:
+*What MoC underlies a SystemC TLM model? I am stuck here*
+The rest are easy:
+Give a concise introduction of TLM as an abstraction layer.
+Explain why it was introduced. What problems does it addresses.
+Give an overview of the extra features it adds to the SystemC library.
+Reason why the OoO PDES will yield faster simulations.
+Why is there a version 1 and 2 for TLM.
+Introduce the dangerous, for simulation accuracy, mechanism of temporal decoupling.
+
+
+* Problem statement
+The distribution of simulation time opens Pandora's box. 
+Protecting the OoO PDES from *causality errors* demands certain assumptions and the addition of complex implementation mechanisms.
+
+The first source of causality errors arises when the system's state variables are not distributed, in a disjoint way, among the processes \cite{Fujimoto1990}.
+A trivial realization of the above scenario is depicted in figure [[fig:causality_shared_state]]. Processes $P_1$ and $P_2$ are executing simultaneously, while sharing the system's state variable $x$.
+Events $E_1$ and $E_2$ are executed by $P_1$ and $P_2$ respectively. If we assume that in real time $E_2$ is executed before $E_1$, then we have implicitly broken causality, since $E_1$ might be influenced
+by the value of $x$ that the execution of $E_2$ might have modified. Furthermore, one must observe that this kind of implicit interaction between $P_1$ and $P_2$ can not be expressed in a DE MoC. 
+This is a meta-implication of the host platform's shared memory architecture.
+
+#+CAPTION: Causality error caused by the sharing of the system's state variable $x$ by $P_1$ and $P_2$.
+#+NAME: fig:causality_shared_state
+[[file:Figures/causality_shared_state.png]]
+
+The second and most difficult to deal with source of causality errors is depicted in figure [[fig:causality_safe_events]]. 
+Event $E_1$ affects $E_2$ by scheduling a third event $E_3$ which, for the shake of argument, modifies the state of $P_2$. 
+This scenario necessitates sequential execution of all three events. 
+Thus the fundamental problem in PDES, in the context of this scenario, becomes the question: how can we deduce that it is safe to execute $E_2$ in parallel with $E_1$, without actually executing $E_1$ \cite{Fujimoto1990}?
+However, one must notice that the kind of interaction that yields this problematic situation is explicitly stated in the model.
+
+#+CAPTION: Causality error caused by the unsafe execution of event $E_2$ (adopted from \cite{Fujimoto1990}).
+#+NAME: fig:causality_safe_events
+[[file:Figures/causality_safe_events.png]]
+
+PDES algorithms, with respect to how they deal with causality errors, have been classified into two categories: *conservative* and *optimistic* \cite{Fujimoto2015}.
+Conservative mechanisms strictly avoid the possibility of any causality error ever occurring by means of model introspection and static analysis.
+On the other hand, optimistic/speculative approaches use a detection and recovery approach: when causality errors are detected a rollback mechanism is invoked to restore the system.
+An optimistic compared to a conservative approach will theoretically yield better performance in models where communication, thus the probability of causality errors, is below a certain threshold \cite{Fujimoto1990}.
+
+Both groups present severe implementation difficulties.
+For conservative algorithms, model introspection and static analysis tools might be very difficult to develop,
+while the rollback mechanism of an optimistic algorithm may require complex entities, such as a hardware/software transactional memory \cite{Anane2015} .
+
+
+* Problem 							   
+In this project we investigate the feasibility of implementing a SystemC OoO PDES, 
+that can lead to scalable simulations of MPSoC Loosely-Timed Transaction Level Models,
+on SMP host platforms.
+
+
+* Hypothesis
+We hypothesize that by following a conservative approach on implementing a SystemC OoO PDES 
+we will yield equivalent and faster simulations with respect to the reference SystemC DES.   
+
+
+* Purpose
+The vision of a fully automated and connected society, the IoT revolution has promised to deliver,
+is depending on the industry's abillity to deliver novel, complex and heterogeneous cyber-physical systems with short time-to-market constraints.
+To live up to these expectations, the engineering discipline of ESLD must provide an answer to a number of questions:
+\newline
+*High-Level Synthesis*: How a system described in a SLDL can be realized in a structured and automatic way? 
+Which of its components should be mapped in hardware entities like Digital Signal Processors (DSPs), Field Programmable Gate Arrays (FPGAs) or Application Specific Integrated Circuits (ASICs)?
+Which of its components could be software for some kind of Central Processing Unit (CPU)?
+Which is the optimal mapping that satisfies the system's requirements and yields a minimum power consumption?
+\newline
+*Correct-by-design*: Can a high-level synthesis design methodology yield correct-by-design implementations?
+Can a system be formally verified given its abstract representation, early on in the design procedure?
+Can we free the huge amount of resources wasted in mundane testing and debugging procedures that sometimes can not even provide any formal guarantee about the system's behavior?
+\newline
+*Improving the co-simulation speed for hardware and software*: Can we develop a virtual prototype of the platform early on in the development cycle, 
+so that software engineers can begin developing integral applications without having to wait for the silicon to arrive?
+Can we make the simulation fast and accurate, utilizing all the latest developments in High Performance Computing (HPC)?
+This project hopes to deliver an infinitesimal contribution in solving the latter class of questions.
+
+
+
+
+
+* Goal(s)
+sorted by importance:
+1. A OoO PDES implementation of the SystemC kernel.
+2. A static analysis/introspection tool for parsing the SystemC description of the system and extracting its pure representation, in terms of processes and links.
+3. A code generation tool for implementing the communication FIFOs and replacing .
+4. A framework to bind the workflow.
+5. A TLM 2.0 coding style to minimize the effort and complexity of the code generator.
+6. A proof of concept application of the proposed methodology on a sufficiently parallel system, running a substantially parallel application, on top of a Linux kernel.
+
+
+
+
+
+
+
+* Methods
+
+** 
+The fundamental metric for evaluating the efficiency of the PDES implementation proposed is the speedup compared to the reference DES.
+The accuracy of the simulation can be measured by the aggregate number of causality errors.
+The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
+
+** Hardware and Software tools 
+
+
+
+
+
+* TODO Tasks and Time Scheduling
+
+
+* References
+\renewcommand\refname{}
+\bibliography{References}
+\bibliographystyle{myIEEEtran}
+
+
+
+
+
+
+
+
+
+* Computer Science Cheatsheet                                      :noexport:
+An _Algorithm_ is a finite description of a sequence of steps to be taken to solve a problem.
+Physical processes are rarely structured as a sequence of steps; rather, they are structured as _continuous interactions between concurrent components_.
+
+_Model vs Reality:_ You will never strike oil by drilling through the map (Golomb 1971)
+
+_Concurrency vs Parallelism:_ Consider two "living" threads. On a multicore machine they might be executed in parallel.
+On a single core the instructions of each thread are arbitrarily interleaved. In both cases the execution is these two 
+threads is characterized as concurrent. Concurrency does not imply simultaneity.
+
+_Chattering Zeno model:_ A moment in the simulation where execution is happening within delta time, not allowing the simulation time to progress.
+
+_Zeno model:_ A model (like Achilles and the Turtle) where simulation time advances slower and slower until it reaches a point where 
+it can not advance further(time increment becomes lower than the resolution) and gets trapped in delta time.
+
+A simulation is defined as the execution of model revealing the behaviour of the system being modeled.
+A system can be analyzed either by being formally verified or simulated.
+Simulation beyond analysis, as a means of constructing a virtual platform.
+
+
+* Terminology 							   :noexport:
+| Process   | Provides necessary modeling of independently timed circuits                              |
+| Process   | A design artifact that models the behaviour or an aspect of the behaviour an entity has. |
+| ESL       | Electronic System Level modeling                                                         |
+| Initiator | Historically known as Master                                                             |
+| Target    | Historically known as Slave                                                              |
+
+
+* SystemC 							   :noexport:
+** General
+
+*** Parsing the SystemC standard for occurences of the word kernel
+Clause 4 of \cite{OpenSystemCInitiative2009} "_Elaboration and simulation semantics_", defines the behavior of the SystemC kernel
+and is central to an understanding of SystemC.
+
+The _execution_ of a SystemC application consists of _elaboration_ followed by _simulation_.
+Elaboration results in the creation of the module hierarchy.
+Elaboration involves the execution of application code, the public shell of the implementation, and the private kernel of the implementation.
+Simulation involves the execution of the scheduler, part of the kernel, which in turn may execute processes within the application.
+
+The purpose of the process macros is to _register the associated function with the kernel such that the scheduler can call back that member function during simulation_.
+
+When a port is bound to a channel, the kernel shall call the member function register_port of the channel.
+
+Simulation time is initialized to zero at the start of simulation and increases monotonically during simulation.
+The physical significance of the integer value representing time within the kernel is determined by the simulation time resolution.
+
+Since process instances execute without interruption, only a single process instance can be running at any one time,
+and no other process instance can execute until the currently executing process instance has yielded control to the kernel.
+_A process shall not pre-empt or interrupt the execution of another process._
+_This is known as co-routine semantics or co-operative multitasking_
+
+The SystemC sc_module class provides four routines that may be overridden, and they are executed at the boundaries of simulation.
+These routines provide modelers with a place to put initialization and clean-up code that has no place to live.
+For example, checking the environment, reading run-time configuration information and generating summary reports at the end of simulation.
+#+BEGIN_SRC cpp :exports code
+void before_end_of_elaboration(void);
+void end_of_elaboration(void);
+void start_of_simulation(void);
+void end_of_simulation(void);
+#+END_SRC
+
+A thread of clocked thread process instance is said to be resumed when the kernel causes the process to continue execution,
+starting with the statement immediately following the most recent call to function wait.
+
+If the thread or clocked thread process executes the entire function body or executes a return statement and thus returns control to the kernel,
+the associated function shall not be called again for that process instance. The process instance is then said to be terminated.
+
+The function next_trigger does not suspend the method process instance; a method process cannot be suspended but always executes to completion before
+returning control to the kernel.
+
+The distinction between _suspend/resume_ and _disable/enable_ lies in the sensitivity of the target process during the period while it is suspended or disabled.
+With _suspend_ the kernel keeps track of the sensitivity of the target process while it is suspended such that a relevant event notification or time-out 
+while suspended would cause the process to become runnable immediately when resume is called.
+With _disable_ the sensitivity of the target process is nullified while it is suspended such that the process is not made runnable by the call to enable, but only on the next
+relevant event notification or time-out subsequent to the call to enable.
+
+If a process kills itself, the statements following the call to kill shall not be executed again during the current simulation, and control shall return to the kernel.
+
+_STOPPED AT OCCURENCE 44_
+
+
+*** Parsing the SystemC standard for occurences of the phrase set of
+Set of runnable processes
+Set of update requests
+Set of delta notifications
+Set of time-outs
+Set of timed notifications
+
+
+*** Parsing the SystemC standard for occurences of the phrase simulation time
+43/105:
+Synchronization may be strong in the sense that the sequences of communication events
+is precisely determined in advance, or weak in the sense that the sequence of communication events
+is partially determined by the detailed timing of the individual processes.
+
+Strong synchronization is easily implemented in SystemC using FIFOs or semaphores, allowing a completely
+untimed modeling style where in principle simulation can run without advancing simulation time.
+
+Untimed modeling in this sense is outside the scope of TLM 2.0. On the other hand, a fast virtual
+platform model allowing multiple embedded software threads to run in parallel may use either strong or weak
+synchronization. In this standard, the appropriate coding style for such a model is termed loosely-timed.
+
+
+*** Port vs Export
+The purpose of port and export bindings is to enable a port or export to _forward interface method calls made during simulation._
+A port _requires_ the services defined by an interface.
+An export _provides_ the services defined by an interface.
+
+Forward path form initiator to target.
+Backward path from target back to initiator.
+
+
+*** TODO Parsing the SystemC standard for occurences of the phrase update phase 
+
+
+
+
+
+
+
+
+
+
+
+SC_THREADs are not threads. They are coroutines.
+
+Coroutines are subroutines that allow multiple entry points for suspending and resuming execution at certain locations.
+
+SystemC does not offer real concurrency. It simulates concurrency using ...
+
+The SystemC kernel implements cooperative scheduling where each SC_THREAD willingly relinquishes control to allow other SC_THREADs to execute.
+
+In order to implement that cooperative scheduling strategy using coroutines, a threading library is used.
+
+
+The scheduler advances simulation time to the time of the next event, 
+then runs any processes due to run at that time of sensitive to that event.
+
+Computations that take some time are usually modeled by instantaneous computations followed by a SystemC wait.
+
+A _scheduler_ manages the threads by use of queues, such as READY, which contains all those that are ready to execute
+and WAIT which contains threads waiting for events.
+
+_Threads_ switch between READY and WAIT during simulation subject to event notification and time advances.
+
+Events are delivered in an inner loop called _delta-cycle_ and simulation time advances in an outer loop _time-cycle_.
+
+
+** Co-routine semantics
+\cite{OpenSystemCInitiative2012}
+Since process instances execute without interruption, only a single process instance can be running at any one time, 
+and no other process instance can execute until the currently executing process instance has yielded control to the kernel.
+A process shall not pre-empt or interrupt the execution of another process.
+This is known as co-routine semantics or co-operative multitasking
+
+An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
+provided that the behavior appears identical to the co-routine semantics defined in this subclause.
+In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics.
+
+Software modules that interact with one another as if they were performing I/O operations. (Conway 1963)
+
+Co-routine semantics are linked to Kahn process networks.
+
+
+** Dynamic processes with sc_spawn
+
+
+* TLM 2.0 							   :noexport:
+
+** Transaction
+A transaction is an abstraction of communication
+
+
+** General
+- Transaction-level memory-mapped _bus modeling_.
+- Register accurate and functionally complete.
+- Fast enough to boot software O/S in seconds.
+- Loosely-timed and approximately-timed modeling.
+- Interoperable API for memory-mapped bus modeling.
+- Generic payload and extension mechanism
+- Avoid adapters where possible
+
+Facilitating the simulation of systems, with inter communicating components.
+The components are modeled on a functional level.
+
+TLM 2.0 consists of:
+- A set of core interfaces
+  - Blocking
+  - Non-blocking
+  - DMI
+  - Debug transport interface
+- The global quantum
+- Initiator and target sockets
+- Generic payload
+- Base protocol
+- Utilities
+
+
+References to a single transaction object are passed along the forward and backward paths.
+
+
+
+#+BEGIN_LATEX
+\tikzstyle{block} = [draw, fill=blue!4!white, rectangle, minimum height=3em, minimum width=6em]
+\begin{figure}
+\begin{tikzpicture}[auto, node distance=2cm]
+
+\node [block] (payload) {Generic payload};
+\node [block, right of=payload] (phases)  {Phases};
+\node [block, below of=payload] (sockets) {Initiator and target sockets};
+\node [block, below of=sockets] (tlm)     {TLM-2 core interfaces: 
+                                               \begin{itemize}
+					       \item {Blocking transport interface}
+					       \item {Non-blocking transport interface}
+					       \item {Direct memory interface}
+					       \item {Debug transport interface}
+					       \end{itemize}
+					       };
+
+\draw [->] (payload) -- (sockets);
+\draw [->] (phases)  -- (sockets);
+\draw [->] (sockets) -- (tlm);
+
+\end{tikzpicture}\caption{TLM 2.0 Interoperability layer for bus modeling}
+\end{figure}
+#+END_LATEX
+
+
+** Sockets
+A socket combines a port with an export.
+An _initiator socket_ is derived from class sc_port and has an sc_export. It has the port for the forward path and the export for the backward path.
+An _target_socket_    is derived from class sc_export and has an sc_port ([[~/pSystemC/src/tlm_core/tlm_2/tlm_sockets/tlm_target_socket.h][tlm_base_target_socket]])
+
+Only the most derived classes *tlm_initiator_socket* and *tlm_target_socket* are typically used directly by applications. 
+These two sockets are parameterized with a protocol traits class that defines the types used by the forward and backward interfaces.
+Sockets can only be bound together if they have the identical protocol type.
+
+
+** Generic Payload
+It supports the _abstract modeling of memory-mapped buses_, 
+together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
+
+The main features of the generic payload are:
+- Command 
+  Is it read or write?
+- Address
+  What is the address
+- Data
+  A pointer to the physical data as an array of bytes
+- Byte Enable Mask
+- Response
+  An indication of whether the transaction was successful, and if not the nature of the error
+
+
+** Initiators and Targets
+A module's processes may act as either initiators or targets.
+An initiator is responsible for creating a payload and calling the transport function to send it.
+A target receives payloads from the transport function for processing and response.
+In the case of non-blocking interfaces the target may create new transactions backwards in response to a transaction from an initiator.
+Initiator calls are made through initiator sockets, target calls received through target sockets.
+A module may implement both target and initiator sockets, allowing its threads to both generate and receive traffic.
+
+
+** Blocking, Non-Blocking, Debug and Direct Memory Interfaces
+The _blocking transport_ functions are called by the initiator thread, received by the target thread, which processes the request and then returns the result.
+Until the transaction has been processed and released the initiator thread is blocked.
+
+The _non-blocking transport_ functions are called by the initiator thread, received by the target thread
+
+A _debug_ transaction is a read that does not affect the state of the model.
+
+The _DMI_ allows processes to have direct access to blocks of memory in other threads for high performance.
+_An example an ISS accessing memory using transactions would destroy performance._
+
+
+** Socket
+In order to pass transactions between initiators and targets, TLM-2.0 uses sockets.
+An initiator sends transactions out through an _initiator socket_, and a target receives incoming transactions through a _target socket_.
+
+
+
+
+
+
+
+
+
+
+
+
+#+BEGIN_SRC cpp :exports code
+// In simple tlm_utils/simple_target_socket.h
+
+void register_b_transport(MODULE* mod, void (MODULE::*cb)(transaction_type&, sc_core::sc_time&))
+{
+    assert( ! sc_core::sc_get_curr_simcontext()->elaboration_done() );
+    m_fw_process.set_b_transport_ptr(mod, cb);
+}
+
+#+END_SRC
+
+
+
+
+** Blocking interface
+This interface allows only two timing points to be associated with each transaction, 
+corresponding to the call to and return from the blocking transport function.
+
+
+
+** Loosely Timed Coding Style					   
+- Only sufficient timing detail to _boot O/S and run multi-core systems. It can express the modeling of _timers and _interrupts_
+- Processes can run ahead of simulation time (_temporal decoupling_)
+- Each transaction has _2 timing points_: begin and end
+- Uses direct memory interface (_DMI_)
+
+Each process runs ahead up to quantum boundary.
+sc_time_stamp() advances in multiples of the quantum.
+Deterministic communication requires explicit synchronization.
+
+A fast, loosely-timed model is typically expected to use the _blocking transport interface_ the _DMI_ and _temporal decoupling_.
+
+
+** Approximately-timed
+\cite{OpenSystemCInitiative2012}
+
+
+** Loosely-timed coding style and temporal decoupling
+Individual SystemC processes are permitted to run ahead in a local "time warp" without actually advancing simulation time
+until they need to synchronize with the rest of the system.
+Temporal decoupling can result in very fast simulation for certain systems because it increases the data and code locality and reduces scheduling overhead of the simulator.
+
+*Each process is allowed to run for a certain time slice or quantum before switching to the next, or instead may yield control when it reaches an explicit synchronization point.*
+
+The quantum value represents a tradeoff between simulation speed and accuracy.
+
+For a fine grained model, the overhead of event scheduling and process context switching becomes the dominant factor in simulation speed.
+Therefore allowing a process to run ahead of the simulation time will speed up the simulation.
+Until it needs to interact with another process, for example read or update a variable belonging to another process.
+
+The processs that runs ahead of simulation time creates a time warp
+
+Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
+When a process encounters an external dependency it has two choices: either force synchronization, 
+which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
+
+
+
+
+* Distributed Simulations 					   :noexport:
+I must say something about parallelization through running many parallel/distributed simulations since it is a common practise in the industry.
+This is how they are solving the problem at the moment.
+Maybe quote my supervisor.
+
+
+* AXM5500 							   :noexport:
+
+A family of communication processors developped by Axxia, formerly owned by LSI (now Intel).
+
+*From the press release of AXM5500:*
+
+The AXM5500 is a flexible combination of general-purpose processors and specialized packet-processing acceleration engines.
+These processors and engines use Virtual Pipeline technology, a message-passing control path to efficiently and autonomously process packets.
+
+
+* Graveyard of potentially usefull plagiarisms                     :noexport:
+
+
+
+
+
+
+
+Causality, deadlock
+
+An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
+provided that the behavior appears identical to the co-routine semantics defined in this subclause.
+In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics.
+
+
+
+An important limitation of SystemC regarding performance is that the reference implementation is sequential, 
+and the official semantics, just like any other Discrete Event Simulator (henceforth DES), make parallel execution difficult.
+Most existing work on parallelization of SystemC targets cycle-accurate simulation,
+and would be inefficient on loosely timed systems since they cannot run in parallel processes that do not execute simultaneously \cite{Moy}.
+
+\cite{Moy}
+The SystemC standard allows this, "provided that the behavior appears identical to the co-routine semantics" \cite{OpenSystemCInitiative2012}
+This implies two constraints on a parallel implementation:
+
+- It should not change the order in which processes are allowed to be executed. 
+  In particular, the simulated time imposes an order on the execution of processes.
+  
+An optimistic approach would relax this constraint having a violation detection and rollback mechanism to correct any violations afterwards.
+Although this may seem to work with VHDL, with SystemC this is chaotic, since arbitrary C++ code and system calls.
+
+- It should not introduce new race conditions.
+  For example, two SystemC processes may safely execute x++ on a shared variable, but running two such processes in parallel cannot be allowed.
+  The co-routine semantics of the SystemC kernel guarantee that there will be no race conditions.
+  Evaluate-update paradigm
+
+
+How to realize the DE MoC on top of completely heterogeneous HPC platform 
+
+
+* Latex Headers 						   :noexport:
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [12pt,twoside]
+#+LATEX_HEADER: \usepackage[paper=a4paper,dvips,top=1.5cm,left=1.5cm,right=1.5cm, foot=1cm,bottom=1.5cm]{geometry}
+#+LATEX_HEADER: \renewcommand{\rmdefault}{ptm} 
+#+LATEX_HEADER: \usepackage[scaled=.90]{helvet}
+#+LATEX_HEADER: \usepackage{courier}
+#+LATEX_HEADER: \usepackage{bookmark}
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancy}
+#+LATEX_HEADER: \usepackage[dvipsnames*,svgnames]{xcolor} 
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning,calc,shapes}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[swedish,english]{babel}
+#+LATEX_HEADER: \usepackage{rotating}		
+#+LATEX_HEADER: \usepackage{array}		
+#+LATEX_HEADER: \usepackage{graphicx}	 
+#+LATEX_HEADER: \usepackage{float}	
+#+LATEX_HEADER: \usepackage{color}      
+#+LATEX_HEADER: \usepackage{mdwlist}
+#+LATEX_HEADER: \usepackage{setspace}   
+#+LATEX_HEADER: \usepackage{listings}	
+#+LATEX_HEADER: \usepackage{bytefield}  
+#+LATEX_HEADER: \usepackage{tabularx}	
+#+LATEX_HEADER: \usepackage{multirow}
+#+LATEX_HEADER: \usepackage{algorithm}
+#+LATEX_HEADER: \usepackage{algpseudocode}	
+#+LATEX_HEADER: \usepackage{dcolumn}	
+#+LATEX_HEADER: \usepackage{url}	
+#+LATEX_HEADER: \usepackage[perpage,para,symbol]{footmisc} 
+#+LATEX_HEADER: \usepackage[all]{hypcap}
+#+LATEX_HEADER: \definecolor{darkblue}{rgb}{0.0,0.0,0.3} %% define a color called darkblue
+#+LATEX_HEADER: \definecolor{darkred}{rgb}{0.4,0.0,0.0}
+#+LATEX_HEADER: \definecolor{red}{rgb}{0.7,0.0,0.0}
+#+LATEX_HEADER: \definecolor{lightgrey}{rgb}{0.8,0.8,0.8} 
+#+LATEX_HEADER: \definecolor{grey}{rgb}{0.6,0.6,0.6}
+#+LATEX_HEADER: \definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
+#+LATEX_HEADER: \hyphenpenalty=15000 
+#+LATEX_HEADER: \tolerance=1000
+#+LATEX_HEADER: \newcommand{\rr}{\raggedright} 
+#+LATEX_HEADER: \newcommand{\rl}{\raggedleft} 
+#+LATEX_HEADER: \newcommand{\tn}{\tabularnewline}
+#+LATEX_HEADER: \newcommand{\colorbitbox}[3]{%
+#+LATEX_HEADER: \rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}\bitbox{#2}{#3}}
+#+LATEX_HEADER: \newcommand{\red}{\color{red}}
+#+LATEX_HEADER: \makeatletter
+#+LATEX_HEADER: \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex} {\normalfont\normalsize\bfseries}}
+#+LATEX_HEADER: \makeatother
+#+LATEX_HEADER: \makeatletter
+#+LATEX_HEADER: \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex} {\normalfont\normalsize\bfseries}}
+#+LATEX_HEADER: \makeatother
+#+LATEX_HEADER: \setcounter{tocdepth}{3}
+#+LATEX_HEADER: \setcounter{secnumdepth}{5}
+#+LATEX_HEADER: \renewcommand{\headrulewidth}{0pt}
+#+LATEX_HEADER: \lhead{K.Sotiropoulos: Master's Thesis}
+#+LATEX_HEADER: \chead{Project Plan Draft 2}
+#+LATEX_HEADER: \rhead{\date{\today}}
+#+LATEX_HEADER: \makeatletter
+#+LATEX_HEADER: \let\ps@plain\ps@fancy 
+#+LATEX_HEADER: \makeatother
+#+LATEX_HEADER: \setlength{\headheight}{15pt}
