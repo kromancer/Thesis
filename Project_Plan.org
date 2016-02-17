@@ -206,7 +206,11 @@ However, one must notice that the kind of interaction that yields this problemat
 #+NAME: fig:causality_safe_events
 [[file:Figures/causality_safe_events.png]]
 
-PDES algorithms, with respect to how they deal with causality errors, have been classified into two categories: *conservative* and *optimistic* \cite{Fujimoto2015}.
+The last example makes evident the fact that the daunting task of preserving causality in the simulation is all about *process synchronization*.
+For example, each process must be able to communicate to each of its peers (processes that is linked with) the message: 
+"I will not send you any event before $t_1$, so you can proceed with processing any event you have with timestamp $t_2$ where $t_2 < t_1$".
+
+PDES synchronization algorithms, with respect to how they deal with causality errors, have been classified into two categories: *conservative* and *optimistic* \cite{Fujimoto2015}.
 Conservative mechanisms strictly avoid the possibility of any causality error ever occurring by means of model introspection and static analysis.
 On the other hand, optimistic/speculative approaches use a detection and recovery approach: when causality errors are detected a rollback mechanism is invoked to restore the system.
 An optimistic compared to a conservative approach will theoretically yield better performance in models where communication, thus the probability of causality errors, is below a certain threshold \cite{Fujimoto1990}.
@@ -251,14 +255,16 @@ This project hopes to deliver an infinitesimal contribution in solving the latte
 
 
 * Goal(s)
+
 sorted by importance:
 1. A OoO PDES implementation of the SystemC kernel.
 2. A static analysis/introspection tool for parsing the SystemC description of the system and extracting its pure representation, in terms of processes and links.
 3. A code generation tool for implementing the communication FIFOs and replacing .
-4. A framework to bind the workflow.
-5. A TLM 2.0 coding style to minimize the effort and complexity of the code generator.
+4. A way of sequencing the application of the previous tools, either in the kernel's elaboration phase, or using a "gluing" script.
+5. A TLM 2.0 coding style to minimize the effort and complexity of the analysis and generation tools.
 6. A proof of concept application of the proposed methodology on a sufficiently parallel system, running a substantially parallel application, on top of a Linux kernel.
 
+Given the time constraints
 
 
 
@@ -267,14 +273,38 @@ sorted by importance:
 
 * Methods
 
-** 
-The fundamental metric for evaluating the efficiency of the PDES implementation proposed is the speedup compared to the reference DES.
-The accuracy of the simulation can be measured by the aggregate number of causality errors.
-The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
+** Assumptions and delimitations
+Cornerstone assumption, 
+
+"An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
+provided that the behavior appears identical to the co-routine semantics defined in this subclause.
+In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics " \cite{OpenSystemCInitiative2012}.
+
+By assuming/enforcing the principle of one process per module, we hope to cope with causality errors caused by processes sharing system variables.
+
+Furthermore, the feasibility of the introspection and code generation procedures certain limitations on SystemC's expressive capabilities will be imposed.
+
+** Process synchronization algorithm 
+
+** Introspection and code generation
+For the critical task of analizying the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
+
+Using SystemC's well defined API for module hierarchy (for example \texttt{get_child_objects()}) Not in a pre-compilation, application's runtime, at elaboration phase () by querrying each object, using 
+
+
+
 
 ** Hardware and Software tools 
+To ensure efficiency and interoperability, we will use the explicit threading mechanisms that come with the latest standards of C++.
+Intel Parallel Studio XE 2016.
+Xeon phi coprocessor or Xeon server
+Stretch goal to investigate the distribute the simulation , a cluster of SMP nodes.
 
-
+** Evaluation Metrics
+The fundamental metric for evaluating the efficiency of the PDES implementation proposed is the speedup compared to the reference DES.
+Scaling
+The accuracy of the simulation can be measured by the aggregate number of causality errors.
+The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
 
 
 
@@ -320,6 +350,18 @@ Simulation beyond analysis, as a means of constructing a virtual platform.
 | ESL       | Electronic System Level modeling                                                         |
 | Initiator | Historically known as Master                                                             |
 | Target    | Historically known as Slave                                                              |
+
+
+* C++
+** Explicit threading in C++
+#+BEGIN_SRC cpp
+#include <thread>
+#+END_SRC
+
+
+** Introspection vs Reflection
+Super important to check Qt.
+Although it is a GUI thing, it has a DES (maybe PDES, each QThread runs its own event loop) and a Meta Object Compiler.
 
 
 * SystemC 							   :noexport:
