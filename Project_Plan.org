@@ -228,7 +228,7 @@ on SMP host platforms.
 
 * Hypothesis
 We hypothesize that by following a conservative approach on implementing a SystemC OoO PDES 
-we will yield equivalent and faster simulations with respect to the reference SystemC DES.   
+we will yield semantically equivalent and scalable simulations with respect to the reference SystemC DES.   
 
 
 * Purpose
@@ -277,19 +277,18 @@ The automation and generallity the tools could deliver will be emulated by manua
 
 * Methods
 ** Assumptions and delimitations
-Cornerstone assumption, 
-
+The IEEE Standard for SystemC states the following about non reference implementations of the kernel:
 "An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
 provided that the behavior appears identical to the co-routine semantics defined in this subclause.
 In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics " \cite{OpenSystemCInitiative2012}.
+We assume that our implementation, since it is designed to deliver causal simulations, has a strong coverage over this directive (consider the TLM 2.0 temporal decoupling technique which often yields inaccurate simulations)
 
-By assuming/enforcing the principle of one process per module, we hope to cope with causality errors caused by processes sharing system variables.
-
-Furthermore, the feasibility of the introspection and code generation procedures certain limitations on SystemC's expressive capabilities will be imposed.
+We also state that by assuming/enforcing the principle of one process per module and not allowing a module/process to execute another module's/process' function in its context (TLM 2.0 blocking transport interface), 
+we hope to cope with causality errors caused by processes sharing system variables.
+Finally, the feasibility of the introspection and code generation procedures impose certain limitations on SystemC's expressive capabilities.
 
 
 ** Process synchronization algorithm 
-
 
 ** Introspection and code generation
 For the critical task of analizying the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
@@ -301,14 +300,20 @@ Using SystemC's well defined API for module hierarchy (for example \texttt{get\_
 
 ** Hardware and Software tools 
 To ensure efficiency and interoperability, we will use the explicit threading mechanisms that come with the latest standards of C++.
-Intel Parallel Studio XE 2016.
-Xeon phi coprocessor or Xeon server
-Stretch goal to investigate the distribute the simulation , a cluster of SMP nodes.
+The Intel Parallel Studio XE 2016 toolchain will be used for compilation, code analysis and optimization.
+We will initially use the Intel® Xeon Phi™ 5120D Coprocessor as the host platform for the simulation.
+
 
 
 ** Evaluation Metrics
-The fundamental metric for evaluating the efficiency of the PDES implementation proposed is the speedup compared to the reference DES.
-Scaling
+The first evaluation metric of the proposed kernel will be its strong scalability against the reference SystemC kernel.
+It will be determined by keeping the simulation's size constant and varrying the number of processing elements.
+Furthermore, we will also measure weak scalability, by varrying the number of processing elements and the simulation's size symmetrically,
+and trying to achieve constant time to simulation end.
+
+The simulation's size can be easily related to the duration of the simulation (in simulated time).
+Another way of describing the simulation's size is through the conception of a formula involving the number of system processes, the number of links, the system's topology and the amount of events generated.
+
 The accuracy of the simulation can be measured by the aggregate number of causality errors.
 The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
 
