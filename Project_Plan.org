@@ -49,7 +49,7 @@ It is subject to the company's needs and the scientific context a Master's Thesi
  
 All the necessary equipment (software and hardware) has been kindly provided by the company.
 The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
-but will conform to the general context dictated by the documents that have been already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
+but will conform to the general context dictated by the documents already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
 
 
 
@@ -254,17 +254,21 @@ This project hopes to deliver an infinitesimal contribution in solving the latte
 
 
 
-* Goal(s)
+* Goals and Objectives
+If the timing constraints stretched beyond the scope of a Master Thesis, 
+the project's self-actualization would require the development/production of the following components (sorted in descending significance order):
+1. An OSCI compliant, OoO PDES implementation of the SystemC kernel.
+2. A proof of concept application of the proposed kernel, on a sufficiently parallel system, running a substantially parallel application, on top of a Linux kernel.
+3. The Master Thesis report document.
+4. A static analysis/introspection tool for parsing the SystemC description of the system and extracting its pure representation, in terms of processes and links.
+5. A code generation tool for constructing the communication and synchronization mechanisms.
+6. A way of sequencing the application of the previous tools, either in the kernel's elaboration phase, or using a "gluing" script.
+7. A TLM 2.0 coding style to minimize the effort and complexity of the analysis and generation tools.
+8. A roadmap for elevating the simulation from SMP parallel to distributed, in a cluster of SMP nodes, parallel.
 
-sorted by importance:
-1. A OoO PDES implementation of the SystemC kernel.
-2. A static analysis/introspection tool for parsing the SystemC description of the system and extracting its pure representation, in terms of processes and links.
-3. A code generation tool for implementing the communication FIFOs and replacing .
-4. A way of sequencing the application of the previous tools, either in the kernel's elaboration phase, or using a "gluing" script.
-5. A TLM 2.0 coding style to minimize the effort and complexity of the analysis and generation tools.
-6. A proof of concept application of the proposed methodology on a sufficiently parallel system, running a substantially parallel application, on top of a Linux kernel.
+Given the time constraints, the primary focus falls on the first three objectives.
+The automation and generallity the tools could deliver will be emulated by manual and ad-hoc solutions.
 
-Given the time constraints
 
 
 
@@ -272,7 +276,6 @@ Given the time constraints
 
 
 * Methods
-
 ** Assumptions and delimitations
 Cornerstone assumption, 
 
@@ -284,12 +287,14 @@ By assuming/enforcing the principle of one process per module, we hope to cope w
 
 Furthermore, the feasibility of the introspection and code generation procedures certain limitations on SystemC's expressive capabilities will be imposed.
 
+
 ** Process synchronization algorithm 
+
 
 ** Introspection and code generation
 For the critical task of analizying the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
 
-Using SystemC's well defined API for module hierarchy (for example \texttt{get_child_objects()}) Not in a pre-compilation, application's runtime, at elaboration phase () by querrying each object, using 
+Using SystemC's well defined API for module hierarchy (for example \texttt{get\_child\_objects()}) Not in a pre-compilation, application's runtime, at elaboration phase () by querrying each object, using 
 
 
 
@@ -300,6 +305,7 @@ Intel Parallel Studio XE 2016.
 Xeon phi coprocessor or Xeon server
 Stretch goal to investigate the distribute the simulation , a cluster of SMP nodes.
 
+
 ** Evaluation Metrics
 The fundamental metric for evaluating the efficiency of the PDES implementation proposed is the speedup compared to the reference DES.
 Scaling
@@ -309,6 +315,9 @@ The detection of causality errors must be facilitated in a per process level and
 
 
 * TODO Tasks and Time Scheduling
+| Week(s) | End Date | Task Description | Outcome |
+|---------+----------+------------------+---------|
+|         |          |                  |         |
 
 
 * References
@@ -352,7 +361,7 @@ Simulation beyond analysis, as a means of constructing a virtual platform.
 | Target    | Historically known as Slave                                                              |
 
 
-* C++
+* C++ 								   :noexport:
 ** Explicit threading in C++
 #+BEGIN_SRC cpp
 #include <thread>
@@ -798,7 +807,7 @@ How to realize the DE MoC on top of completely heterogeneous HPC platform
 #+LATEX_HEADER: \setcounter{secnumdepth}{5}
 #+LATEX_HEADER: \renewcommand{\headrulewidth}{0pt}
 #+LATEX_HEADER: \lhead{K.Sotiropoulos: Master's Thesis}
-#+LATEX_HEADER: \chead{Project Plan Draft 2}
+#+LATEX_HEADER: \chead{Project Plan Draft 3}
 #+LATEX_HEADER: \rhead{\date{\today}}
 #+LATEX_HEADER: \makeatletter
 #+LATEX_HEADER: \let\ps@plain\ps@fancy 
