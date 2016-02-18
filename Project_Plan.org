@@ -177,10 +177,11 @@ Thus, the kernel can safely assign them to a different operating system thread a
 
 
 ** Transaction Level Modeling					  
-*Transaction Level Modeling (TLM)* was to allow model interoperability and the rapid development of virtual platforms to be used for software development and validation.
+*Transaction Level Modeling (TLM)* enhances SystemC's expressiveness in order to facilitate the more abstract description (compared to RTL) of systems.  
+TLM 2.0 allows model interoperability and the rapid development of fast virtual platforms to be deployed in software development, early on in the system's design procedure.
 
 Transaction-level models represent one specific type of the DE MoC \cite{Grotker2002}.
-Transactions are nonatomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
+Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
 The set of messages exchanged during a transaction are modeled using function calls and represent the different phases of a communication protocol.
 In a transaction one can distinguish two actors:
 the *initiator*, the process which initiated the communication, and the *target*, the process which is supposed to service the target's request.
@@ -197,7 +198,9 @@ TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features:
 - A set of *utilities* to facilitate the rapid development of models.
 
 Figure demonstrates the typical use cases for TLM's different features.
-
+#+CAPTION: TLM 2.0 use cases (adopted from \cite{OpenSystemCInitiative2009}).
+#+NAME: fig:tlm_use_cases
+[[file:Figures/tlm_use_cases.png]]
 
 
 
@@ -360,7 +363,7 @@ The important points one must notice with this deadlock avoidance mechanism are 
 
 
 ** Introspection and code generation
-For the critical task of analyzing the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
+For the critical task of analyzing the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Hosein2012}.
 Using SystemC's well defined API for module hierarchy (e.g. \texttt{get\_child\_objects()}), along with the introduction of meta objects, the system's structure can be
 serialized at runtime, in the pre simulation phase of elaboration.
 
@@ -391,15 +394,15 @@ A concrete realization of the accuracy metric comes in the form of a counter eac
 
 
 * Tasks and Time Scheduling
-The majority of the remaining time has been partioned into 3 x 3-4 week long iterations, 
+The majority of the remaining time has been partitioned into 3 x 3-4 week long iterations, 
 where we will incrementally try to achieve our objectives.
 The tasks that comprise the first iteration are the following:
   1. Setup software environment on the first experimentation server (Lovisa)
   2. Manually compile the TLM 2.0 LT example of the SystemC installation, to a multithreaded C++ application, according to the CMB algorithm.
   3. Document Task 1
-  4. Find a way to create parameterizable random networks within C++, that can be serialized, so that they can be analyzed and visualized by Matlab.
-  5. Create "dummy" process functionallity that can be parameterized and resembles the behaviour of common TLM actors (Instruction Set Simulators, Memory, Timers etc)
-  6. Simulate a number of random networks.
+  4. Find a way to create parameterizable random networks within C++, that can be serialized in a form Matlab can analyze and visualize them.
+  5. Create "dummy" process functionality that resembles the behavior of common TLM actors (Instruction Set Simulators, Memory, Timers etc)
+  6. Perform a number of simulations of the random systems that correspond to the random networks.
   7. Document Tasks 3-5.
 
 The context of the next iterations will be decided based on the outcome of the first.
