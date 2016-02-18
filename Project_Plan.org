@@ -24,6 +24,7 @@
 * Acronyms 							   
 | *DE*:    | Discrete Event                      |
 | *DES*:   | Discrete Event Simulator/Simulation |
+| *DMI*:   | Direct Memory Interface             |
 | *ESL*:   | Electronic System-Level Design      |
 | *HPC*:   | High Performance Computing          |
 | *MoC*:   | Model of Computation                |
@@ -35,17 +36,20 @@
 | *SoC*:   | System on Chip                      |
 | *SR*:    | Synchronous Reactive                |
 | *TLM*:   | Transaction Level Modeling          |
+| *CMB*:   | Chandy/Misra/Bryant algorithm       |
 \clearpage
 
 
 * Organization
 This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
-Mr. Bjorn Runaker (bjorn.runaker@intel.com) is the project's supervisor from the company's side, while professor Ingo Sanders (ingo@kth.se) is the examiner from the university. 
+Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
+while professor [[https://people.kth.se/~ingo/][Ingo Sanders]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se})are the examiner and supervisor from KTH. 
 The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company 
 (document title: "Statement of Terms and Conditions of Fixed Term Employment"). 
 
 The scope of this project has been and is being mutually determined by all parties. 
-It is subject to the company's needs and the scientific context a Master's Thesis must expose and cultivate.
+It is dialectically determined between the company's needs and the institute's research agenda.
+As Master's Thesis project, it needs to expose a scientific ground on which the engineering effort shall be rooted.
  
 All the necessary equipment (software and hardware) has been kindly provided by the company.
 The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
@@ -54,7 +58,7 @@ but will conform to the general context dictated by the documents already signed
 
 
 
-* Background
+* Background	
 SystemC is considered to be a System-Level Design Language (SLDL), that is implemented as a C++ class library.
 The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized with the latest LRB being the IEEE 1666-2011 \cite{OpenSystemCInitiative2012}
 The major advantage SystemC provides to the designer is that a component's functionality can be easily expressed in C/C++, the dominating languages for in systems programming (e.g. Operating System and Device Driver development).
@@ -62,7 +66,7 @@ As a result SystemC models are executable: the designer can directly simulate th
 The language has been demanded and supported by the semiconductor industry, in its collaborative effort to push Electronic Design Automation (EDA) into higher abstraction layers, thus giving birth to a trend
 referred to as Electronic System-Level Design (ESLD).
 
-The rest of this section is devoted into presenting the theoretical/scientific ground on which we will cultivate this projcet.
+The rest of this section is devoted into presenting the theoretical/scientific ground on which we will cultivate this project.
 To avoid confusion by being precise, fundamental terms and concepts of computer science are being defined and redefined, even at the risk of being pedantic.  
 Facing a labyrinth of abstraction layers, we will begin unraveling Ariadne's thread at the simple observation that SystemC is a System Level Design *Language*.
 
@@ -88,22 +92,22 @@ The dominant MoC that underlies most industry standard EDA languages (VHDL, Veri
 The components of a DE system are called *processes*.
 In this context processes usually model the behavior and functionality of hardware entities.
 The execution of processes is concurrent and the communication is achieved through *events*.
-An event can be considered as an exchange of a timestamped value.
+An event can be considered as an exchange of a time-stamped value.
 
 Concurrent execution does not imply parallel/simultaneous execution. 
 The notion of *concurrency* is more abstract. 
 It can be realized as either parallel/simultaneous execution or as sequential interleaved execution, depending on the actual machine's computational resources.
 
-Systems whose semantics are meant to be interpreted by a DE MoC, in order to be realizable, must have a *causal* behaviour: they must process events in a chronological order, 
+Systems whose semantics are meant to be interpreted by a DE MoC, in order to be realizable, must have a *causal* behavior: they must process events in a chronological order, 
 while any output events produced by a process are required to be no earlier in time than the input events that were consumed \cite{Editor2014}.
 At any moment in real time, the model's time is determined by the last event processed.
 
 In figure [[fig:MoCs]] one can observe that the DE MoC is also considered to be *Synchronous-Reactive (SR)*. 
 This demonstrates the possibility of the MoC to "understand" entities with zero execution time, where output events are produced at the same time input events are consumed.
 We can also extend/rephrase the previous definitions and say that Synchronous-Reactive MoCs are able to handle systems where events happen at the same time, instantaneously, in a causal way.
-The DE MoC handles the aforementioned situations by extending timestamps(the notion of model time) with the introduction of delta delays (also referred to as cycles or microsteps).
+The DE MoC handles the aforementioned situations by extending time-stamps(the notion of model time) with the introduction of delta delays (also referred to as cycles or micro-steps).
 A delta delay signifies an infinitesimal unit of time and no amount of delta delays, if summed, can result in time progression.
-A timestamp is therefore represented as a tuple of values, $(t,n)$ where $t$ indicates the model time and $n$ the number of delta delays that have advanced at $t$.
+A time-stamp is therefore represented as a tuple of values, $(t,n)$ where $t$ indicates the model time and $n$ the number of delta delays that have advanced at $t$.
 
 
 
@@ -119,10 +123,10 @@ A process shall not preempt or interrupt the execution of another process \cite{
 
 To avoid quantization errors and the non-uniform distribution of floating point values, time is expressed as an integer multiple of a real value referred to as the time resolution. 
 
-The kernel maintains a *centralized event queue* that is sorted by timestamp and knows which process is *running*, which processes are waiting for events and which are *runnable*.
+The kernel maintains a *centralized event queue* that is sorted by time-stamp and knows which process is *running*, which processes are waiting for events and which are *runnable*.
 Runnable processes have had events to which they are sensitive triggered and are waiting for the running process to yield to the kernel so that they can be scheduled.
-The kernel controls the execution order by selecting the earliest event in the event queue and making its timestamp the current simulation time.
-It then determines the process the event is destined for, and finds all other events in the event queue with the same timestamp that are destined for the same process \cite{Black2010}.
+The kernel controls the execution order by selecting the earliest event in the event queue and making its time-stamp the current simulation time.
+It then determines the process the event is destined for, and finds all other events in the event queue with the same time-stamp that are destined for the same process \cite{Black2010}.
 The operation of the kernel is exemplified in Alg \ref{alg:kernel}.
 
 #+BEGIN_LATEX
@@ -172,30 +176,29 @@ Thus, the kernel can safely assign them to a different operating system thread a
 
 
 
-** TODO Transaction Level Modeling 				   :noexport:
-*What MoC underlies a SystemC TLM model? I am stuck here*
-The rest are easy:
-Give a concise introduction of TLM as an abstraction layer.
-Explain why it was introduced. What problems does it addresses.
-Give an overview of the extra features it adds to the SystemC library.
-Reason why the OoO PDES will yield faster simulations.
-Why is there a version 1 and 2 for TLM.
-Introduce the dangerous, for simulation accuracy, mechanism of temporal decoupling.
+** Transaction Level Modeling					  
+*Transaction Level Modeling (TLM)* was to allow model interoperability and the rapid development of virtual platforms to be used for software development and validation.
 
-*Transaction Level Modeling (TLM)* defines a number of abstraction levels (*Loosely Timed (LT) and Approximately Timed (AT)*)
-for describing systems as networks of functional blocks, communicating via transactions.
-A transaction 
-TLM 2.0 consists of:
+Transaction-level models represent one specific type of the DE MoC \cite{Grotker2002}.
+Transactions are nonatomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
+The set of messages exchanged during a transaction are modeled using function calls and represent the different phases of a communication protocol.
+In a transaction one can distinguish two actors:
+the *initiator*, the process which initiated the communication, and the *target*, the process which is supposed to service the target's request.
+
+TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features:
 - A set of core interfaces
-  - Blocking
-  - Non-blocking
-  - DMI
-  - Debug transport interface
-- The global quantum
-- Initiator and target sockets
-- Generic payload
-- Base protocol
-- Utilities
+  - A Blocking interface which is coupled with the *Loosely-Timed (LT)* coding style.
+  - A non-blocking interface, which is coupled with the *Approximately-Timed (AT)* coding style.
+  - The *Direct Memory Interface (DMI)* to enable an initiator to have direct access to a target's memory, bypassing the usual path through the interconnect components used by the transport interfaces. 
+  - The *Debug transport interface* to allow an non-intrusive inspection of the system's state.
+- The *global quantum* used by the *temporal decoupling* mechanism of the LT coding style, which facilitates faster simulations by reducing the number of context switches performed by the kernel. 
+- Initiator and target *sockets* to denote the links (causal dependencies) between processes.
+- The *generic payload* which supports the abstract modeling of memory-mapped buses.
+- A set of *utilities* to facilitate the rapid development of models.
+
+Figure demonstrates the typical use cases for TLM's different features.
+
+
 
 
 
@@ -225,7 +228,7 @@ However, one must notice that the kind of interaction that yields this problemat
 
 The last example makes evident the fact that the daunting task of preserving causality in the simulation is all about *process synchronization*.
 For example, each process must be able to communicate to each of its peers (processes that is linked with) the message: 
-"I will not send you any event before $t_1$, so you can proceed with processing any event you have with timestamp $t_2$ where $t_2 < t_1$".
+"I will not send you any event before $t_1$, so you can proceed with processing any event you have with time-stamp $t_2$ where $t_2 < t_1$".
 
 PDES synchronization algorithms, with respect to how they deal with causality errors, have been classified into two categories: *conservative* and *optimistic* \cite{Fujimoto2015}.
 Conservative mechanisms strictly avoid the possibility of any causality error ever occurring by means of model introspection and static analysis.
@@ -250,7 +253,7 @@ we will yield semantically equivalent and scalable simulations with respect to t
 
 * Purpose
 The vision of a fully automated and connected society, the IoT revolution has promised to deliver,
-is depending on the industry's abillity to deliver novel, complex and heterogeneous cyber-physical systems with short time-to-market constraints.
+is depending on the industry's ablate to deliver novel, complex and heterogeneous cyber-physical systems with short time-to-market constraints.
 To live up to these expectations, the engineering discipline of ESLD must provide an answer to a number of questions:
 \newline
 *High-Level Synthesis*: How a system described in a SLDL can be realized in a structured and automatic way? 
@@ -285,7 +288,7 @@ the project's self-actualization would require the development/production of the
 9. A roadmap for elevating the simulation from SMP parallel to distributed, in a cluster of SMP nodes, parallel.
 
 Given the time constraints, the primary focus falls on the first three objectives.
-The automation and generallity the tools could deliver will be emulated by manual and ad-hoc solutions.
+The automation and generality the tools could deliver will be emulated by manual and ad-hoc solutions.
 
 
 
@@ -304,14 +307,15 @@ We assume that our implementation, since it is designed to deliver causal simula
 However, the feasibility of the introspection and code generation procedures, imposes certain limitations on SystemC's expressive capabilities.
 This is the main reason our kernel can not be considered to be compliant with the standard.
 
-We also state that by assuming/enforcing the principle of one process per module and not allowing a module/process to execute another module's/process' function in its context (TLM 2.0 blocking transport interface), 
-we hope to cope with causality errors caused by processes sharing system variables.
+We also state that by assuming/enforcing the principle of one process per module and not allowing a module to execute another module's functions in its context (TLM 2.0 blocking transport interface), 
+we hope to avoid causality errors caused by processes sharing system variables.
+
 
 
 
 ** Process synchronization algorithm 
-We will begin our experimentations using a class of conservative synchronization algorithms originating from the work of Chandy/Misra/Bryant \cite{Bryant} \cite{Chandy1979}.
-Algorithm  \ref{alg:kernel} demonstrates how these algorithms deal with the fundamendal dilemma presented in section [[Problem statement]], figure [[fig:causality_safe_events]].
+We will begin our experimentations using a class of conservative synchronization algorithms originating from the work of *Chandy/Misra/Bryant (CMB)* \cite{Bryant} \cite{Chandy1979}.
+Listing \ref{alg:kernel} demonstrates how these algorithms deal with the fundamental dilemma presented in section [[Problem statement]], figure [[fig:causality_safe_events]].
 
 #+BEGIN_LATEX
 \begin{algorithm}
@@ -321,8 +325,8 @@ Algorithm  \ref{alg:kernel} demonstrates how these algorithms deal with the fund
 
    \While{simulation is not over}  
       \State \textbf{Block} until each incoming link queue contains at least one event
-      \State remove event with the smallest timestamp M from its queue.
-      \State process clock = M
+      \State remove event with the smallest time-stamp M from its queue.
+      \State set clock = M
       \State process M
    \EndWhile
 
@@ -330,10 +334,33 @@ Algorithm  \ref{alg:kernel} demonstrates how these algorithms deal with the fund
 \end{algorithm}
 #+END_LATEX
 
+However, a naive realization of the algorithm leads to deadlock situations like the one depicted in figure [[fig:deadlock]].
+The queues placed along the red loop are empty, thus simulation has halted, even though there are pending events (across the blue loop).
+
+#+CAPTION: adopted from \cite{Fujimoto1999}
+#+NAME: fig:deadlock
+[[file:Figures/Deadlock.png]]
+
+The deadlock avoidance mechanism that lies in the core of the CMB class of algorithms can be demonstrated with the following example:
+Let us assume that $P_3$ is at time 5.
+Furthermore, let us assume that we have the *a priori* knowledge that $P_3$ has a minimum event processing time of 3 (simulated).
+We will call this knowledge *lookahead*.
+$P_3$ could create a *null event*, with no data value, but with a time-stamp $t$(8) = clock(5) + lookahead(3) and place it on its outgoing links.
+A null event is still an event, so $P_2$ by processing it would advance its clock to 8.
+In the same fashion, let us assume that $P_2$ has a lookahead of 2 and upon processing $P_3$ null event, 
+it will generate a null event for $P_1$ with time-stamp 10. 
+Eventually $P_1$ can now safely process actual event with time-stamp 9, thus unfreezing the simulation.
+
+The important points one must notice with this deadlock avoidance mechanism are that:
+- Null events are created when a process updates its clock.
+- Each process propagates null events on all of its outgoing links.
+- This mechanism is mostly dependent to determine sufficiently large lookaheads.
+
+
 
 
 ** Introspection and code generation
-For the critical task of analizying the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
+For the critical task of analyzing the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
 Using SystemC's well defined API for module hierarchy (e.g. \texttt{get\_child\_objects()}), along with the introduction of meta objects, the system's structure can be
 serialized at runtime, in the pre simulation phase of elaboration.
 
@@ -344,13 +371,14 @@ serialized at runtime, in the pre simulation phase of elaboration.
 To ensure efficiency and code readability, we will use the explicit threading mechanisms that come with the latest standards of C++.
 The Intel Parallel Studio XE 2016 toolchain will be used for compilation, code analysis and optimization.
 We will initially use the Intel® Xeon Phi™ 5120D Coprocessor as the host platform for the simulation.
+The coprocessor is situated in a Intel® Xeon E5-2600M v3 server (named lovisa).
 
 
 
 ** Evaluation Metrics
 The first evaluation metric of the proposed kernel will be its strong scalability against the reference SystemC kernel.
-It will be determined by keeping the simulation's size constant and varrying the number of processing elements.
-Furthermore, we will also measure weak scalability, by varrying the number of processing elements and the simulation's size symmetrically,
+It will be determined by keeping the simulation's size constant and varying the number of processing elements.
+Furthermore, we will also measure weak scalability, by varying the number of processing elements and the simulation's size symmetrically,
 and trying to achieve constant time to simulation end.
 
 The simulation's size can be easily related to the duration of the simulation (in simulated time).
@@ -358,14 +386,51 @@ Another way of describing the simulation's size is through the conception of a f
 
 The accuracy of the simulation can be measured by the aggregate number of causality errors.
 The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
-A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a timestamp lower than its clock (the timestamp of the last processed event).
+A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a time-stamp lower than its clock (the time-stamp of the last processed event).
 
 
 
-* TODO Tasks and Time Scheduling
-| Week(s) | End Date | Task Description | Outcome |
-|---------+----------+------------------+---------|
-|         |          |                  |         |
+* Tasks and Time Scheduling
+The majority of the remaining time has been partioned into 3 x 3-4 week long iterations, 
+where we will incrementally try to achieve our objectives.
+The tasks that comprise the first iteration are the following:
+  1. Setup software environment on the first experimentation server (Lovisa)
+  2. Manually compile the TLM 2.0 LT example of the SystemC installation, to a multithreaded C++ application, according to the CMB algorithm.
+  3. Document Task 1
+  4. Find a way to create parameterizable random networks within C++, that can be serialized, so that they can be analyzed and visualized by Matlab.
+  5. Create "dummy" process functionallity that can be parameterized and resembles the behaviour of common TLM actors (Instruction Set Simulators, Memory, Timers etc)
+  6. Simulate a number of random networks.
+  7. Document Tasks 3-5.
+
+The context of the next iterations will be decided based on the outcome of the first.
+To summarize:
+
+#+ATTR_LATEX: :align=|c|c|c|c|
+| *Week(s)* | *End Date* |         *Task Number* | *Milestone*     |
+|-----------+------------+-----------------------+-----------------|
+|       5-7 |      02-18 | Initial Investigation | Project Plan v1 |
+|-----------+------------+-----------------------+-----------------|
+|         7 |      02-19 |                     1 |                 |
+|-----------+------------+-----------------------+-----------------|
+|         8 |      02-26 |                     2 |                 |
+|-----------+------------+-----------------------+-----------------|
+|         9 |      03-02 |                     3 | Status Report 1 |
+|-----------+------------+-----------------------+-----------------|
+|         9 |      03-04 |                     4 |                 |
+|-----------+------------+-----------------------+-----------------|
+|        10 |      03-11 |                     5 |                 |
+|-----------+------------+-----------------------+-----------------|
+|        11 |      03-18 |                     6 |                 |
+|-----------+------------+-----------------------+-----------------|
+|        12 |      03-23 |                     7 | Status Report 2 |
+|-----------+------------+-----------------------+-----------------|
+|     12-15 |      04-14 |      Second Iteration | Status Report 3 |
+|-----------+------------+-----------------------+-----------------|
+|     16-19 |      05-12 |      Third  Iteration | Status Report 4 |
+|-----------+------------+-----------------------+-----------------|
+|     20-21 |            |         Reserve weeks |                 |
+|-----------+------------+-----------------------+-----------------|
+|     22-26 |      06-30 |       Project closure | Final Report    |
 
 
 * References
@@ -400,6 +465,11 @@ A simulation is defined as the execution of model revealing the behaviour of the
 A system can be analyzed either by being formally verified or simulated.
 Simulation beyond analysis, as a means of constructing a virtual platform.
 
+
+* ESLD Cheatsheet :noexport:
+_RTL modules are pin-accurate:_ This means that the ports of an RTL module directly correspond to wires in the real-world implementation of the module. 
+
+_Is the MoC underlying a PDES a special form of KPN?_
 
 * Terminology 							   :noexport:
 | Process   | Provides necessary modeling of independently timed circuits                              |
@@ -748,7 +818,7 @@ This is how they are solving the problem at the moment.
 Maybe quote my supervisor.
 
 
-* Super Important Issues                        :noexport:
+* Super Important Issues 					   :noexport:
 \cite{Fujimoto1999}
 If each LP adheres to the local causality constraint, then the
 parallel/distributed execution will yield exactly the same results as a sequential
@@ -777,15 +847,6 @@ These processors and engines use Virtual Pipeline technology, a message-passing 
 
 
 * Graveyard of potentially usefull plagiarisms                     :noexport:
-
-
-
-
-
-
-
-Causality, deadlock
-
 An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
 provided that the behavior appears identical to the co-routine semantics defined in this subclause.
 In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics.
@@ -872,7 +933,7 @@ How to realize the DE MoC on top of completely heterogeneous HPC platform
 #+LATEX_HEADER: \setcounter{secnumdepth}{5}
 #+LATEX_HEADER: \renewcommand{\headrulewidth}{0pt}
 #+LATEX_HEADER: \lhead{K.Sotiropoulos: Master's Thesis}
-#+LATEX_HEADER: \chead{Project Plan Draft 3}
+#+LATEX_HEADER: \chead{Project Plan version 1}
 #+LATEX_HEADER: \rhead{\date{\today}}
 #+LATEX_HEADER: \makeatletter
 #+LATEX_HEADER: \let\ps@plain\ps@fancy 
