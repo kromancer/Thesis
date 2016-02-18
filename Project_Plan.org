@@ -310,8 +310,27 @@ we hope to cope with causality errors caused by processes sharing system variabl
 
 
 ** Process synchronization algorithm 
-The conservative algorithm with which we will begin our experimentations is called the Chandy/Misra/Bryant
-algorithm \cite{Bryant} \cite{Chandy1979}.
+We will begin our experimentations using a class of conservative synchronization algorithms originating from the work of Chandy/Misra/Bryant \cite{Bryant} \cite{Chandy1979}.
+Algorithm  \ref{alg:kernel} demonstrates how these algorithms deal with the fundamendal dilemma presented in section [[Problem statement]], figure [[fig:causality_safe_events]].
+
+#+BEGIN_LATEX
+\begin{algorithm}
+\caption{Process event loop, adopted from \cite{Fujimoto1999}}
+\label{alg:initial_CMB}
+\begin{algorithmic}[2]
+
+   \While{simulation is not over}  
+      \State \textbf{Block} until each incoming link queue contains at least one event
+      \State remove event with the smallest timestamp M from its queue.
+      \State process clock = M
+      \State process M
+   \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+#+END_LATEX
+
+
 
 ** Introspection and code generation
 For the critical task of analizying the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
@@ -339,6 +358,7 @@ Another way of describing the simulation's size is through the conception of a f
 
 The accuracy of the simulation can be measured by the aggregate number of causality errors.
 The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
+A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a timestamp lower than its clock (the timestamp of the last processed event).
 
 
 
@@ -726,6 +746,24 @@ which means yielding to allow all other processes to run as normal until simulat
 I must say something about parallelization through running many parallel/distributed simulations since it is a common practise in the industry.
 This is how they are solving the problem at the moment.
 Maybe quote my supervisor.
+
+
+* Super Important Issues                        :noexport:
+\cite{Fujimoto1999}
+If each LP adheres to the local causality constraint, then the
+parallel/distributed execution will yield exactly the same results as a sequential
+executlOn of the same simulation program provided that events containing the same
+timestamp are processed in the same order in both the sequential and parallel
+execution. Events containing the same time stamp are referred to as simultaneous
+events.
+
+\cite{Fujimoto1999}
+Messages arriving on each incoming link can be stored in a first-in-first-out
+(FIFO) queue, which is also time stamp order because of the above restrictions.
+*Here, we ignore "local" events that are scheduled by an LP for itself*
+In practice, processing ofthese events must be interleaved with the processing ofmessages from
+other LPs so that all events are processed in time stamp order, however, this is easy
+to accomplish.
 
 
 * AXM5500 							   :noexport:
