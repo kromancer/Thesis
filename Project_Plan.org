@@ -56,6 +56,7 @@ but will conform to the general context dictated by the documents already signed
 
 * Background
 SystemC is considered to be a System-Level Design Language (SLDL), that is implemented as a C++ class library.
+The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized with the latest LRB being the IEEE 1666-2011 \cite{OpenSystemCInitiative2012}
 The major advantage SystemC provides to the designer is that a component's functionality can be easily expressed in C/C++, the dominating languages for in systems programming (e.g. Operating System and Device Driver development).
 As a result SystemC models are executable: the designer can directly simulate the behavior of a system modeled in SystemC.
 The language has been demanded and supported by the semiconductor industry, in its collaborative effort to push Electronic Design Automation (EDA) into higher abstraction layers, thus giving birth to a trend
@@ -181,6 +182,24 @@ Reason why the OoO PDES will yield faster simulations.
 Why is there a version 1 and 2 for TLM.
 Introduce the dangerous, for simulation accuracy, mechanism of temporal decoupling.
 
+*Transaction Level Modeling (TLM)*  Facilitating the simulation of systems, with inter communicating components.
+The components are modeled on a functional level.
+
+TLM 2.0 consists of:
+- A set of core interfaces
+  - Blocking
+  - Non-blocking
+  - DMI
+  - Debug transport interface
+- The global quantum
+- Initiator and target sockets
+- Generic payload
+- Base protocol
+- Utilities
+
+
+References to a single transaction object are passed along the forward and backward paths.
+
 
 * Problem statement
 The distribution of simulation time opens Pandora's box. 
@@ -257,14 +276,15 @@ This project hopes to deliver an infinitesimal contribution in solving the latte
 * Goals and Objectives
 If the timing constraints stretched beyond the scope of a Master Thesis, 
 the project's self-actualization would require the development/production of the following components (sorted in descending significance order):
-1. An OSCI compliant, OoO PDES implementation of the SystemC kernel.
+1. An OoO PDES implementation of the SystemC kernel.
 2. A proof of concept application of the proposed kernel, on a sufficiently parallel system, running a substantially parallel application, on top of a Linux kernel.
 3. The Master Thesis report document.
 4. A static analysis/introspection tool for parsing the SystemC description of the system and extracting its pure representation, in terms of processes and links.
 5. A code generation tool for constructing the communication and synchronization mechanisms.
 6. A way of sequencing the application of the previous tools, either in the kernel's elaboration phase, or using a "gluing" script.
 7. A TLM 2.0 coding style to minimize the effort and complexity of the analysis and generation tools.
-8. A roadmap for elevating the simulation from SMP parallel to distributed, in a cluster of SMP nodes, parallel.
+8. A way to ensure the kernel's OSCI compliance.
+9. A roadmap for elevating the simulation from SMP parallel to distributed, in a cluster of SMP nodes, parallel.
 
 Given the time constraints, the primary focus falls on the first three objectives.
 The automation and generallity the tools could deliver will be emulated by manual and ad-hoc solutions.
@@ -283,23 +303,27 @@ provided that the behavior appears identical to the co-routine semantics defined
 In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics " \cite{OpenSystemCInitiative2012}.
 We assume that our implementation, since it is designed to deliver causal simulations, has a strong coverage over this directive (consider the TLM 2.0 temporal decoupling technique which often yields inaccurate simulations)
 
+However, the feasibility of the introspection and code generation procedures, imposes certain limitations on SystemC's expressive capabilities.
+This is the main reason our kernel can not be considered to be compliant with the standard.
+
 We also state that by assuming/enforcing the principle of one process per module and not allowing a module/process to execute another module's/process' function in its context (TLM 2.0 blocking transport interface), 
 we hope to cope with causality errors caused by processes sharing system variables.
-Finally, the feasibility of the introspection and code generation procedures impose certain limitations on SystemC's expressive capabilities.
+
 
 
 ** Process synchronization algorithm 
 
+
 ** Introspection and code generation
 For the critical task of analizying the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
-
-Using SystemC's well defined API for module hierarchy (for example \texttt{get\_child\_objects()}) Not in a pre-compilation, application's runtime, at elaboration phase () by querrying each object, using 
+Using SystemC's well defined API for module hierarchy (e.g. \texttt{get\_child\_objects()}), along with the introduction of meta objects, the system's structure can be
+serialized at runtime, in the pre simulation phase of elaboration.
 
 
 
 
 ** Hardware and Software tools 
-To ensure efficiency and interoperability, we will use the explicit threading mechanisms that come with the latest standards of C++.
+To ensure efficiency and code readability, we will use the explicit threading mechanisms that come with the latest standards of C++.
 The Intel Parallel Studio XE 2016 toolchain will be used for compilation, code analysis and optimization.
 We will initially use the Intel® Xeon Phi™ 5120D Coprocessor as the host platform for the simulation.
 
@@ -550,7 +574,6 @@ TLM 2.0 consists of:
 
 
 References to a single transaction object are passed along the forward and backward paths.
-
 
 
 #+BEGIN_LATEX
