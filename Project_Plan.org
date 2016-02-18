@@ -182,9 +182,9 @@ Reason why the OoO PDES will yield faster simulations.
 Why is there a version 1 and 2 for TLM.
 Introduce the dangerous, for simulation accuracy, mechanism of temporal decoupling.
 
-*Transaction Level Modeling (TLM)*  Facilitating the simulation of systems, with inter communicating components.
-The components are modeled on a functional level.
-
+*Transaction Level Modeling (TLM)* defines a number of abstraction levels (*Loosely Timed (LT) and Approximately Timed (AT)*)
+for describing systems as networks of functional blocks, communicating via transactions.
+A transaction 
 TLM 2.0 consists of:
 - A set of core interfaces
   - Blocking
@@ -197,8 +197,6 @@ TLM 2.0 consists of:
 - Base protocol
 - Utilities
 
-
-References to a single transaction object are passed along the forward and backward paths.
 
 
 * Problem statement
@@ -312,7 +310,8 @@ we hope to cope with causality errors caused by processes sharing system variabl
 
 
 ** Process synchronization algorithm 
-
+The conservative algorithm with which we will begin our experimentations is called the Chandy/Misra/Bryant
+algorithm \cite{Bryant} \cite{Chandy1979}.
 
 ** Introspection and code generation
 For the critical task of analizying the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Niaki2012}.
