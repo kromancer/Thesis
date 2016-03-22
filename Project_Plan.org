@@ -202,6 +202,12 @@ Figure demonstrates the typical use cases for TLM's different features.
 #+NAME: fig:tlm_use_cases
 [[file:Figures/tlm_use_cases.png]]
 
+The root problem with TLM 2.0 lies in the elimination of explicit channels, which were a key contribution in the early days of research on system-level design.
+As most researchers agreed, the concept of separation of concerns was of highest importance, and for system-level design in particular, this meant the clear separation of computation (in behaviors or modules) and communication (in channels)
+Regrettably, SystemC TLM 2.0 chose to implement communication interfaces directly as sockets in modules and this indifference between channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
+Without such channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
+Without such channels, there is very little opportunity for safe parallel execution \cite{Liu2015}.
+
 
 
 
@@ -243,10 +249,15 @@ For conservative algorithms, model introspection and static analysis tools might
 while the rollback mechanism of an optimistic algorithm may require complex entities, such as a hardware/software transactional memory \cite{Anane2015} .
 
 
-* Problem 							   
+* Old Problem 							   :noexport:							   
 In this project we investigate the feasibility of implementing a SystemC OoO PDES, 
 that can lead to scalable simulations of MPSoC Loosely-Timed Transaction Level Models,
 on SMP host platforms.
+
+
+* Problem
+This project evaluates the efficiency of existing process synchronization algorithms when applied to the parallel simulation
+of Loosely-Timed Transaction Level Models on Symmetric Multiprocessing platforms.
 
 
 * Hypothesis
@@ -442,11 +453,177 @@ To summarize:
 \bibliographystyle{myIEEEtran}
 
 
+* 1st Iteration Notes
+** What is Blocking and Non-Blocking in MPI's context
+The classification is with respect to whether the buffer involved in the communication primitive
+is available for re-use in case of send or use in case of receive.
+
+The 4 communication modes still apply for both categories.
+
+_A *nonblocking send* call indicates_
+that the system may start copying data out of the send buffer. 
+The sender should not modify any part of the send buffer after a nonblocking send operation is called, 
+until the send completes.
+
+The completion of a send operation indicates that the sender is now free to update the locations in the send buffer 
+It does not indicate that the message has been received, rather, 
+it may have been buffered by the communication subsystem.
+
+However, if a *synchronous mode* send was used, the completion of the send operation indicates 
+that a matching receive was initiated, 
+and that the message will eventually be received by this matching receive.
+
+
+_A *nonblocking receive* call indicates_
+that the system may start writing data into the receive buffer. 
+The receiver should not access any part of the receive buffer after a nonblocking receive operation is called, until the receive completes.
+
+The completion of a receive operation indicates that the receive buffer contains the received message, 
+the receiver is now free to access it, and that the status object is set. 
+It does not indicate that the matching send operation has completed (but indicates, of course, that the send was initiated).
 
 
 
 
 
+
+** MPI_Status
+The source or tag of a received message may not be known if wildcard values were used in the receive operation. 
+Also, if multiple requests are completed by a single MPI function (see Section 3.7.5), a distinct error code may need to be returned for each request.
+
+The status argument also returns information on the length of the message received.
+However, this information is not directly available as a field of the status variable and a call to MPI_GET_COUNT is required to “decode” this information.
+
+
+** MPI Communication modes
+As dictated by the MPI version 3.0 standard the following communication modes
+are supported \cite{MessagePassingInterfaceForum2012}
+
+_No-prefix for *standard mode*_
+In this mode, it is up to MPI to decide whether outgoing messages will be buffered. 
+
+MPI may buffer outgoing messages. 
+In such a case, the send call may complete before a matching receive is invoked. 
+
+On the other hand, buffer space may be unavailable, or MPI may choose not to buffer outgoing messages, for performance reasons. 
+In this case, the send call will not complete until a matching receive has been posted, and the data has been moved to the receiver.
+
+_B for *buffered mode*_ 
+A buffered mode send operation can be started whether or not a matching receive has been posted. 
+It may complete before a matching receive is posted. 
+
+However, unlike the standard send, this operation is local, and its completion does not depend on the occurrence of a matching receive. 
+Thus, if a send is executed and no matching receive is posted, then MPI *must buffer the outgoing message*, so as to allow the send call to complete. 
+*An error will occur if there is insufficient buffer space*. 
+
+The amount of available buffer space is controlled by the user — see Section 3.6. 
+Buffer allocation by the user may be required for the buffered mode to be effective.
+
+_S for *synchronous mode*_
+A send that uses the synchronous mode can be started whether or not a matching receive was posted. 
+However, *the send will complete successfully only if a matching receive is posted*, and the receive operation has started to receive the message sent by the synchronous send. 
+
+Thus, the completion of a synchronous send not only indicates that the send buffer can be reused, 
+but it also indicates that the receiver has reached a certain point in its execution, 
+namely that it has started executing the matching receive. 
+
+If both sends and receives are blocking operations then the use of the synchronous mode provides synchronous communication semantics: 
+a communication does not complete at either end before both processes *rendezvous* at the communication.
+
+_*R for ready mode*_
+A send that uses the ready communication mode may be started *only if the matching receive is already posted*. 
+
+Otherwise, the operation is erroneous and its outcome is undefined.
+Ready sends are an optimization when it can be guaranteed that a matching receive has already been posted at the destination.
+
+On some systems, this allows the removal of a hand-shake operation that is otherwise required and results in improved performance. 
+
+The completion of the send operation does not depend on the status of a matching receive, and merely indicates that the send buffer can be reused. 
+
+A send operation that uses the ready mode has the same semantics as a standard send operation, or a synchronous send operation; 
+it is merely that the sender provides additional information to the system (namely that a matching receive is already posted), that can save some overhead. 
+
+In a correct program, therefore, a ready send could be replaced by a standard send with no effect on the behavior of the program other than performance.
+
+The communication modes are indicated by a one letter prefix.
+
+
+** Semantics of point-to-point communication
+One can think of message transfer as consisting of the following three phases
+1. Data is pulled out of the send buffer and a message is assembled
+2. A message is transferred from sender to receiver
+3. Data is pulled from the incoming message and disassembled into the receive buffer
+
+In a multithreaded implementation of MPI, the system may de-schedule a thread that is blocked on a send or receive operation,
+and schedule another thread for execution in the same address space.
+*In such a case it is the user's responsibility not to modify a communication buffer until the communication completes*.
+Otherwise, the outcome of the computation is undefined
+
+_Order:_
+Messages are non-overtaking.
+
+If a sender sends two messages in succession to the same destination, 
+and both match the same receive, 
+then this operation cannot receive the second message if the first one is still pending. 
+
+If a receiver posts two receives in succession,
+ and both match the same message, 
+then the second receive operation cannot be satisfied by this message, if the first one is still pending. 
+
+This requirement facilitates matching of sends to receives. 
+It guarantees that message-passing code is deterministic, 
+if processes are single-threaded and the wildcard MPI_ANY_SOURCE is not used in receives. 
+(Some of the calls described later, such as MPI_CANCEL or MPI_WAITANY, are additional sources of nondeterminism.)
+
+_Progress:_
+?
+
+_Fairness:_
+MPI makes no guarantee of fairness in the handling of communication. 
+
+Suppose that a send is posted. 
+Then it is possible that the destination process repeatedly posts a receive that matches this send, 
+yet the message is never received, 
+because it is each time overtaken by another message, 
+sent from another source. 
+
+Similarly, suppose that a receive was posted by a multithreaded process. 
+Then it is possible that messages that match this receive are repeatedly received, 
+yet the receive is never satisfied, 
+because it is overtaken by other receives posted at this node (by other executing threads). 
+
+It is the programmer’s responsibility to prevent starvation in such situations.
+
+_Resource limitations:_
+A buffered send operation that cannot complete because of a lack of buffer space is erroneous. 
+When such a situation is detected, an error is signaled that may cause the program to terminate abnormally. 
+On the other hand, a standard send operation that cannot complete because of lack of buffer space will merely block, 
+waiting for buffer space to become available or for a matching receive to be posted. 
+This behavior is preferable in many situations. 
+
+Consider a situation where a producer repeatedly produces new values and sends them to a consumer. 
+Assume that the producer produces new values faster than the consumer can consume them. 
+If buffered sends are used, then a buffer overflow will result. 
+Additional synchronization has to be added to the program so as to prevent this from occurring. 
+If standard sends are used, then the producer will be automatically throttled,
+
+_A program is *safe* if no message buffering is required for the program to complete_. 
+One can replace all sends in such program with synchronous sends, and the program will still run correctly. 
+This conservative programming style provides the best portability, 
+since program completion does not depend on the amount of buffer space available or on the communication protocol used.
+
+
+** Failed Attempt to implement the original Bryant Chandi Misra
+
+
+** Fujimoto
+*Lookahead:* If a logical process at simulation time T can only schedule new events with thime stamp of at least T+L, then KL is referred to as the lookahead for the logical process.
+
+An alternative approach to sending a null message after processing each event is a demand-driven approach.
+Whenever a process is about to become blocked because the incoming link with the smallest link clock value has no messages waiting to be processed,
+it requests the next message (null or otherwise) from the process on the sending side of the link.
+The process resumes execution when the response to this request is achieved.
+This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
 
 
 * Computer Science Cheatsheet                                      :noexport:
@@ -464,15 +641,46 @@ _Chattering Zeno model:_ A moment in the simulation where execution is happening
 _Zeno model:_ A model (like Achilles and the Turtle) where simulation time advances slower and slower until it reaches a point where 
 it can not advance further(time increment becomes lower than the resolution) and gets trapped in delta time.
 
-A simulation is defined as the execution of model revealing the behaviour of the system being modeled.
+_A simulation_ is defined as the execution of model revealing the behaviour of the system being modeled.
 A system can be analyzed either by being formally verified or simulated.
 Simulation beyond analysis, as a means of constructing a virtual platform.
 
+_A binary file:_ a statically linked library, a dynamically linked library, an object module, a standalone executable.
+All binary files contain  meta information, such as the symbol table.
 
-* ESLD Cheatsheet :noexport:
+_False Sharing:_ The silent performance killer.
+When cores communicate using "shared memory", they are often really just communicating through the cache coherence mechanisms.
+A pathological case can occur when two cores access data that happens to lie in the same cache line. 
+Normally, cache coherence protocols assign one core, the one that last modifies a cache line, to be the owner of that cache line. If two cores write to the same cache line repeatedly, they fight over ownership. 
+Importantly, note that this can happen even if the cores are not writing to the same part of the cache line.
+Write contention on cache lines is the single most limiting factor on achieving scalability for parallel threads of execution in an SMP system. \cite{McCool2012}em
+
+_Design Automation_ depends on the high-level modelling and specification of systems.
+
+_Reentrancy (vs Thread Safety):_ A subroutine is called *re-entrant* if it can be interrupted in the middle of its execution and then safely called again (re-entered, for example by the ISR) before its previous invocations complete execution.
+*Recursive subroutines must be re-entrant*. A thread-safe code does not necessarily have to be re-entrant.
+#+BEGIN_SRC C++
+void thread_safe()
+{
+   acquire_lock
+        if interrupted here and the ISR tries to re-enter we are fucked.
+   release_lock
+}
+#+END_SRC
+
+_A computer language:_ can be regarded the medium of communicating an algorithm to a machine.
+We want the language to be expressive (like the greek language), portable (like the english language) and efficient (like the swedish)
+
+_Data Parallelism:_ parallelism determined implicitly by data *independence*.
+
+_Bash & C:_ brick and mortar
+
+
+* ESLD Cheatsheet 						   :noexport:
 _RTL modules are pin-accurate:_ This means that the ports of an RTL module directly correspond to wires in the real-world implementation of the module. 
 
 _Is the MoC underlying a PDES a special form of KPN?_
+
 
 * Terminology 							   :noexport:
 | Process   | Provides necessary modeling of independently timed circuits                              |
@@ -492,6 +700,35 @@ _Is the MoC underlying a PDES a special form of KPN?_
 ** Introspection vs Reflection
 Super important to check Qt.
 Although it is a GUI thing, it has a DES (maybe PDES, each QThread runs its own event loop) and a Meta Object Compiler.
+
+
+** Iterators
+Iterators connect algorithms to the elements in a container regardless of the type of the container.
+Iterators decouple the algorithm from the data source; an algorithm has no knowledge of the container form which the data originates. 
+
+** DANGER
+#+BEGIN_SRC cpp
+  class Base{
+      void foo(){}
+  };
+  
+  
+  class Derived : public Base{
+      void bar(){}
+  };
+  
+  
+  void dangerous(Base *p, int n){
+      for(int i=0; i!=n; i++)
+          p[i].foo();
+  };
+  
+  
+  void initiate_chaos(){
+      Derived d[10];
+      dangerous(d, 10);
+  }
+#+END_SRC
 
 
 * SystemC 							   :noexport:
@@ -630,17 +867,19 @@ Software modules that interact with one another as if they were performing I/O o
 
 Co-routine semantics are linked to Kahn process networks.
 
+*** Impediments to speed
+_Context switching:_
+- Every time you see a SC_THREAD -> _wait_ or a SC_METHOD -> _next_trigger() return_
+- Complex bus protocols and lots of processes
+
 
 ** Dynamic processes with sc_spawn
 
 
 * TLM 2.0 							   :noexport:
-
-** Transaction
-A transaction is an abstraction of communication
-
-
 ** General
+The story of Virtual Platform is old
+
 - Transaction-level memory-mapped _bus modeling_.
 - Register accurate and functionally complete.
 - Fast enough to boot software O/S in seconds.
@@ -693,6 +932,13 @@ References to a single transaction object are passed along the forward and backw
 \end{figure}
 #+END_LATEX
 
+The TLM LRM provides guidance for constructing interoperable models
+
+
+** Transaction
+A transaction is an abstraction of communication.
+Two way communication.
+
 
 ** Sockets
 A socket combines a port with an export.
@@ -729,43 +975,29 @@ Initiator calls are made through initiator sockets, target calls received throug
 A module may implement both target and initiator sockets, allowing its threads to both generate and receive traffic.
 
 
-** Blocking, Non-Blocking, Debug and Direct Memory Interfaces
-The _blocking transport_ functions are called by the initiator thread, received by the target thread, which processes the request and then returns the result.
-Until the transaction has been processed and released the initiator thread is blocked.
+** Blocking, Non-Blocking, Debug and Interfaces/Transport Call
+_How does TLM contribute to performance boost:_ You do 1 wait, rather than many waits.
 
-The _non-blocking transport_ functions are called by the initiator thread, received by the target thread
+With the blocking interface you can have wat() on the target code.
 
-A _debug_ transaction is a read that does not affect the state of the model.
+Why does the nb_transport_if defines 4 phases?
+- To enable
 
-The _DMI_ allows processes to have direct access to blocks of memory in other threads for high performance.
-_An example an ISS accessing memory using transactions would destroy performance._
 
+** Direct Memory Interface
+_Characteristics:_
+- Allows direct backdoor access into memory
+- *Allows un-inhibited ISS execution:* 
+  (Instead of roaming through the hierarchy of a buss system-Fast software execution)
 
 ** Socket
 In order to pass transactions between initiators and targets, TLM-2.0 uses sockets.
 An initiator sends transactions out through an _initiator socket_, and a target receives incoming transactions through a _target socket_.
+A socket is basically a convinience class, wrapping up a port and an export.
+
+[[file:Figures/tlm_socket.png]]
 
 
-
-
-
-
-
-
-
-
-
-
-#+BEGIN_SRC cpp :exports code
-// In simple tlm_utils/simple_target_socket.h
-
-void register_b_transport(MODULE* mod, void (MODULE::*cb)(transaction_type&, sc_core::sc_time&))
-{
-    assert( ! sc_core::sc_get_curr_simcontext()->elaboration_done() );
-    m_fw_process.set_b_transport_ptr(mod, cb);
-}
-
-#+END_SRC
 
 
 
@@ -776,21 +1008,36 @@ corresponding to the call to and return from the blocking transport function.
 
 
 
-** Loosely Timed Coding Style					   
+** Loosely Timed Coding Style
+Notes from Video Lecture: [[http://videos.accellera.org/tlm20tutorial/David_Black/player.html][David Black, XtremeEDA USA: TLM Mechanics]]					   
+_FAST-NOT ACCURATE_ (In terms of timing?): Less detail means faster simulation. Less context switching means also faster simulation.
+A fast, loosely-timed model is typically expected to use the _blocking transport interface_ the _DMI_ and _temporal decoupling_.
+_Older terminology:_ UnTimed - Programmer's View
+_Use Cases:_
+- Early Software Development
+_Characteristics:_
 - Only sufficient timing detail to _boot O/S and run multi-core systems. It can express the modeling of _timers and _interrupts_
 - Processes can run ahead of simulation time (_temporal decoupling_)
 - Each transaction has _2 timing points_: begin and end
 - Uses direct memory interface (_DMI_)
 
+_Temporal decoupling:_
 Each process runs ahead up to quantum boundary.
 sc_time_stamp() advances in multiples of the quantum.
 Deterministic communication requires explicit synchronization.
 
-A fast, loosely-timed model is typically expected to use the _blocking transport interface_ the _DMI_ and _temporal decoupling_.
+_DMI:_
+When combined with temporal decoupling may lead to completely crappy situations.
+The language neither the simulator do not protect the designer.
+It is like a hole in the legal system.
 
 
 ** Approximately-timed
-\cite{OpenSystemCInitiative2012}
+_ACCURATE_ (In terms of timing?)
+_Older terminology:_ Cycle Accurate
+_Use cases:_
+- Architectural Analysis, Software Performance Analysis
+- Hardware Verification
 
 
 ** Loosely-timed coding style and temporal decoupling
@@ -811,8 +1058,6 @@ The processs that runs ahead of simulation time creates a time warp
 Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
 When a process encounters an external dependency it has two choices: either force synchronization, 
 which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
-
-
 
 
 * Distributed Simulations 					   :noexport:
@@ -850,6 +1095,9 @@ These processors and engines use Virtual Pipeline technology, a message-passing 
 
 
 * Graveyard of potentially usefull plagiarisms                     :noexport:
+A very _rudimentary_ look at TLM
+
+
 An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
 provided that the behavior appears identical to the co-routine semantics defined in this subclause.
 In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics.
