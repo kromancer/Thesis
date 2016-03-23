@@ -1,0 +1,564 @@
+#+TITLE: Cheatsheet
+#+STARTUP: overview
+
+* Monitor the state of the Coprocessor
+#+BEGIN_SRC sh
+micctrl -s
+#+END_SRC
+*Online* - The coprocessor is ready for use. The Linux microkernel has finished booting and access via ssh or minicom should be possible
+
+The coprocessor's crash dump files are placed in */var/crash/mpss*.
+Also there is a GUI for monitoring the state of the coprocessors
+#+BEGIN_SRC sh
+sudo micsmc-gui
+#+END_SRC
+
+
+* Configuring an Intel Xeon Phi coprocessor
+The directory */etc/mpss/* contains the configuration files for the coprocessors:
+- *default.conf:* configuration items which are the same for all coprocessors regardless of the
+  number of coprocessors installed on the system
+- *mic<n>.conf:*  (where <n> is the coprocessor number) configuration items which change
+  based on the identity of the coprocessor
+- *conf.d/*: - directory containing zero or more configuration files for configuring additional software you want to
+  install on the coprocessors
+
+After initial installation of the Intel MPSS, no files are present in /etc/sysconfig/mic/ until you create
+a default set of files with the command:
+#+BEGIN_SRC sh
+sudo micctrl --initdefaults
+#+END_SRC
+
+Whenever these configuration files change, you need to propagate the changes using:
+#+BEGIN_SRC sh
+sudo micctrl --resetconfig
+#+END_SRC
+
+The current configuration of the mic cards can be displayed with
+#+BEGIN_SRC sh
+sudo micctrl --config
+#+END_SRC
+
+** Root Device & File System
+The configuration parameter for the root device is called *RootDevice*(see for example /etc/mpss/mic0.conf).
+The options are three:
+- Ramfs: the disk image is recreated every time we boot the coprocessor.
+- StaticRamfs: the disk image will not be recreated unless you call *sudo micctrl --updateramfs*
+- NFS
+
+** Adding files to the file system
+There is always the option of ad hoc scp transfer of files.
+This option however is *non persistent*.
+
+Furthermore, we have the *root access problem* to the Xeon Phis (we do not know the root password).
+
+I modified the */etc/mpss/default.conf* file:
+- I *stopped* the mpss daemon (sudo service mpss stop)
+- I added the entry: *CommonDir* /home/kisp/MIC/common/ /home/kisp/MIC/common/descriptor_file
+- Then I copied all the files I want to be transferred to the mic cards in */home/kostis/MIC/common/*
+- To specify where will the files already located in /home/kisp/MIC/common/, will be placed in the mic cards, I created the file */home/kostis/MIC/common/descriptor_file*
+- Finally I *updated the ramfs disk image*.
+- *Restart* the mpss daemon.
+
+
+* Running MPI application on Host & Xeon Phis
+I followed this guide: [[https://software.intel.com/sites/default/files/article/336139/using-intel-mpi-on-intel-xeon-phi-coprosessor-systems.pdf][Using the Intel MPILibrary on Intel Xeon Phi Coprocessor Systems]]
+** Prerequisites
+1.I am not sure what these do but they are necessary
+#+BEGIN_SRC sh
+sudo /sbin/sysctl -w net.ipv4.ip_forward=1
+export I_MPI_MIC=enable
+#+END_SRC
+
+2.Make sure that these two commands are already in your .profile and have been executed
+#+BEGIN_SRC sh
+source /opt/intel/bin/compilervars.sh intel64
+source /opt/intel/impi/5.1.3.181/bin64/mpivars.sh
+#+END_SRC
+
+3.Ensure password-less ssh access between mics and host
+
+
+
+
+** Compilation
+You need two executables, one for the host and one for the cards.
+In general the compilation commands look like this (depending on what libraries you use):
+#+BEGIN_SRC sh
+mpiicc -mmic <source> -o <exec.mic> ## For the mic
+mpiicc <source> -o <exec.host>
+#+END_SRC
+
+Do not forget to transfer the mic executables
+#+BEGIN_SRC sh
+scp <executable> <location>
+#+END_SRC
+
+
+** Execution
+To determine the [[https://software.intel.com/en-us/node/535533][communication fabrics]]:
+#+BEGIN_SRC sh
+export I_MPI_FABRICS=shm:dapl
+#+END_SRC
+
+Running from host:
+#+BEGIN_SRC sh
+mpirun -n <#processes> -host <host> <executable> : -n <#processes> -host <host2> <executable2> (and so on)
+#+END_SRC
+
+You can try my MonteCarlo calculation of Pi application:
+#+BEGIN_SRC sh
+cp -r /home/kisp/Pi_MonteCarlo/ .
+cd Pi_MonteCarlo
+make
+make transfer
+mpirun -n 1 -host lovisa ./pi_MonteCarlo : -n 61 -host mic0 -wdir /tmp /tmp/pi_MonteCarlo.mic : -n 61 -host mic1 -wdir /tmp /tmp/pi_MonteCarlo.mic
+#+END_SRC
+
+
+** Debugging application launch
+A first sanity check would be to run the _hostname_ (the default unix utillity) instead of your custom application:
+#+BEGIN_SRC sh
+mpirun -n 1 -host lovisa hostname : -n 1 -host mic0 -wdir /tmp hostname : -n 1 -host mic1 -wdir /tmp hostname
+#+END_SRC
+This may help reveal an environmental problem (such as, the MPI remote access tool is not configured properly), or a connectivity problem (such as, unreachable hosts).
+
+To debug the launch of the application set:
+#+BEGIN_SRC sh
+export I_MPI_DEBUG=4
+export I_MPI_HYDRA_DEBUG=on
+#+END_SRC
+The value of I_MPI_DEBUG can be further increased
+
+Make sure that you have unlimited access to locked memory:
+#+BEGIN_SRC sh
+ulimit -a
+#+END_SRC
+
+Make sure that /opt directory is NFS Mounted on the Xeon Phis
+
+
+** Debugging application run
+Ubuntu does not allow attaching a debugger to a non-child process. 
+In order to use -gdb-ia with mpirun, this must be disabled by setting the sysctl value
+/proc/sys/kernel/yama/ptrace_scope to 0.
+
+
+Do not forget to compile with debugging information
+#+BEGIN_SRC sh
+mpiicpc -g3 -debug all -std=c++11 main.cpp
+#+END_SRC
+
+To attach gdb-ia to process with rank 0 do:
+#+BEGIN_SRC sh
+mpirun -gtool "gdb-ia:0=attach" -n 3 ./a.out
+#+END_SRC
+
+
+
+
+
+
+
+
+
+
+* Intel Trace Analyzer & Collector
+A Fool list of documentation [https://software.intel.com/en-us/articles/intel-trace-analyzer-and-collector-documentation]
+** Prerequisites
+1.Export the necessary environment (add to your .profile)
+#+BEGIN_SRC sh
+source /opt/intel/parallel_studio_xe_2016.2.062/bin/psxevars.sh
+#+END_SRC
+
+
+** Inspecting your application
+Execute your application by providing the -trace flag to mpirun
+For example:
+#+BEGIN_SRC sh
+mpirun -trace -n 1 -host lovisa ./pi_MonteCarlo : -n 5 -host mic0 -wdir /tmp /tmp/pi_MonteCarlo.mic
+#+END_SRC
+
+This will generate a .stf file on your current directory.
+To open it use:
+#+BEGIN_SRC sh
+traceanalyzer ./pi_MonteCarlo.stf
+#+END_SRC
+
+
+
+* MPI quick reference 						   :noexport:
+** Serializing C++ objects
+*** Type signature
+The type signature controls how data items are interpreted when data is sent of received.
+In other words, it tells MPI how to interpret the bits in a data buffer.
+The *displacements* tell MPI where to find the bits (when sending) or where to put them (when receiving).
+
+
+*** Typemap
+To illustrate how MPI assembles user-defined datatypes we introduce the following terms:
+
+Lower_Bound = min_j (disp_j)
+The location of the first byte described by the datatype
+
+Upper_Bound = max_j (disp_j + sizeof(type_j)) + pad
+The location of the last byte described by the datatype
+
+Extend      = upper_bound - lower_bound
+See *MPI_Type_get_extend*
+
+
+*** Memory Alignment
+One of the most common requirements made by an implementation of C/Fortran languages is that the address of an item in bytes be a multiple of the length of that item in bytes.
+
+
+
+
+
+
+
+* Intel Parallel Studio XE 2016 				   :noexport:
+** Preparing the environment
+Before you invoke the compiler, 
+you may need to set certain environment variables that define the location of compiler-related components.
+#+BEGIN_SRC sh
+source /opt/intel/bin/compilervars.sh intel64
+source /opt/intel/parallel_studio_xe_2016.2.062/bin
+#+END_SRC
+
+
+** The Intel C++ compiler
+_The compiler's documentation can be opened with:_
+#+BEGIN_SRC sh
+firefox /opt/intel/documentation_2016/en/compiler_c/common/core/index.htm &
+#+END_SRC
+
+_The openmp cheatsheet can be opened with:_
+#+BEGIN_SRC sh
+evince /opt/intel/documentation_2016/en/compiler_c/common/openmp/openmp-4.0-c.pdf &
+#+END_SRC
+
+_This is your friend_
+#+BEGIN_SRC sh
+icpc -help
+#+END_SRC
+
+| Flag | Description                      |
+|------+----------------------------------|
+| -E   | Preporcess to stdout             |
+| -P   | Preprocess to file               |
+| -c   | Produces the object files        |
+| -O2  | Default auto-optimization        |
+| -X   | Remove default include directory |
+| -I   | Add include directory            |
+| -o   | Specify output name              |
+
+*** Specifying Include Files
+The compiler searches directories for include files in the following order:
+1. Directories specified by the -I option
+2. Directories specified in the environment variables
+3. Default include directory
+
+
+
+
+
+
+
+* Xeon Phi Deprecated? 						   :noexport:
+** Transfering files :noexport:
+
+
+** OpenMP :noexport:
+I follow these instructions: [[https://software.intel.com/en-us/articles/building-a-native-application-for-intel-xeon-phi-coprocessors][Building a Native Application for Intel® Xeon Phi™ Coprocessors]]
+
+*Set the SINK_LD_LIBRARY_PATH* to the location of the Intel compiler runtime
+libraries for Intel Xeon Phi coprocessors and to the location of any other dynamic
+libraries required by the application
+
+#+BEGIN_SRC sh
+export SINK_LD_LIBRARY_PATH=/opt/intel/clck/3.1.2.006/provider/share/common/lib/mic/
+#+END_SRC
+
+*The micnativeloadex utility*, when used with option -l, will list shared library dependency information.
+The utility uses a default path, defined by the environment variable SINK_LD_LIBRARY_PATH, to search for dependencies.
+
+#+BEGIN_SRC sh
+/opt/intel/mic/bin/micnativeloadex <executable> -l
+#+END_SRC
+
+*Quick and dirty way* to execute an application natively on the Xeon Phi is to execute 
+(after you have defined the SINK_LD_LIBRARY_PATH)
+
+#+BEGIN_SRC sh
+sudo -E /opt/intel/mic/bin/micnativeloadex <executable>
+#+END_SRC
+
+
+
+
+
+
+
+* Compiling the SystemC library 				   :noexport:
+** Host compilation
+Execute the following from within the downloaded folder
+#+BEGIN_SRC sh
+export CXX=icpc
+mkdir objdir
+cd    objdir
+../configure --prefix=/opt/systemc-2.3.1 --enable-pthreads --enable-debug
+
+#+END_SRC
+
+
+* Linux topics 							   :noexport:
+** TODO netstat
+
+
+** ssh
+To create a passworldes access to the mics I did
+#+BEGIN_SRC sh
+rm ./ssh/id*
+ssh-keygen
+ssh-copy-id mic0
+#+END_SRC
+
+
+** awk
+#+BEGIN_SRC sh
+#This is how I created the descriptor file
+ls -la /opt/intel/compilers_and_libraries_2016.2.181/linux/mkl/lib/intel64_lin_mic/ | awk '$1 !~ /d.*/ {print "file /lib64/"$9" /lib64/"$9 " 777 0 0"}' >> ~/MIC/common/descriptor_file
+#+END_SRC
+
+
+** Environment variables
+Do not forget the all time classic
+#+BEGIN_SRC sh
+env | grep I_MPI
+#+END_SRC
+
+
+** Makefiles
+*** Automatic variables
+| $@ | The file name of the target of the rule                                                      |
+| $? | The names of all the prerequisities that are newer than the target, with spaces between them |
+
+
+** source
+Running the command source on a script executes the script within the context of the current process. 
+_This means that environment variables set by the script remain available after it's finished running_. 
+This is in contrast to running a script normally, 
+in which case environment variables set within the newly-spawned process will be lost once the script exits.
+
+You can source any runnable shell script. 
+The end effect will be the same as if you had typed the commands in the script into your terminal. 
+For example, if the script changes directories, when it finishes running, your current working directory will have changed.
+
+
+
+** nm
+Applied to a binary, parses its meta information (e.g. symbol table) and can give you
+valueable information about _un symbols_
+A nice way to get them is
+#+BEGIN_SRC sh
+nm <executable> | awk '$2=="U" {print $3}'
+#+END_SRC
+
+Do not forget about C++'s _name mangling_ strategy.
+(compiler dependent)
+
+The need arises where the language allows different entities to be named with the same identifier 
+as long as they occupy a different namespace 
+(where a namespace is typically defined by a module, class, or explicit namespace directive) 
+or have different signatures (such as function overloading).
+
+For example:
+#+BEGIN_SRC cpp
+namespace wikipedia 
+{
+   class article 
+   {
+   public:
+      std::string format (void); 
+         /* = _ZN9wikipedia7article6formatEv */
+   };
+}
+#+END_SRC
+
+
+** service
+Runs a (?System V?) init script, located in */etc/init.d/* in predictable environment, 
+removing most environment variables and with current working directory set to /.
+All scripts should support at least the start and stop commands.
+
+
+** TODO device node
+
+
+** Process Management
+An Operating System on a single-processor machine is *multitasking* 
+if it can interleave the execution of more than one process, 
+giving the illusion of there being more than one process running at the same time.
+
+Multitasking operating systems come in two variants: *cooperative* and *preemptive*.
+
+
+
+* C++ topics 							   :noexport:
+** Initialization
+Initialization using {} _list initialization_ does not allow narrowing.
+
+
+** Structs
+A user-defined type, an aggregate of elements of arbitrary types.
+The size of an struct object is not necessarily the sum of the sizes of its members.
+A struct is simply a class where the members are public by default.
+A struct can have member functions.
+
+
+** Set
+Inside the C++ Standard Library there is the Standard Template Library, which consists of:
+   - Algorithms
+   - Functional
+   - Containers
+
+The containers are further analyzed to:
+   - Sequence containers
+   - Associative containers
+   - Unordered associative containers
+
+*Set* is an associative container
+#+BEGIN_SRC cpp :exports code
+  template < class T,                        // set::key_type/value_type
+             class Compare = less<T>,        // set::key_compare/value_compare
+             class Alloc = allocator<T>      // set::allocator_type
+             > class set;
+#+END_SRC
+
+Internally, the elements in a set are always sorted following a specific *strict weak ordering* criterion indicated by its internal comparison object (of type Compare).
+Weak ordering satisfies the following:
+     1. Irreflexivity: cmp(x,x) is false.
+     2. Antisymmetry: cmp(x,y) implies !cmp(y,x).
+     3. Transitivity: If cmp(x,y) and cmp(y,z), then cmp(x,z).
+     4. Transitivity of equivalence: Define equiv(x,y) to be !(cmp(x,y)||cmp(y,x)).If equiv(x,y) and equiv(y,z), then equiv(x,z).
+
+
+** Rvalue references
+Check out [[http://thbecker.net/articles/rvalue_references/section_01.html][this link]]
+
+R value references facilitate the implementation of these concepts:
+   - Move semantics
+   - Perfect forwarding
+
+*** A Rvalue is
+An expression that refers to a memory location and allows us to take the address of that memory location via the & operator. 
+An rvalue is an expression that is not an lvalue.
+
+*** 
+
+
+
+
+*** Move semantics
+#+BEGIN_SRC cpp :main no
+  #include <iostream>
+  #include <cstring>
+  using namespace std;
+
+  class X {
+  public:
+      X(int id_): id(id_){
+          pointer = new int[1000];
+          for (int i = 0; i < 1000; i++) {
+              pointer[i] = id;
+          }
+
+      }
+      // Copy assignment operator
+      X& operator=(const X &rhs){
+          cout << "Copying" << endl;
+          memcpy(pointer, rhs.pointer, 1000);        
+          // To allow assignment chaining       
+          return *this;
+      }
+  private:
+      int id;
+      // If the class needs to support assignment do no use references
+      int *pointer;
+  };
+      
+
+
+  int main(int argc, char *argv[])
+  {
+      X x1(1), x2(2);
+
+      return 0;
+  }
+
+
+
+#+END_SRC
+
+#+RESULTS:
+: Copying
+
+
+** Function Pointer
+*** General
+#+BEGIN_SRC cpp
+int (*POINTER_NAME)(int a, int b)
+#+END_SRC
+
+A way to remember how to write one is to do this:
+ _1. Write a normal function declaration_
+ #+BEGIN_SRC cpp
+ int function(int a, int b)
+ #+END_SRC 
+
+ _2. Wrap function name with pointer syntax_
+ #+BEGIN_SRC cpp
+ int (*function)(int a, int b)
+ #+END_SRC
+
+ _3. Change the name_
+ #+BEGIN_SRC cpp
+ int (*function_ptr)(int a, int b)
+ #+END_SRC
+
+
+
+*** typedef a function type
+#+BEGIN_SRC cpp
+typedef int function(int a, int b);
+#+END_SRC
+
+
+* Password 							   :noexport:
+123j123j
+
+
+* Serial Key 							   :noexport:
+2jxl-p796s7fv 
+
+
+* DPDK 								   :noexport:
+The DPDK is a set of software libraries for accelerating packet processing
+workloads on COTS hardware platforms.
+
+** IP L3 forwarding
+
+** Packet Size 64 bytes
+
+** Use Huge Pages to avoid TLB misses which cripple performance
+
+** Integrated PCIe Controller
+
+** Intel Direct I/O Technology
+
+** DPDK includes a driver in user space
+UIO
+VFIO
+BAR
+

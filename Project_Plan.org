@@ -249,12 +249,6 @@ For conservative algorithms, model introspection and static analysis tools might
 while the rollback mechanism of an optimistic algorithm may require complex entities, such as a hardware/software transactional memory \cite{Anane2015} .
 
 
-* Old Problem 							   :noexport:							   
-In this project we investigate the feasibility of implementing a SystemC OoO PDES, 
-that can lead to scalable simulations of MPSoC Loosely-Timed Transaction Level Models,
-on SMP host platforms.
-
-
 * Problem
 This project evaluates the efficiency of existing process synchronization algorithms when applied to the parallel simulation
 of Loosely-Timed Transaction Level Models on Symmetric Multiprocessing platforms.
@@ -401,8 +395,6 @@ Another way of describing the simulation's size is through the conception of a f
 The accuracy of the simulation can be measured by the aggregate number of causality errors.
 The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
 A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a time-stamp lower than its clock (the time-stamp of the last processed event).
-
-
 
 * Tasks and Time Scheduling
 The majority of the remaining time has been partitioned into 3 x 3-4 week long iterations, 
@@ -625,6 +617,11 @@ it requests the next message (null or otherwise) from the process on the sending
 The process resumes execution when the response to this request is achieved.
 This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
 
+* Old Problem 							   :noexport:
+In this project we investigate the feasibility of implementing a SystemC OoO PDES, 
+that can lead to scalable simulations of MPSoC Loosely-Timed Transaction Level Models,
+on SMP host platforms.
+
 
 * Computer Science Cheatsheet                                      :noexport:
 An _Algorithm_ is a finite description of a sequence of steps to be taken to solve a problem.
@@ -705,6 +702,7 @@ Although it is a GUI thing, it has a DES (maybe PDES, each QThread runs its own 
 ** Iterators
 Iterators connect algorithms to the elements in a container regardless of the type of the container.
 Iterators decouple the algorithm from the data source; an algorithm has no knowledge of the container form which the data originates. 
+
 
 ** DANGER
 #+BEGIN_SRC cpp
@@ -876,6 +874,23 @@ _Context switching:_
 ** Dynamic processes with sc_spawn
 
 
+** sc_elab_and_sim
+sc_elab_and_sim is used to simplify the invocation of SystemC from a user-defined main() function.
+If you do not have your own main(), you do not need sc_elab_and_sim
+
+
+** sc_simcontext::crunch
+This process implements the simulator's execution of processes.
+It is a while(true) thing
+
+sc_simcontext::crunch
+sc_simcontext::simulate
+sc_core::start
+sc_main
+sc_elab_and_sim
+main
+
+
 * TLM 2.0 							   :noexport:
 ** General
 The story of Virtual Platform is old
@@ -965,6 +980,9 @@ The main features of the generic payload are:
 - Response
   An indication of whether the transaction was successful, and if not the nature of the error
 
+*** Streaming Width
+In case of *multi-beat* transactions the ratio of the data length over the streaming width will give the number of beats. 
+
 
 ** Initiators and Targets
 A module's processes may act as either initiators or targets.
@@ -989,6 +1007,7 @@ _Characteristics:_
 - Allows direct backdoor access into memory
 - *Allows un-inhibited ISS execution:* 
   (Instead of roaming through the hierarchy of a buss system-Fast software execution)
+
 
 ** Socket
 In order to pass transactions between initiators and targets, TLM-2.0 uses sockets.
@@ -1058,6 +1077,15 @@ The processs that runs ahead of simulation time creates a time warp
 Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
 When a process encounters an external dependency it has two choices: either force synchronization, 
 which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
+
+
+** Debuggin the AT 2 phase example
+*** Call stack when calling the constructor of a module
+constructor of current module
+constructor of top module
+sc_main
+sc_elab_and_sim
+main
 
 
 * Distributed Simulations 					   :noexport:
