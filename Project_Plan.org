@@ -43,7 +43,7 @@
 * Organization
 This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
 Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
-while professor [[https://people.kth.se/~ingo/][Ingo Sanders]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se})are the examiner and supervisor from KTH. 
+while professor [[https://people.kth.se/~ingo/][Ingo Sander]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se})are the examiner and supervisor from KTH. 
 The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company 
 (document title: "Statement of Terms and Conditions of Fixed Term Employment"). 
 
@@ -60,8 +60,8 @@ but will conform to the general context dictated by the documents already signed
 
 * Background	
 SystemC is considered to be a System-Level Design Language (SLDL), that is implemented as a C++ class library.
-The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized with the latest LRB being the IEEE 1666-2011 \cite{OpenSystemCInitiative2012}
-The major advantage SystemC provides to the designer is that a component's functionality can be easily expressed in C/C++, the dominating languages for in systems programming (e.g. Operating System and Device Driver development).
+The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized, with the latest LRB being the IEEE 1666-2011 \cite{OpenSystemCInitiative2012}
+The major advantage SystemC provides to the designer is that a component's functionality can be easily expressed in C/C++, the dominating languages for systems programming (e.g. Operating System and Device Driver development).
 As a result SystemC models are executable: the designer can directly simulate the behavior of a system modeled in SystemC.
 The language has been demanded and supported by the semiconductor industry, in its collaborative effort to push Electronic Design Automation (EDA) into higher abstraction layers, thus giving birth to a trend
 referred to as Electronic System-Level Design (ESLD).
@@ -396,6 +396,7 @@ The accuracy of the simulation can be measured by the aggregate number of causal
 The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
 A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a time-stamp lower than its clock (the time-stamp of the last processed event).
 
+
 * Tasks and Time Scheduling
 The majority of the remaining time has been partitioned into 3 x 3-4 week long iterations, 
 where we will incrementally try to achieve our objectives.
@@ -616,6 +617,7 @@ Whenever a process is about to become blocked because the incoming link with the
 it requests the next message (null or otherwise) from the process on the sending side of the link.
 The process resumes execution when the response to this request is achieved.
 This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
+
 
 * Old Problem 							   :noexport:
 In this project we investigate the feasibility of implementing a SystemC OoO PDES, 

@@ -22,21 +22,21 @@
 #+END_LaTex
 
 * Acronyms 							   
-| *DE*:    | Discrete Event                      |
-| *DES*:   | Discrete Event Simulator/Simulation |
-| *DMI*:   | Direct Memory Interface             |
-| *ESL*:   | Electronic System-Level Design      |
-| *HPC*:   | High Performance Computing          |
-| *MoC*:   | Model of Computation                |
-| *MPSoC*: | Multicore System on Chips           |
-| *OoO*:   | Out-of-Order                        |
-| *PDES*:  | Parallel Discrete Event Simulation  |
-| *SLDL*:  | System-Level Design Language        |
-| *SMP*:   | Symmetric Multiprocessing           |
-| *SoC*:   | System on Chip                      |
-| *SR*:    | Synchronous Reactive                |
-| *TLM*:   | Transaction Level Modeling          |
-| *CMB*:   | Chandy/Misra/Bryant algorithm       |
+| *DE*:    | Discrete Event                          |
+| *DES*:   | Discrete Event Simulator/Simulation     |
+| *DMI*:   | Direct Memory Interface                 |
+| *ESLDL*: | Electronic System-Level Design Language |
+| *HPC*:   | High Performance Computing              |
+| *MoC*:   | Model of Computation                    |
+| *MPSoC*: | Multicore System on Chips               |
+| *OoO*:   | Out-of-Order                            |
+| *PDES*:  | Parallel Discrete Event Simulation      |
+| *SLDL*:  | System-Level Design Language            |
+| *SMP*:   | Symmetric Multiprocessing               |
+| *SoC*:   | System on Chip                          |
+| *SR*:    | Synchronous Reactive                    |
+| *TLM*:   | Transaction Level Modeling              |
+| *CMB*:   | Chandy/Misra/Bryant algorithm           |
 \clearpage
 
 
@@ -45,6 +45,33 @@
 
 
 * Introduction
+This chapter will present the problem statement 
+and give an overview of the project's objectives and this document's structure.
+
+In the first unit of this chapter a minimal subset of relevant terms and concepts is presented 
+so that the reader can adequately understand the problem statement, following in the second unit.
+
+The third unit 
+
+The last unit summarizes the content found in the subsequent chapters.
+** Background
+*** SystemC and TLM
+While maintaining the expressivenes of a Hardware Description Language (HDL), *SystemC* is meant to act as an Electronic System Level Design Language (ESLDL).
+It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than synthesizable models.
+The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized (IEEE 1666-2011 \cite{OpenSystemCInitiative2012}).
+
+A system level model offers an abstract description of a system, beyond the Register Transfer Level (RTL) a HDL, like VHDL or Verilog, can facilitate.
+*Transaction Level Modeling* (TLM) is a term coined to describe a post-RTL abstraction space, where the system's components communicate via transactions, while their functionallity is described on an algorithmic level.
+
+Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
+In a transaction one can distinguish two actors:
+the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the target's request.
+The communication between initiators and actors is routed through *interconnect* components, that usually encapsulate the functionallity of a memory-mapped buses.
+
+
+
+
+
 ** Problem Statement
 
 
@@ -74,10 +101,6 @@ such that code developed using standard tools on the virtual platform will run u
 
 To enable interoperabillity between IP and facilitate the simulation under a refernce simulation kernel, that of SystemC
 
-TLMs are an abstraction, 
-a higher level representation of hardware behavior, 
-focusing on discrete events such as register reads/writes
- and information passing such as clock frequency notification, rather than bus signals and clock transitions (Fig. 2.2).
 
 Industry driven to tackle time-to-market pressure new SoCs face (but lacks a theoretical framework?)
 
@@ -113,6 +136,7 @@ Simics full system simulator, mature,
 
 
 * Part III: Implementation 
+
 
 * Part IV: Appendices
 ** Appendix A
@@ -700,6 +724,7 @@ it requests the next message (null or otherwise) from the process on the sending
 The process resumes execution when the response to this request is achieved.
 This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
 
+
 * Computer Science Cheatsheet                                      :noexport:
 An _Algorithm_ is a finite description of a sequence of steps to be taken to solve a problem.
 Physical processes are rarely structured as a sequence of steps; rather, they are structured as _continuous interactions between concurrent components_.
@@ -757,6 +782,12 @@ _Is the MoC underlying a PDES a special form of KPN?_
 
 _Test Driven Development:_ Whereby he tests are written first, based on the specifications, and then model functionality implemented, ensuring those tests pass.
 
+
+* Electronics Cheatsheet 					   :noexport:
+_UART:_ The idle, no data state is high-voltage, or powered. 
+This is a historic legacy from telegraphy, in which the line is held high to show that the line and transmitter are not damaged
+
+
 * C++ 								   :noexport:
 ** Explicit threading in C++
 #+BEGIN_SRC cpp
@@ -797,6 +828,7 @@ Iterators decouple the algorithm from the data source; an algorithm has no knowl
       dangerous(d, 10);
   }
 #+END_SRC
+
 
 * SystemC 							   :noexport:
 ** General
@@ -958,6 +990,7 @@ sc_core::start
 sc_main
 sc_elab_and_sim
 main
+
 
 * TLM 2.0 							   :noexport:
 ** General
@@ -1190,15 +1223,14 @@ The AXM5500 is a flexible combination of general-purpose processors and speciali
 These processors and engines use Virtual Pipeline technology, a message-passing control path to efficiently and autonomously process packets.
 
 
-* Graveyard of potentially usefull plagiarisms                     :noexport:
-A very _rudimentary_ look at TLM
+* Graveyard of potentially usefull phrases 			   :noexport:
+Like a wagnerian leitmotif
 
+A very _rudimentary_ look at TLM
 
 An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
 provided that the behavior appears identical to the co-routine semantics defined in this subclause.
 In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics.
-
-
 
 An important limitation of SystemC regarding performance is that the reference implementation is sequential, 
 and the official semantics, just like any other Discrete Event Simulator (henceforth DES), make parallel execution difficult.
