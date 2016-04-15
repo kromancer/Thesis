@@ -246,7 +246,6 @@ A way to remember how to write one is to do this:
 typedef int function(int a, int b);
 #+END_SRC
 
-
 * Monitor the state of the Coprocessor
 #+BEGIN_SRC sh
 micctrl -s
@@ -258,7 +257,6 @@ Also there is a GUI for monitoring the state of the coprocessors
 #+BEGIN_SRC sh
 sudo micsmc-gui
 #+END_SRC
-
 
 * Configuring an Intel Xeon Phi coprocessor
 The directory */etc/mpss/* contains the configuration files for the coprocessors:
@@ -530,10 +528,8 @@ cd    objdir
 * Password 							   :noexport:
 123j123j
 
-
 * Serial Key 							   :noexport:
 2jxl-p796s7fv 
-
 
 * DPDK 								   :noexport:
 The DPDK is a set of software libraries for accelerating packet processing
@@ -553,7 +549,6 @@ workloads on COTS hardware platforms.
 UIO
 VFIO
 BAR
-
 
 * Bernstein 							   :noexport:
 ...that was only a description, not a grammatical explanation.
@@ -589,6 +584,11 @@ Wagner's Fate + Diminished + 3 quarter beat
 ->
 An uncertain fate dances
 
-
 * TODO Chomsky's Transformational Grammar 			   :noexport:
+* Gecode
+"Hand it over to a search engine"
+ - give root node
+ - get either null or leaf node as solution
 
+The degree of a variable is approximately equal to the
+number of constraints this variable appears in.

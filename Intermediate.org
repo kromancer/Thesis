@@ -22,10 +22,12 @@
 #+END_LaTex
 
 * Acronyms 							   
+| *ASIC*:  | Application Specific Integrated Circuit |
 | *DE*:    | Discrete Event                          |
 | *DES*:   | Discrete Event Simulator/Simulation     |
 | *DMI*:   | Direct Memory Interface                 |
-| *ESLDL*: | Electronic System-Level Design Language |
+| *ESLD*:  | Electronic System-Level Design          |
+| *FPGA*:  | Field Programmable Gate Array           |
 | *HPC*:   | High Performance Computing              |
 | *MoC*:   | Model of Computation                    |
 | *MPSoC*: | Multicore System on Chips               |
@@ -45,28 +47,93 @@
 
 
 * Introduction
-This chapter will present the problem statement 
-and give an overview of the project's objectives and this document's structure.
+The aim of this chapter is to present the problem statement,
+after a brief introduction of the relevant context.
 
-In the first unit of this chapter a minimal subset of relevant terms and concepts is presented 
-so that the reader can adequately understand the problem statement, following in the second unit.
+In units [[The Design Process]] and [[Electronic System-Level Design]] we make an attempt to 
+deobfuscate the meaning of heavily cluttered terms such as design, system, model and simulation, 
+in order to provide an overview of the engineering practise of Electronic System-Level Design (ESLD).
 
-The third unit 
+The third and fourth unit 
 
-The last unit summarizes the content found in the subsequent chapters.
-** Background
-*** SystemC and TLM
+In the fourth and the fifth unit the problem statement and the objectives of this Master's Thesis are presented.
+
+The structure of this document is presented in the final unit.
+
+** The Design Process
+We define the process of *designing* as the engineering art of incarnating a desired functionality into a perceivable, thus concrete, artifact.
+An engineering artifact is predominantly reffered to as a *system*, 
+to emphasize the fact that it can be viewed as a structured collection of components and that its behavior is a product of the interaction among its components.
+
+Conceptually, designing implies a non-monotonic movement from abstract to concrete, fueled by the engineer's *design decisions*, incrementally adding implementation details.
+This movement is also known as the *design flow* and can be facilitated by the creation of an arbitrary number of intermediate artifacts called models.
+A *model* is thus an abstract representation of the final artifact with abstraction being the key mental ability for managing complexity.
+The design flow can be now semi-formally defined as a process of model refinement and the ultimate model being the final artifact itself.
+We use the term semi-formal to describe the process of model refinement, because to the best of our knowledge, 
+such model algebras that would establish transformation rules and equivalence relations are far from complete \cite{Gajski2009}.
+
+A desired property of a model is executabillity; that is its ability to demonstrate portions of the final artifact's desired functionallity in a controlled environment.
+An *executable model*, allows the engineer to form hypotheses, conduct experiments on the model and finally evaluate design decisions.
+It is now evident that executable models can firmly associate the desing process with the scientific method.
+The execution of a model is also known as *simulation* \cite{Editor2014}.
+
+
+** Electronic System-Level Design
+An electronic system provides a desired functionallity, by manipulating the flow of electrons.
+Electronic systems are omnipotent in every aspect of human activity; 
+most devices are either electronic systems or have an embedded electronic system for their cybernisis.
+
+The prominent way for visualizing the design space and further refining the terms presented in the previous unit,
+in the context of electronic systems, 
+is by means of the Y-Chart.
+The concept was first presented in 1983 \cite{miaou} and has been constantly evolving to match industry practices.
+Figure \ref{fig:Y-Chart} presents the form of the Y-Chart found in \cite{Gajski2009}.
+
+The Y-Chart quantizes the abstraction space into four levels; system, processor, logic and circuit, represented as the four concentric circles.
+Points in the abstraction space correspond to system models.
+For each abstraction level, one can have different views over the system; behavioral, structural and physical
+
+Physical dimensionality added by automated place and route software.
+geometrical positioning of the components on the silicion waffer
+
+
+*Synthesis*:
+The movement from behavioral to structural (arrow AB) and the 
+realization of an upper level structural model  using finer components (arrows BC, BD).
+
+Design flow vs synthesis re-itaration not , monotonic, linear progress through the design space
+
+The final result is a from the chosen device technology (standard cell ASIC, gate array ASIC, FPGA)
+
+Verification and validation
+
+
+** Transaction-Level Modeling
+As mentioned earlier, 
+a TLM is used to explore different specification model structures,
+and different mappings to platform architectures. 
+
+For example, we may want to restructure a SM for a given platform and a given mapping. 
+On the other hand, for any given SM and component library, we may try to generate an optimal platform for some given metric. 
+Similarly, for a given SM and platform, we may try to find an optimal mapping for a given metric. 
+In an extreme case, we may want to simultaneously optimize the SM structure or application code, platform architecture, and the mapping for one or several metrics. 
+As mentioned earlier, TLMs allow us to perform quickly and with reasonable accuracy each of these disparate optimization scenarios, which will be described in more detail in Chapter 4.
+
+
+** SystemC and TLM
 While maintaining the expressivenes of a Hardware Description Language (HDL), *SystemC* is meant to act as an Electronic System Level Design Language (ESLDL).
 It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than synthesizable models.
 The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized (IEEE 1666-2011 \cite{OpenSystemCInitiative2012}).
 
 A system level model offers an abstract description of a system, beyond the Register Transfer Level (RTL) a HDL, like VHDL or Verilog, can facilitate.
-*Transaction Level Modeling* (TLM) is a term coined to describe a post-RTL abstraction space, where the system's components communicate via transactions, while their functionallity is described on an algorithmic level.
+*Transaction Level Modeling* (TLM) is a term coined to describe a post-RTL abstraction space, where the system's components communicate via transactions.
 
 Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
 In a transaction one can distinguish two actors:
 the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the target's request.
 The communication between initiators and actors is routed through *interconnect* components, that usually encapsulate the functionallity of a memory-mapped buses.
+
+
 
 
 
@@ -82,15 +149,17 @@ SystemC TLM 2.0 LT model -> Recoding Infastructure -> MPI process network -> Par
 ** Document Overview
 
 
+
 * Part I: Theoretical Framework 
 ** Fundamental Definitions
 Abstraction:
 Model: An artifact which constitutes an abstraction of reality.
 
+
 ** Models of Computation
 
 
-* Part II:
+* Part II: SystemC & TLM 2.0
 ** SystemC and TLM 2.0
 A *virtual platform* is a fully functional software model of a complete system, 
 typically used for software development in the absence of hardware, 
@@ -132,10 +201,14 @@ Simics full system simulator, mature,
 
 ** Message Passing Interface
 
+
 ** Synchronization Algorithms
 
 
 * Part III: Implementation 
+
+
+* Part IV: Use Case
 
 
 * Part IV: Appendices
@@ -725,12 +798,24 @@ The process resumes execution when the response to this request is achieved.
 This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
 
 
-* Computer Science Cheatsheet                                      :noexport:
+* Computer Science Cheatsheet 					   :noexport:
+_Semantics:_ As a necessary propery of a modeling language whose models are meant to undergo
+             synthesis and refinement. In order to have well-defined semantics, we need to
+             introduce some form of formalism to models and modeling languages.
+
+_NP problem:_ Non-deterministic Polynomial
+              NP problems run in polynomial time on non-deterministic Turing machines
+              A decision problem for which a "yes-answer" can be verified in polynomial time (by a deterministic Turing machine)
+
+_NP hard problem:_    (With respect to the class of NP problems) 
+                      If every NP problem can be *reduced* to it.
+
+_NP complete problem:_ If it is NP and NP hard.
+
 An _Algorithm_ is a finite description of a sequence of steps to be taken to solve a problem.
 Physical processes are rarely structured as a sequence of steps; rather, they are structured as _continuous interactions between concurrent components_.
 
 _Model vs Reality:_ You will never strike oil by drilling through the map (Golomb 1971)
-
 _Concurrency vs Parallelism:_ Consider two "living" threads. On a multicore machine they might be executed in parallel.
 On a single core the instructions of each thread are arbitrarily interleaved. In both cases the execution is these two 
 threads is characterized as concurrent. Concurrency does not imply simultaneity.
@@ -775,12 +860,78 @@ _Data Parallelism:_ parallelism determined implicitly by data *independence*.
 _Bash & C:_ brick and mortar
 
 
-* ESLD Cheatsheet 						   :noexport:
+* RTL Cheatsheet 						   :noexport:
 _RTL modules are pin-accurate:_ This means that the ports of an RTL module directly correspond to wires in the real-world implementation of the module. 
 
-_Is the MoC underlying a PDES a special form of KPN?_
+_RTL_design:_ The basis of RTL design is that circuits can be thought of 
+              as a set of registers and 
+              a set of transfer functions 
+              defining the datapaths between registers.
 
-_Test Driven Development:_ Whereby he tests are written first, based on the specifications, and then model functionality implemented, ensuring those tests pass.
+_Stages of RTL design:_
+(Remeber the dot product example)
+1. Identify Data Operations:
+2. Determine Type & Precision:
+3. Determine Constraints on Data Processing Resources:
+4. Allocation and Scheduling: Allocation reffers to the mappings of data operations onto processing resources.
+                              Scheduling refers to the choice of clock cycle on which an operation will be performed in a multi-cycle operation.
+                              Registers must also be allocated to all values that cross over from one clock cycle to a later one.
+			      The aim is to maximize the resource usage and simultaneously to minimise the registers required to store intermediate results.
+                              It is now possible to design the datapath minus its controller.
+
+5. Controller Design:         Design a controller to sequence the operations over the eight clock cycles.
+                              There are three multiplexers and a register to control in this circuit.
+                              *Normally the controller would be implemented as a state machine*
+                              
+6. Reset Mechanism Design:
+
+#+BEGIN_SRC vhdl
+library ieee;
+use ieee.std_logic_1164.all, ieee.numeric_std.all;
+
+package dot_product_types is
+   subtype sig8 is signed (7 downto 0);
+   type sig8_vector is array (natural range <>) of sig8;
+end;
+
+library ieee;
+use ieee.std_logic_1164.all, ieee.numeric_std.all;
+use work.dot_product_types.all;
+entity dot_product is
+   port (a, b : in sig8_vector(7 downto 0);
+   ck, reset: in std_logic;
+   result : out signed(15 downto 0));
+end;
+
+architecture behaviour of dot_product is
+   signal i : unsigned(2 downto 0);
+   signal ai, bi : signed (7 downto 0);
+   signal product, add_in, sum, accumulator : signed(15 downto 0);
+begin
+   control: process
+   begin
+     wait until rising_edge(ck);
+     if reset = '1' then
+        i <= (others => '0');
+     else
+        i <= i + 1;
+     end if;
+   end process;
+
+   a_mux: ai <= a(to_integer(i));
+   b_mux: bi <= b(to_integer(i));
+   multiply: product <= ai * bi;
+   z_mux: add_in <= X"0000" when i = 0 else accumulator;
+   add: sum <= product + add_in;
+   
+   accumulate: process
+   begin
+     wait until rising_edge(ck);
+     accumulator <= sum;
+   end process;
+   output: result <= accumulator;
+end;
+#+END_SRC
 
 
 * Electronics Cheatsheet 					   :noexport:
@@ -803,6 +954,35 @@ Although it is a GUI thing, it has a DES (maybe PDES, each QThread runs its own 
 ** Iterators
 Iterators connect algorithms to the elements in a container regardless of the type of the container.
 Iterators decouple the algorithm from the data source; an algorithm has no knowledge of the container form which the data originates. 
+
+
+** Named Casts
+1. static_cast: converts between related types 
+                such as one pointer type to another in the same class hierarchy, 
+                an integral type to an enumeration, or a floating-point type to an integral type
+
+2. reinterpret_cast: handles conversions between unrelated types such as an integer to a pointer
+                     or a pointer to an unrelated pointer type
+
+3. const_cast:  converts between types that differ only in const and volatile qualifiers
+
+4. dynamic_cast: does run-time checked conversion of pointers and references into a class hierarchy
+
+*** Dynamic Cast
+To use derived classes as more than a convenient shorthand in declarations, 
+we must solve the following problem: 
+
+_Given a pointer of type Base*, to which derived type does the object pointed to really belong?_
+
+There are four fundamental solutions:
+1. Ensure that only objects of a single type are pointed to.
+2. Place a type field in the base class for the functions to inspect.
+3. Use dynamic_cast
+4. Use virtual functions
+
+Consequently, the most obvious and useful operation for inspecting the type of an object at run time
+is *a type conversion operation that returns a valid pointer if the object is of the expected type and a null pointer if it isn’t.* 
+The dynamic_cast operator does exactly that.
 
 
 ** DANGER
@@ -1077,13 +1257,15 @@ The main features of the generic payload are:
   What is the address
 - Data
   A pointer to the physical data as an array of bytes
-- Byte Enable Mask
+- Byte Enable Mask Pointer
 - Response
   An indication of whether the transaction was successful, and if not the nature of the error
 
 *** Streaming Width
-In case of *multi-beat* transactions the ratio of the data length over the streaming width will give the number of beats. 
+In case of *multi-beat* transactions 
+the ratio of the data length over the streaming width will give the number of beats. 
 
+*** Byte Enable Mask Pointer
 
 ** Initiators and Targets
 A module's processes may act as either initiators or targets.
@@ -1318,3 +1500,5 @@ How to realize the DE MoC on top of completely heterogeneous HPC platform
 #+LATEX_HEADER: \let\ps@plain\ps@fancy 
 #+LATEX_HEADER: \makeatother
 #+LATEX_HEADER: \setlength{\headheight}{15pt}
+
+
