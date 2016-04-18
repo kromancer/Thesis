@@ -1,31 +1,18 @@
-#+TITLE: Project Title: Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
-#+OPTIONS: toc:nil email:nil title:nil author:nil date:nil
+#+TITLE: Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
+#+AUTHOR:  Konstantinos Sotiropoulos
+#+EMAIL:   kisp@kth.se
+#+OPTIONS: ^: 1 email: 1
 #+STARTUP: overview
 
-#+BEGIN_LaTex
-\author{
-        \textsc{Konstantinos Sotiropoulos}
-        \mbox{}\\
-        \normalsize
-            \texttt{konstantinos.sotiropoulos}
-        \normalsize
-            \texttt{@intel.com}
-}
 
-\date{\today}
 
-\maketitle
-
-\tableofcontents
-
-\clearpage
-#+END_LaTex
 
 * Acronyms 							   
 | *ASIC*:  | Application Specific Integrated Circuit |
 | *DE*:    | Discrete Event                          |
 | *DES*:   | Discrete Event Simulator/Simulation     |
 | *DMI*:   | Direct Memory Interface                 |
+| *ES*:    | Electronic System                       |
 | *ESLD*:  | Electronic System-Level Design          |
 | *FPGA*:  | Field Programmable Gate Array           |
 | *HPC*:   | High Performance Computing              |
@@ -42,35 +29,45 @@
 \clearpage
 
 
-* Abstract
-*Keywords:*
 
 
-* Introduction
+
+* Preface 							   :noexport:
+This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
+Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
+while professor [[https://people.kth.se/~ingo/][Ingo Sanders]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se})are the examiner and supervisor from KTH. 
+The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company 
+(document title: "Statement of Terms and Conditions of Fixed Term Employment"). 
+
+The scope of this project has been and is being mutually determined by all parties. 
+It is dialectically determined between the company's needs and the institute's research agenda.
+As Master's Thesis project, it needs to expose a scientific ground on which the engineering effort shall be rooted.
+ 
+All the necessary equipment (software and hardware) has been kindly provided by the company.
+The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
+but will conform to the general context dictated by the documents already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
+
+
+* Introduction-
 The aim of this chapter is to present the problem statement,
 after a brief introduction of the relevant context.
-
-In units [[The Design Process]] and [[Electronic System-Level Design]] we make an attempt to 
-deobfuscate the meaning of heavily cluttered terms such as design, system, model and simulation, 
-in order to provide an overview of the engineering practise of Electronic System-Level Design (ESLD).
-
-The third and fourth unit 
-
-In the fourth and the fifth unit the problem statement and the objectives of this Master's Thesis are presented.
-
-The structure of this document is presented in the final unit.
+In unit [[The Design Process]] we provide a definition for the fundamental concepts of design, system, model and simulation.
+In units [[Electronic Systems Design]] to [[Transaction-Level Model]], using Gajski and Kuhn's Y-Chart, we determine the concept of a Transaction-Level Model, as an instance in the engineering practice of Electronic System-Level Design (ESLD).
+In unit [[SystemC and TLM]] we have a rudimentary look at what SystemC is.
+In the units [[Problem Statement]] and [[Objectives]] the problem statement and the objectives of this Master's Thesis are presented.
+The structure of this document is given in unit [[Document Overview]].
 
 ** The Design Process
 We define the process of *designing* as the engineering art of incarnating a desired functionality into a perceivable, thus concrete, artifact.
 An engineering artifact is predominantly reffered to as a *system*, 
 to emphasize the fact that it can be viewed as a structured collection of components and that its behavior is a product of the interaction among its components.
 
-Conceptually, designing implies a non-monotonic movement from abstract to concrete, fueled by the engineer's *design decisions*, incrementally adding implementation details.
+Conceptually, designing implies a movement from abstract to concrete, fueled by the engineer's *design decisions*, incrementally adding implementation details.
 This movement is also known as the *design flow* and can be facilitated by the creation of an arbitrary number of intermediate artifacts called models.
-A *model* is thus an abstract representation of the final artifact with abstraction being the key mental ability for managing complexity.
-The design flow can be now semi-formally defined as a process of model refinement and the ultimate model being the final artifact itself.
+A *model* is thus an abstract representation of the final artifact. 
+The design flow can be now semi-formally defined as a process of model refinement, with the ultimate model being the final artifact itself.
 We use the term semi-formal to describe the process of model refinement, because to the best of our knowledge, 
-such model algebras that would establish transformation rules and equivalence relations are far from complete \cite{Gajski2009}.
+such model semantics and algebras that would establish formal transformation rules and equivalence relations are far from complete \cite{Gajski2009}.
 
 A desired property of a model is executabillity; that is its ability to demonstrate portions of the final artifact's desired functionallity in a controlled environment.
 An *executable model*, allows the engineer to form hypotheses, conduct experiments on the model and finally evaluate design decisions.
@@ -78,88 +75,344 @@ It is now evident that executable models can firmly associate the desing process
 The execution of a model is also known as *simulation* \cite{Editor2014}.
 
 
-** Electronic System-Level Design
-An electronic system provides a desired functionallity, by manipulating the flow of electrons.
+** Electronic Systems Design
+An Electronic System (ES) provides a desired functionallity, by manipulating the flow of electrons.
 Electronic systems are omnipotent in every aspect of human activity; 
 most devices are either electronic systems or have an embedded electronic system for their cybernisis.
 
-The prominent way for visualizing the design space and further refining the terms presented in the previous unit,
-in the context of electronic systems, 
-is by means of the Y-Chart.
-The concept was first presented in 1983 \cite{miaou} and has been constantly evolving to match industry practices.
+The prominent way for visualizing the ES design/abstraction space is by means of the Y-Chart.
+The concept was first presented in 1983 \cite{Gajski1983} and has been constantly evolving to capture and steer industry practices.
 Figure \ref{fig:Y-Chart} presents the form of the Y-Chart found in \cite{Gajski2009}.
 
-The Y-Chart quantizes the abstraction space into four levels; system, processor, logic and circuit, represented as the four concentric circles.
-Points in the abstraction space correspond to system models.
-For each abstraction level, one can have different views over the system; behavioral, structural and physical
+The Y-Chart quantizes the design space into four levels of abstraction; system, processor, logic and circuit, represented as the four concentric circles.
+For each abstraction level, one can use different ways for describing the system; behavioral, structural and physical.
+These are represented as the three axises, hence the name Y-Chart.
+Models can now be identified as points in this design space.
 
+A typical design flow for an Intergrated Circuit (IC) begins with a high-level behavioral model capturing the system's specifications and 
+proceeds non-monotonically to a lower level structural represenantation, expressed as a netlist of, still abstract, components.
+From there, Electronic Design Automation (EDA) tools will pick up the the task of reducing the abstraction of a structural model by translating the netlist of abstract components to a netlist of standard cells.
+The nature of the standard cells is determined by the IC's fabrication technology (FPGA, gate-array or standard-cell ASIC).
+Physical dimensionality is added by place and route algorithms, 
+part of an EDA framework, 
+signifying the exit from the design space, 
+represented in the Y-Chart by the transition from the structural to the physical axis.
+
+We have used the adjective non-monotic to describe the design flow, because as a movement in the abstraction space, it is iterative; 
+design \rightarrow test/verify \rightarrow redesign or proceed.
+This cyclic nature of the design flow is implied by the errors the human factor introduces, under the lack of formal model transformation methodologies in the upper abstraction levels.
+The term *synthesis* is therefore introduced to describe a monotonic movement from a behavioral to a structural model, or the realization of an upper level structural model using finer components.
+We distinguish synthesis from the general case of the design flow, to disregard the testing and verification procedures.
+Therefore, the term synthesis may indicate the presence, or the desire of having, an automated design flow.
+Low-level synthesis is a reality modern EDA tools achieve, while high-level synthesis is still a utopia modern tools are converging to.
+
+
+
+*** Notes for completing this section 				   :noexport:
+Explain processor, logic, circuit, structural, behavioral, etc
 Physical dimensionality added by automated place and route software.
-geometrical positioning of the components on the silicion waffer
-
-
-*Synthesis*:
-The movement from behavioral to structural (arrow AB) and the 
-realization of an upper level structural model  using finer components (arrows BC, BD).
-
-Design flow vs synthesis re-itaration not , monotonic, linear progress through the design space
-
+geometrical positioning of the components on the silicon waffer
 The final result is a from the chosen device technology (standard cell ASIC, gate array ASIC, FPGA)
+Verification and validation 
+High-Level synthesis
 
-Verification and validation
+
+** System-Level Design
+To meet the increasing demand for functionality, ES complexity, as expressed by their heterogeneity and their size, is increasing.
+Terms like Systems on Chip (SoC) and Multi Processor SoC (MPSoC), used for characterizing modern ES, indicate this trend.
+With abstraction being the key mental ability for managing complexity, the initiation of the design flow has been pushed to higher abstraction levels.
+In the Y-Chart the most abstract level, depicted as the outer circle, is the system level.
+At this level the distinction between hardware and software is a mere design choice thus *co-simulation of hardware and software* is one of the main objectives.
+Thereby the term *system-level design* is used to describe design flows that enter the design space at this level.
+
+A common practice among modern systen-level design tools/methodologies, 
+like Intel's CoFluent Studio \cite{NEEDED}, 
+is for the designer to construct two intermediate models;
+An application model, that is the behavioral view of the system and 
+a platform model, assembled using a component database of Processing Elements (PE, processors, hardware accelerators etc) and Communication Elements (CE, buses, interfaces etc).
+The final step towards *system-level synthesis*, that is the transition from a behavioral to a structural model on the system level, is called system mapping;
+the partitioning of the application to the elements of the platform.
 
 
-** Transaction-Level Modeling
-As mentioned earlier, 
-a TLM is used to explore different specification model structures,
-and different mappings to platform architectures. 
+** Transaction-Level Model
+A *Transaction-Level Model* (TLM) can now be defined as the point in the Y-Chart where the structural axis meets the system abstraction level.
+As mentioned in the previous unit, a TLM can be thought of as a platform model, or *virtual platform*, where an application can/is mapped.
+It is the model that facilitates co-simulation of hardware and software.
+The notion of the transaction as an abstraction of communication will be explained in later units.
 
-For example, we may want to restructure a SM for a given platform and a given mapping. 
-On the other hand, for any given SM and component library, we may try to generate an optimal platform for some given metric. 
-Similarly, for a given SM and platform, we may try to find an optimal mapping for a given metric. 
-In an extreme case, we may want to simultaneously optimize the SM structure or application code, platform architecture, and the mapping for one or several metrics. 
-As mentioned earlier, TLMs allow us to perform quickly and with reasonable accuracy each of these disparate optimization scenarios, which will be described in more detail in Chapter 4.
+What are the pragmatic reasons that make the development of a virtual platform imperative?
+To begin with, an increasing amount of an ES's functionality is becoming software based. 
+Moreover, ES related companies are facing the economical pressure of reducing new products' time to market.
+Thus, software engineers must be equipped with a virtual platform they can use for software development, early on in the design flow, without needing to wait for the actual silicon to arrive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ** SystemC and TLM
-While maintaining the expressivenes of a Hardware Description Language (HDL), *SystemC* is meant to act as an Electronic System Level Design Language (ESLDL).
-It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than synthesizable models.
+While maintaining the expressivenes of a Hardware Description Language (HDL), *SystemC* is meant to act as an *Electronic System Level Design Language* (ESLDL);
+a language with which system-level models can be expressed.
+It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than EDA synthesizable models.
 The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized (IEEE 1666-2011 \cite{OpenSystemCInitiative2012}).
 
-A system level model offers an abstract description of a system, beyond the Register Transfer Level (RTL) a HDL, like VHDL or Verilog, can facilitate.
-*Transaction Level Modeling* (TLM) is a term coined to describe a post-RTL abstraction space, where the system's components communicate via transactions.
 
+
+
+
+
+
+
+** Problem
+The vision of a fully automated and connected society, the IoT revolution has promised to deliver,
+is depending on the industry's ablate to deliver novel, complex and heterogeneous cyber-physical systems with short time-to-market constraints.
+To live up to these expectations, the engineering discipline of ESLD must provide an answer to a number of questions:
+\newline
+*High-Level Synthesis*: How a system described in a SLDL can be realized in a structured and automatic way? 
+Which of its components should be mapped in hardware entities like Digital Signal Processors (DSPs), Field Programmable Gate Arrays (FPGAs) or Application Specific Integrated Circuits (ASICs)?
+Which of its components could be software for some kind of Central Processing Unit (CPU)?
+Which is the optimal mapping that satisfies the system's requirements and yields a minimum power consumption?
+\newline
+*Correct-by-design*: Can a high-level synthesis design methodology yield correct-by-design implementations?
+Can a system be formally verified given its abstract representation, early on in the design procedure?
+Can we free the huge amount of resources wasted in mundane testing and debugging procedures that sometimes can not even provide any formal guarantee about the system's behavior?
+\newline
+*Improving the co-simulation speed for hardware and software*: Can we develop a virtual prototype of the platform early on in the development cycle, 
+so that software engineers can begin developing integral applications without having to wait for the silicon to arrive?
+Can we make the simulation fast and accurate, utilizing all the latest developments in High Performance Computing (HPC)?
+This project hopes to deliver an infinitesimal contribution in solving the latter class of questions.
+
+
+This project evaluates the efficiency of existing process synchronization algorithms when applied to the parallel simulation
+of Loosely-Timed Transaction Level Models on Symmetric Multiprocessing platforms.
+
+
+** Objectives
+If the timing constraints stretched beyond the scope of a Master Thesis, 
+the project's self-actualization would require the development/production of the following components (sorted in descending significance order):
+1. An OoO PDES implementation of the SystemC kernel.
+2. A proof of concept application of the proposed kernel, on a sufficiently parallel system, running a substantially parallel application, on top of a Linux kernel.
+3. The Master Thesis report document.
+4. A static analysis/introspection tool for parsing the SystemC description of the system and extracting its pure representation, in terms of processes and links.
+5. A code generation tool for constructing the communication and synchronization mechanisms.
+6. A way of sequencing the application of the previous tools, either in the kernel's elaboration phase, or using a "gluing" script.
+7. A TLM 2.0 coding style to minimize the effort and complexity of the analysis and generation tools.
+8. A way to ensure the kernel's OSCI compliance.
+9. A roadmap for elevating the simulation from SMP parallel to distributed, in a cluster of SMP nodes, parallel.
+
+Given the time constraints, the primary focus falls on the first three objectives.
+The automation and generality the tools could deliver will be emulated by manual and ad-hoc solutions.
+
+
+** Document Overview
+To be completed at the end.
+
+
+
+
+* Part I: Theoretical Framework 
+The rest of this section is devoted into presenting the theoretical/scientific ground on which we will cultivate this project.
+To avoid confusion by being precise, fundamental terms and concepts of computer science are being defined and redefined, even at the risk of being pedantic.  
+Facing a labyrinth of abstraction layers, we will begin unraveling Ariadne's thread at the simple observation that SystemC is a System Level Design *Language*.
+An MoC for describing the application at the system-level
+
+** Models of Computation
+A *language* is a set of symbols, rules for combining them (its syntax), and rules for interpreting combinations of symbols (its semantics). 
+Two approaches to semantics have evolved: denotational and operational.
+Operational semantics, which dates back to Turing machines, gives the meaning of a language in terms of actions taken by some abstract machine. 
+How the abstract machine in an operational semantics can behave is a feature of what we call the *Model of Computation (MoC)* \cite{Edwards1997}.
+This definition implies that languages are not computational models themselves, but have underlying computational models \cite{Jantsch2005}.
+
+How can this definition make sense for SLDLs and what do we expect a SLDL to be able to do? 
+A SLDL should be able to describe a system as a hierarchical network of interacting components.
+A MoC is therefore a collection of rules to define what constitutes a component and what are the semantics of execution, communication and concurrency of the abstract machine that will execute the model \cite{Jantsch2005} \cite{Editor2014}.
+To ensure meaningful simulations the MoC of the abstract machine that simulates a model must be equivalent with that of the abstract machine that will realize the system.
+
+#+CAPTION: Categorization of three of the most explored MoCs: State Machine, Synchronous Dataflow and Discrete Event(adopted from \cite{Editor2014})
+#+NAME: fig:MoCs
+[[file:Figures/MoCs.pdf]]
+
+
+** The Discrete Event Model of Computation
+The dominant MoC that underlies most industry standard EDA languages (VHDL, Verilog, SystemC) is called *Discrete Event (DE)*.
+The components of a DE system are called *processes*.
+In this context processes usually model the behavior and functionality of hardware entities.
+The execution of processes is concurrent and the communication is achieved through *events*.
+An event can be considered as an exchange of a time-stamped value.
+
+Concurrent execution does not imply parallel/simultaneous execution. 
+The notion of *concurrency* is more abstract. 
+It can be realized as either parallel/simultaneous execution or as sequential interleaved execution, depending on the actual machine's computational resources.
+
+Systems whose semantics are meant to be interpreted by a DE MoC, in order to be realizable, must have a *causal* behavior: they must process events in a chronological order, 
+while any output events produced by a process are required to be no earlier in time than the input events that were consumed \cite{Editor2014}.
+At any moment in real time, the model's time is determined by the last event processed.
+
+In figure [[fig:MoCs]] one can observe that the DE MoC is also considered to be *Synchronous-Reactive (SR)*. 
+This demonstrates the possibility of the MoC to "understand" entities with zero execution time, where output events are produced at the same time input events are consumed.
+We can also extend/rephrase the previous definitions and say that Synchronous-Reactive MoCs are able to handle systems where events happen at the same time, instantaneously, in a causal way.
+The DE MoC handles the aforementioned situations by extending time-stamps(the notion of model time) with the introduction of delta delays (also referred to as cycles or micro-steps).
+A delta delay signifies an infinitesimal unit of time and no amount of delta delays, if summed, can result in time progression.
+A time-stamp is therefore represented as a tuple of values, $(t,n)$ where $t$ indicates the model time and $n$ the number of delta delays that have advanced at $t$.
+
+
+
+
+** The Discrete Event Simulation(or)
+A realization of the DE abstract machine is called a *Discrete Event Simulator (DES)*.
+SystemC's reference implementation of the DES is referred to as the *SystemC kernel* \cite{OpenSystemCInitiative2012}.
+
+Concurrency of the system's processes is achieved through the co-routine mechanism (also known as co-operative multitasking). 
+Processes execute without interruption. In a single core machine that means that only a single process can be running at any real time, 
+and no other process instance can execute until the currently executing process instance has yielded control to the kernel.
+A process shall not preempt or interrupt the execution of another process \cite{OpenSystemCInitiative2012}.
+
+To avoid quantization errors and the non-uniform distribution of floating point values, time is expressed as an integer multiple of a real value referred to as the time resolution. 
+
+The kernel maintains a *centralized event queue* that is sorted by time-stamp and knows which process is *running*, which processes are waiting for events and which are *runnable*.
+Runnable processes have had events to which they are sensitive triggered and are waiting for the running process to yield to the kernel so that they can be scheduled.
+The kernel controls the execution order by selecting the earliest event in the event queue and making its time-stamp the current simulation time.
+It then determines the process the event is destined for, and finds all other events in the event queue with the same time-stamp that are destined for the same process \cite{Black2010}.
+The operation of the kernel is exemplified in Alg \ref{alg:kernel}.
+
+#+BEGIN_LATEX
+\begin{algorithm}
+\caption{SystemC event loop, adopted from \cite{Schumacher2010}}
+\label{alg:kernel}
+\begin{algorithmic}[1]
+
+   \While{timed events to process exist}  \Comment{Simulation time progression}
+      \State trigger events at that time
+      \While {runnable processes exist}   \Comment{Delta cycle progression}
+         \While {runnable processes exist}
+	     \State run all triggered processes
+             \State trigger all immediate notifications
+         \EndWhile
+         \State update values of changed channels
+	 \State trigger all delta time events
+       \EndWhile
+       \State advance time to next event time
+   \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+#+END_LATEX
+
+
+** The Parallel Discrete Event Simulation(or)
+The previous section has made evident that the reference implementation of the SystemC kernel assumes sequential execution and therefore can not utilize modern massively parallel host platforms. 
+The most logical step in achieving faster simulations is to realize concurrency, from interleaving process execution to actual simultaneous/parallel execution.
+By assigning each process to a different processing unit of the host platform (core or hardware thread) we enter the domain of *Parallel Discrete Event Simulation (PDES)*.
+SystemC as a SLDL remains the same while the implementation of the DES is radically different.
+
+By allowing processes to execute simultaneously one can allow each process to have its own perception of simulation time, determined by the last event it received.
+This approach is referred to as *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}.
+Examples of OoO PDES simulators are the SystemC-SMP \cite{Mello2010} and SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
+
+For PDES implementations that enforce global simulation time, the term Synchronous PDES has been coined in the parSC simulator\cite{Schumacher2010}.
+In Synchronous PDES, parallel execution of processes is performed within a delta cycle. 
+With respect to Alg \ref{alg:kernel}, we can say that a Synchronous PDES parallelizes the execution of the innermost loop (line 4).
+However, as we will see in the following section, this approach will bare no fruits in the simulation of TLM Loosely Timed simulations, since delta cycles are rarely triggered \cite{Chen2012}.
+
+Finally, before committing into modifying the SystemC DES, we should mention the existence of less intrusive approaches, that instead of redesigning extend the reference kernel.
+The example of the sc-during SystemC library \cite{Moy} is characteristic. 
+To exploit parallelism, each process must be redefined as a sequence of atomic tasks that have duration (in simulation time).
+The term atomic is used to represent the fact that these tasks are insensitive to input/output events for their duration.
+Thus, the kernel can safely assign them to a different operating system thread and allow them to execute independently from the rest of the simulation.
+
+
+
+** Transaction Level Modeling					  
+*Transaction Level Modeling (TLM)* enhances SystemC's expressiveness in order to facilitate the more abstract description (compared to RTL) of systems.  
+TLM 2.0 allows model interoperability and the rapid development of fast virtual platforms to be deployed in software development, early on in the system's design procedure.
+
+Transaction-level models represent one specific type of the DE MoC \cite{Grotker2002}.
+Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
+The set of messages exchanged during a transaction are modeled using function calls and represent the different phases of a communication protocol.
+In a transaction one can distinguish two actors:
+the *initiator*, the process which initiated the communication, and the *target*, the process which is supposed to service the target's request.
+
+TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features:
+- A set of core interfaces
+  - A Blocking interface which is coupled with the *Loosely-Timed (LT)* coding style.
+  - A non-blocking interface, which is coupled with the *Approximately-Timed (AT)* coding style.
+  - The *Direct Memory Interface (DMI)* to enable an initiator to have direct access to a target's memory, bypassing the usual path through the interconnect components used by the transport interfaces. 
+  - The *Debug transport interface* to allow an non-intrusive inspection of the system's state.
+- The *global quantum* used by the *temporal decoupling* mechanism of the LT coding style, which facilitates faster simulations by reducing the number of context switches performed by the kernel. 
+- Initiator and target *sockets* to denote the links (causal dependencies) between processes.
+- The *generic payload* which supports the abstract modeling of memory-mapped buses.
+- A set of *utilities* to facilitate the rapid development of models.
+
+Figure demonstrates the typical use cases for TLM's different features.
+#+CAPTION: TLM 2.0 use cases (adopted from \cite{OpenSystemCInitiative2009}).
+#+NAME: fig:tlm_use_cases
+[[file:Figures/tlm_use_cases.png]]
+
+The root problem with TLM 2.0 lies in the elimination of explicit channels, which were a key contribution in the early days of research on system-level design.
+As most researchers agreed, the concept of separation of concerns was of highest importance, and for system-level design in particular, this meant the clear separation of computation (in behaviors or modules) and communication (in channels)
+Regrettably, SystemC TLM 2.0 chose to implement communication interfaces directly as sockets in modules and this indifference between channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
+Without such channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
+Without such channels, there is very little opportunity for safe parallel execution \cite{Liu2015}.
+
+
+
+
+
+** Problem statement
+The distribution of simulation time opens Pandora's box. 
+Protecting the OoO PDES from *causality errors* demands certain assumptions and the addition of complex implementation mechanisms.
+
+The first source of causality errors arises when the system's state variables are not distributed, in a disjoint way, among the processes \cite{Fujimoto1990}.
+A trivial realization of the above scenario is depicted in figure [[fig:causality_shared_state]]. Processes $P_1$ and $P_2$ are executing simultaneously, while sharing the system's state variable $x$.
+Events $E_1$ and $E_2$ are executed by $P_1$ and $P_2$ respectively. If we assume that in real time $E_2$ is executed before $E_1$, then we have implicitly broken causality, since $E_1$ might be influenced
+by the value of $x$ that the execution of $E_2$ might have modified. Furthermore, one must observe that this kind of implicit interaction between $P_1$ and $P_2$ can not be expressed in a DE MoC. 
+This is a meta-implication of the host platform's shared memory architecture.
+
+#+CAPTION: Causality error caused by the sharing of the system's state variable $x$ by $P_1$ and $P_2$.
+#+NAME: fig:causality_shared_state
+[[file:Figures/causality_shared_state.png]]
+
+The second and most difficult to deal with source of causality errors is depicted in figure [[fig:causality_safe_events]]. 
+Event $E_1$ affects $E_2$ by scheduling a third event $E_3$ which, for the shake of argument, modifies the state of $P_2$. 
+This scenario necessitates sequential execution of all three events. 
+Thus the fundamental problem in PDES, in the context of this scenario, becomes the question: how can we deduce that it is safe to execute $E_2$ in parallel with $E_1$, without actually executing $E_1$ \cite{Fujimoto1990}?
+However, one must notice that the kind of interaction that yields this problematic situation is explicitly stated in the model.
+
+#+CAPTION: Causality error caused by the unsafe execution of event $E_2$ (adopted from \cite{Fujimoto1990}).
+#+NAME: fig:causality_safe_events
+[[file:Figures/causality_safe_events.png]]
+
+The last example makes evident the fact that the daunting task of preserving causality in the simulation is all about *process synchronization*.
+For example, each process must be able to communicate to each of its peers (processes that is linked with) the message: 
+"I will not send you any event before $t_1$, so you can proceed with processing any event you have with time-stamp $t_2$ where $t_2 < t_1$".
+
+PDES synchronization algorithms, with respect to how they deal with causality errors, have been classified into two categories: *conservative* and *optimistic* \cite{Fujimoto2015}.
+Conservative mechanisms strictly avoid the possibility of any causality error ever occurring by means of model introspection and static analysis.
+On the other hand, optimistic/speculative approaches use a detection and recovery approach: when causality errors are detected a rollback mechanism is invoked to restore the system.
+An optimistic compared to a conservative approach will theoretically yield better performance in models where communication, thus the probability of causality errors, is below a certain threshold \cite{Fujimoto1990}.
+
+Both groups present severe implementation difficulties.
+For conservative algorithms, model introspection and static analysis tools might be very difficult to develop,
+while the rollback mechanism of an optimistic algorithm may require complex entities, such as a hardware/software transactional memory \cite{Anane2015} .
+
+
+* Part II: SystemC & TLM 2.0
 Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
 In a transaction one can distinguish two actors:
 the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the target's request.
 The communication between initiators and actors is routed through *interconnect* components, that usually encapsulate the functionallity of a memory-mapped buses.
 
-
-
-
-
-
-
-** Problem Statement
-
-
-** Objectives
-SystemC TLM 2.0 LT model -> Recoding Infastructure -> MPI process network -> Parallel Simulation on Xeon PHI
-
-
-** Document Overview
-
-
-
-* Part I: Theoretical Framework 
-** Fundamental Definitions
-Abstraction:
-Model: An artifact which constitutes an abstraction of reality.
-
-
-** Models of Computation
-
-
-* Part II: SystemC & TLM 2.0
 ** SystemC and TLM 2.0
 A *virtual platform* is a fully functional software model of a complete system, 
 typically used for software development in the absence of hardware, 
@@ -206,283 +459,6 @@ Simics full system simulator, mature,
 
 
 * Part III: Implementation 
-
-
-* Part IV: Use Case
-
-
-* Part IV: Appendices
-** Appendix A
-Evaluation
-
-
-* Project Plan v.1.0 						   :noexport:
-** Organization
-This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
-Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
-while professor [[https://people.kth.se/~ingo/][Ingo Sanders]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se})are the examiner and supervisor from KTH. 
-The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company 
-(document title: "Statement of Terms and Conditions of Fixed Term Employment"). 
-
-The scope of this project has been and is being mutually determined by all parties. 
-It is dialectically determined between the company's needs and the institute's research agenda.
-As Master's Thesis project, it needs to expose a scientific ground on which the engineering effort shall be rooted.
- 
-All the necessary equipment (software and hardware) has been kindly provided by the company.
-The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
-but will conform to the general context dictated by the documents already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
-
-
-** Background	
-SystemC is considered to be a System-Level Design Language (SLDL), that is implemented as a C++ class library.
-The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized with the latest LRB being the IEEE 1666-2011 \cite{OpenSystemCInitiative2012}
-The major advantage SystemC provides to the designer is that a component's functionality can be easily expressed in C/C++, the dominating languages for in systems programming (e.g. Operating System and Device Driver development).
-As a result SystemC models are executable: the designer can directly simulate the behavior of a system modeled in SystemC.
-The language has been demanded and supported by the semiconductor industry, in its collaborative effort to push Electronic Design Automation (EDA) into higher abstraction layers, thus giving birth to a trend
-referred to as Electronic System-Level Design (ESLD).
-
-The rest of this section is devoted into presenting the theoretical/scientific ground on which we will cultivate this project.
-To avoid confusion by being precise, fundamental terms and concepts of computer science are being defined and redefined, even at the risk of being pedantic.  
-Facing a labyrinth of abstraction layers, we will begin unraveling Ariadne's thread at the simple observation that SystemC is a System Level Design *Language*.
-
-*** Models of Computation
-A *language* is a set of symbols, rules for combining them (its syntax), and rules for interpreting combinations of symbols (its semantics). 
-Two approaches to semantics have evolved: denotational and operational.
-Operational semantics, which dates back to Turing machines, gives the meaning of a language in terms of actions taken by some abstract machine. 
-How the abstract machine in an operational semantics can behave is a feature of what we call the *Model of Computation (MoC)* \cite{Edwards1997}.
-This definition implies that languages are not computational models themselves, but have underlying computational models \cite{Jantsch2005}.
-
-How can this definition make sense for SLDLs and what do we expect a SLDL to be able to do? 
-A SLDL should be able to describe a system as a hierarchical network of interacting components.
-A MoC is therefore a collection of rules to define what constitutes a component and what are the semantics of execution, communication and concurrency of the abstract machine that will execute the model \cite{Jantsch2005} \cite{Editor2014}.
-To ensure meaningful simulations the MoC of the abstract machine that simulates a model must be equivalent with that of the abstract machine that will realize the system.
-
-#+CAPTION: Categorization of three of the most explored MoCs: State Machine, Synchronous Dataflow and Discrete Event(adopted from \cite{Editor2014})
-#+NAME: fig:MoCs
-[[file:Figures/MoCs.pdf]]
-
-
-*** The Discrete Event Model of Computation
-The dominant MoC that underlies most industry standard EDA languages (VHDL, Verilog, SystemC) is called *Discrete Event (DE)*.
-The components of a DE system are called *processes*.
-In this context processes usually model the behavior and functionality of hardware entities.
-The execution of processes is concurrent and the communication is achieved through *events*.
-An event can be considered as an exchange of a time-stamped value.
-
-Concurrent execution does not imply parallel/simultaneous execution. 
-The notion of *concurrency* is more abstract. 
-It can be realized as either parallel/simultaneous execution or as sequential interleaved execution, depending on the actual machine's computational resources.
-
-Systems whose semantics are meant to be interpreted by a DE MoC, in order to be realizable, must have a *causal* behavior: they must process events in a chronological order, 
-while any output events produced by a process are required to be no earlier in time than the input events that were consumed \cite{Editor2014}.
-At any moment in real time, the model's time is determined by the last event processed.
-
-In figure [[fig:MoCs]] one can observe that the DE MoC is also considered to be *Synchronous-Reactive (SR)*. 
-This demonstrates the possibility of the MoC to "understand" entities with zero execution time, where output events are produced at the same time input events are consumed.
-We can also extend/rephrase the previous definitions and say that Synchronous-Reactive MoCs are able to handle systems where events happen at the same time, instantaneously, in a causal way.
-The DE MoC handles the aforementioned situations by extending time-stamps(the notion of model time) with the introduction of delta delays (also referred to as cycles or micro-steps).
-A delta delay signifies an infinitesimal unit of time and no amount of delta delays, if summed, can result in time progression.
-A time-stamp is therefore represented as a tuple of values, $(t,n)$ where $t$ indicates the model time and $n$ the number of delta delays that have advanced at $t$.
-
-
-
-
-*** The Discrete Event Simulation(or)
-A realization of the DE abstract machine is called a *Discrete Event Simulator (DES)*.
-SystemC's reference implementation of the DES is referred to as the *SystemC kernel* \cite{OpenSystemCInitiative2012}.
-
-Concurrency of the system's processes is achieved through the co-routine mechanism (also known as co-operative multitasking). 
-Processes execute without interruption. In a single core machine that means that only a single process can be running at any real time, 
-and no other process instance can execute until the currently executing process instance has yielded control to the kernel.
-A process shall not preempt or interrupt the execution of another process \cite{OpenSystemCInitiative2012}.
-
-To avoid quantization errors and the non-uniform distribution of floating point values, time is expressed as an integer multiple of a real value referred to as the time resolution. 
-
-The kernel maintains a *centralized event queue* that is sorted by time-stamp and knows which process is *running*, which processes are waiting for events and which are *runnable*.
-Runnable processes have had events to which they are sensitive triggered and are waiting for the running process to yield to the kernel so that they can be scheduled.
-The kernel controls the execution order by selecting the earliest event in the event queue and making its time-stamp the current simulation time.
-It then determines the process the event is destined for, and finds all other events in the event queue with the same time-stamp that are destined for the same process \cite{Black2010}.
-The operation of the kernel is exemplified in Alg \ref{alg:kernel}.
-
-#+BEGIN_LATEX
-\begin{algorithm}
-\caption{SystemC event loop, adopted from \cite{Schumacher2010}}
-\label{alg:kernel}
-\begin{algorithmic}[1]
-
-   \While{timed events to process exist}  \Comment{Simulation time progression}
-      \State trigger events at that time
-      \While {runnable processes exist}   \Comment{Delta cycle progression}
-         \While {runnable processes exist}
-	     \State run all triggered processes
-             \State trigger all immediate notifications
-         \EndWhile
-         \State update values of changed channels
-	 \State trigger all delta time events
-       \EndWhile
-       \State advance time to next event time
-   \EndWhile
-
-\end{algorithmic}
-\end{algorithm}
-#+END_LATEX
-
-
-*** The Parallel Discrete Event Simulation(or)
-The previous section has made evident that the reference implementation of the SystemC kernel assumes sequential execution and therefore can not utilize modern massively parallel host platforms. 
-The most logical step in achieving faster simulations is to realize concurrency, from interleaving process execution to actual simultaneous/parallel execution.
-By assigning each process to a different processing unit of the host platform (core or hardware thread) we enter the domain of *Parallel Discrete Event Simulation (PDES)*.
-SystemC as a SLDL remains the same while the implementation of the DES is radically different.
-
-By allowing processes to execute simultaneously one can allow each process to have its own perception of simulation time, determined by the last event it received.
-This approach is referred to as *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}.
-Examples of OoO PDES simulators are the SystemC-SMP \cite{Mello2010} and SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
-
-For PDES implementations that enforce global simulation time, the term Synchronous PDES has been coined in the parSC simulator\cite{Schumacher2010}.
-In Synchronous PDES, parallel execution of processes is performed within a delta cycle. 
-With respect to Alg \ref{alg:kernel}, we can say that a Synchronous PDES parallelizes the execution of the innermost loop (line 4).
-However, as we will see in the following section, this approach will bare no fruits in the simulation of TLM Loosely Timed simulations, since delta cycles are rarely triggered \cite{Chen2012}.
-
-Finally, before committing into modifying the SystemC DES, we should mention the existence of less intrusive approaches, that instead of redesigning extend the reference kernel.
-The example of the sc-during SystemC library \cite{Moy} is characteristic. 
-To exploit parallelism, each process must be redefined as a sequence of atomic tasks that have duration (in simulation time).
-The term atomic is used to represent the fact that these tasks are insensitive to input/output events for their duration.
-Thus, the kernel can safely assign them to a different operating system thread and allow them to execute independently from the rest of the simulation.
-
-
-
-*** Transaction Level Modeling					  
-*Transaction Level Modeling (TLM)* enhances SystemC's expressiveness in order to facilitate the more abstract description (compared to RTL) of systems.  
-TLM 2.0 allows model interoperability and the rapid development of fast virtual platforms to be deployed in software development, early on in the system's design procedure.
-
-Transaction-level models represent one specific type of the DE MoC \cite{Grotker2002}.
-Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
-The set of messages exchanged during a transaction are modeled using function calls and represent the different phases of a communication protocol.
-In a transaction one can distinguish two actors:
-the *initiator*, the process which initiated the communication, and the *target*, the process which is supposed to service the target's request.
-
-TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features:
-- A set of core interfaces
-  - A Blocking interface which is coupled with the *Loosely-Timed (LT)* coding style.
-  - A non-blocking interface, which is coupled with the *Approximately-Timed (AT)* coding style.
-  - The *Direct Memory Interface (DMI)* to enable an initiator to have direct access to a target's memory, bypassing the usual path through the interconnect components used by the transport interfaces. 
-  - The *Debug transport interface* to allow an non-intrusive inspection of the system's state.
-- The *global quantum* used by the *temporal decoupling* mechanism of the LT coding style, which facilitates faster simulations by reducing the number of context switches performed by the kernel. 
-- Initiator and target *sockets* to denote the links (causal dependencies) between processes.
-- The *generic payload* which supports the abstract modeling of memory-mapped buses.
-- A set of *utilities* to facilitate the rapid development of models.
-
-Figure demonstrates the typical use cases for TLM's different features.
-#+CAPTION: TLM 2.0 use cases (adopted from \cite{OpenSystemCInitiative2009}).
-#+NAME: fig:tlm_use_cases
-[[file:Figures/tlm_use_cases.png]]
-
-The root problem with TLM 2.0 lies in the elimination of explicit channels, which were a key contribution in the early days of research on system-level design.
-As most researchers agreed, the concept of separation of concerns was of highest importance, and for system-level design in particular, this meant the clear separation of computation (in behaviors or modules) and communication (in channels)
-Regrettably, SystemC TLM 2.0 chose to implement communication interfaces directly as sockets in modules and this indifference between channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
-Without such channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
-Without such channels, there is very little opportunity for safe parallel execution \cite{Liu2015}.
-
-
-** Problem statement
-The distribution of simulation time opens Pandora's box. 
-Protecting the OoO PDES from *causality errors* demands certain assumptions and the addition of complex implementation mechanisms.
-
-The first source of causality errors arises when the system's state variables are not distributed, in a disjoint way, among the processes \cite{Fujimoto1990}.
-A trivial realization of the above scenario is depicted in figure [[fig:causality_shared_state]]. Processes $P_1$ and $P_2$ are executing simultaneously, while sharing the system's state variable $x$.
-Events $E_1$ and $E_2$ are executed by $P_1$ and $P_2$ respectively. If we assume that in real time $E_2$ is executed before $E_1$, then we have implicitly broken causality, since $E_1$ might be influenced
-by the value of $x$ that the execution of $E_2$ might have modified. Furthermore, one must observe that this kind of implicit interaction between $P_1$ and $P_2$ can not be expressed in a DE MoC. 
-This is a meta-implication of the host platform's shared memory architecture.
-
-#+CAPTION: Causality error caused by the sharing of the system's state variable $x$ by $P_1$ and $P_2$.
-#+NAME: fig:causality_shared_state
-[[file:Figures/causality_shared_state.png]]
-
-The second and most difficult to deal with source of causality errors is depicted in figure [[fig:causality_safe_events]]. 
-Event $E_1$ affects $E_2$ by scheduling a third event $E_3$ which, for the shake of argument, modifies the state of $P_2$. 
-This scenario necessitates sequential execution of all three events. 
-Thus the fundamental problem in PDES, in the context of this scenario, becomes the question: how can we deduce that it is safe to execute $E_2$ in parallel with $E_1$, without actually executing $E_1$ \cite{Fujimoto1990}?
-However, one must notice that the kind of interaction that yields this problematic situation is explicitly stated in the model.
-
-#+CAPTION: Causality error caused by the unsafe execution of event $E_2$ (adopted from \cite{Fujimoto1990}).
-#+NAME: fig:causality_safe_events
-[[file:Figures/causality_safe_events.png]]
-
-The last example makes evident the fact that the daunting task of preserving causality in the simulation is all about *process synchronization*.
-For example, each process must be able to communicate to each of its peers (processes that is linked with) the message: 
-"I will not send you any event before $t_1$, so you can proceed with processing any event you have with time-stamp $t_2$ where $t_2 < t_1$".
-
-PDES synchronization algorithms, with respect to how they deal with causality errors, have been classified into two categories: *conservative* and *optimistic* \cite{Fujimoto2015}.
-Conservative mechanisms strictly avoid the possibility of any causality error ever occurring by means of model introspection and static analysis.
-On the other hand, optimistic/speculative approaches use a detection and recovery approach: when causality errors are detected a rollback mechanism is invoked to restore the system.
-An optimistic compared to a conservative approach will theoretically yield better performance in models where communication, thus the probability of causality errors, is below a certain threshold \cite{Fujimoto1990}.
-
-Both groups present severe implementation difficulties.
-For conservative algorithms, model introspection and static analysis tools might be very difficult to develop,
-while the rollback mechanism of an optimistic algorithm may require complex entities, such as a hardware/software transactional memory \cite{Anane2015} .
-
-
-** Old Problem							   :noexport:
-In this project we investigate the feasibility of implementing a SystemC OoO PDES, 
-that can lead to scalable simulations of MPSoC Loosely-Timed Transaction Level Models,
-on SMP host platforms.
-
-
-** Problem
-This project evaluates the efficiency of existing process synchronization algorithms when applied to the parallel simulation
-of Loosely-Timed Transaction Level Models on Symmetric Multiprocessing platforms.
-
-
-** Hypothesis
-We hypothesize that by following a conservative approach on implementing a SystemC OoO PDES 
-we will yield semantically equivalent and scalable simulations with respect to the reference SystemC DES.   
-
-
-** Purpose
-The vision of a fully automated and connected society, the IoT revolution has promised to deliver,
-is depending on the industry's ablate to deliver novel, complex and heterogeneous cyber-physical systems with short time-to-market constraints.
-To live up to these expectations, the engineering discipline of ESLD must provide an answer to a number of questions:
-\newline
-*High-Level Synthesis*: How a system described in a SLDL can be realized in a structured and automatic way? 
-Which of its components should be mapped in hardware entities like Digital Signal Processors (DSPs), Field Programmable Gate Arrays (FPGAs) or Application Specific Integrated Circuits (ASICs)?
-Which of its components could be software for some kind of Central Processing Unit (CPU)?
-Which is the optimal mapping that satisfies the system's requirements and yields a minimum power consumption?
-\newline
-*Correct-by-design*: Can a high-level synthesis design methodology yield correct-by-design implementations?
-Can a system be formally verified given its abstract representation, early on in the design procedure?
-Can we free the huge amount of resources wasted in mundane testing and debugging procedures that sometimes can not even provide any formal guarantee about the system's behavior?
-\newline
-*Improving the co-simulation speed for hardware and software*: Can we develop a virtual prototype of the platform early on in the development cycle, 
-so that software engineers can begin developing integral applications without having to wait for the silicon to arrive?
-Can we make the simulation fast and accurate, utilizing all the latest developments in High Performance Computing (HPC)?
-This project hopes to deliver an infinitesimal contribution in solving the latter class of questions.
-
-
-
-
-
-** Goals and Objectives
-If the timing constraints stretched beyond the scope of a Master Thesis, 
-the project's self-actualization would require the development/production of the following components (sorted in descending significance order):
-1. An OoO PDES implementation of the SystemC kernel.
-2. A proof of concept application of the proposed kernel, on a sufficiently parallel system, running a substantially parallel application, on top of a Linux kernel.
-3. The Master Thesis report document.
-4. A static analysis/introspection tool for parsing the SystemC description of the system and extracting its pure representation, in terms of processes and links.
-5. A code generation tool for constructing the communication and synchronization mechanisms.
-6. A way of sequencing the application of the previous tools, either in the kernel's elaboration phase, or using a "gluing" script.
-7. A TLM 2.0 coding style to minimize the effort and complexity of the analysis and generation tools.
-8. A way to ensure the kernel's OSCI compliance.
-9. A roadmap for elevating the simulation from SMP parallel to distributed, in a cluster of SMP nodes, parallel.
-
-Given the time constraints, the primary focus falls on the first three objectives.
-The automation and generality the tools could deliver will be emulated by manual and ad-hoc solutions.
-
-
-
-
-
-
-
 ** Methods
 *** Assumptions and delimitations
 The IEEE Standard for SystemC states the following about non reference implementations of the kernel:
@@ -576,56 +552,7 @@ The detection of causality errors must be facilitated in a per process level and
 A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a time-stamp lower than its clock (the time-stamp of the last processed event).
 
 
-** References
-\renewcommand\refname{}
-\bibliography{References}
-\bibliographystyle{myIEEEtran}
 
-
-** Tasks and Time Scheduling
-The majority of the remaining time has been partitioned into 3 x 3-4 week long iterations, 
-where we will incrementally try to achieve our objectives.
-The tasks that comprise the first iteration are the following:
-  1. Setup software environment on the first experimentation server (Lovisa)
-  2. Manually compile the TLM 2.0 LT example of the SystemC installation, to a multithreaded C++ application, according to the CMB algorithm.
-  3. Document Task 1
-  4. Find a way to create parameterizable random networks within C++, that can be serialized in a form Matlab can analyze and visualize them.
-  5. Create "dummy" process functionality that resembles the behavior of common TLM actors (Instruction Set Simulators, Memory, Timers etc)
-  6. Perform a number of simulations of the random systems that correspond to the random networks.
-  7. Document Tasks 3-5.
-
-The context of the next iterations will be decided based on the outcome of the first.
-To summarize:
-
-#+ATTR_LATEX: :align=|c|c|c|c|
-| *Week(s)* | *End Date* |         *Task Number* | *Milestone*     |
-|-----------+------------+-----------------------+-----------------|
-|       5-7 |      02-18 | Initial Investigation | Project Plan v1 |
-|-----------+------------+-----------------------+-----------------|
-|         7 |      02-19 |                     1 |                 |
-|-----------+------------+-----------------------+-----------------|
-|         8 |      02-26 |                     2 |                 |
-|-----------+------------+-----------------------+-----------------|
-|         9 |      03-02 |                     3 | Status Report 1 |
-|-----------+------------+-----------------------+-----------------|
-|         9 |      03-04 |                     4 |                 |
-|-----------+------------+-----------------------+-----------------|
-|        10 |      03-11 |                     5 |                 |
-|-----------+------------+-----------------------+-----------------|
-|        11 |      03-18 |                     6 |                 |
-|-----------+------------+-----------------------+-----------------|
-|        12 |      03-23 |                     7 | Status Report 2 |
-|-----------+------------+-----------------------+-----------------|
-|     12-15 |      04-14 |      Second Iteration | Status Report 3 |
-|-----------+------------+-----------------------+-----------------|
-|     16-19 |      05-12 |      Third  Iteration | Status Report 4 |
-|-----------+------------+-----------------------+-----------------|
-|     20-21 |            |         Reserve weeks |                 |
-|-----------+------------+-----------------------+-----------------|
-|     22-26 |      06-30 |       Project closure | Final Report    |
-
-
-* 1st Iteration Notes 						   :noexport:
 ** What is Blocking and Non-Blocking in MPI's context
 The classification is with respect to whether the buffer involved in the communication primitive
 is available for re-use in case of send or use in case of receive.
@@ -796,6 +723,49 @@ Whenever a process is about to become blocked because the incoming link with the
 it requests the next message (null or otherwise) from the process on the sending side of the link.
 The process resumes execution when the response to this request is achieved.
 This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
+
+
+
+** Super Important Issues 					   :noexport:
+\cite{Fujimoto1999}
+If each LP adheres to the local causality constraint, then the
+parallel/distributed execution will yield exactly the same results as a sequential
+executlOn of the same simulation program provided that events containing the same
+timestamp are processed in the same order in both the sequential and parallel
+execution. Events containing the same time stamp are referred to as simultaneous
+events.
+
+\cite{Fujimoto1999}
+Messages arriving on each incoming link can be stored in a first-in-first-out
+(FIFO) queue, which is also time stamp order because of the above restrictions.
+*Here, we ignore "local" events that are scheduled by an LP for itself*
+In practice, processing ofthese events must be interleaved with the processing ofmessages from
+other LPs so that all events are processed in time stamp order, however, this is easy
+to accomplish.
+
+
+* Part IV: Use Case
+
+
+* Part V: Appendices
+** Appendix A
+Evaluation
+
+
+* References
+\renewcommand\refname{}
+\bibliography{References}
+\bibliographystyle{myIEEEtran}
+
+
+
+
+
+
+
+
+
+
 
 
 * Computer Science Cheatsheet 					   :noexport:
@@ -1267,6 +1237,7 @@ the ratio of the data length over the streaming width will give the number of be
 
 *** Byte Enable Mask Pointer
 
+
 ** Initiators and Targets
 A module's processes may act as either initiators or targets.
 An initiator is responsible for creating a payload and calling the transport function to send it.
@@ -1371,38 +1342,10 @@ sc_elab_and_sim
 main
 
 
-* Distributed Simulations 					   :noexport:
-I must say something about parallelization through running many parallel/distributed simulations since it is a common practise in the industry.
-This is how they are solving the problem at the moment.
-Maybe quote my supervisor.
 
 
-* Super Important Issues 					   :noexport:
-\cite{Fujimoto1999}
-If each LP adheres to the local causality constraint, then the
-parallel/distributed execution will yield exactly the same results as a sequential
-executlOn of the same simulation program provided that events containing the same
-timestamp are processed in the same order in both the sequential and parallel
-execution. Events containing the same time stamp are referred to as simultaneous
-events.
-
-\cite{Fujimoto1999}
-Messages arriving on each incoming link can be stored in a first-in-first-out
-(FIFO) queue, which is also time stamp order because of the above restrictions.
-*Here, we ignore "local" events that are scheduled by an LP for itself*
-In practice, processing ofthese events must be interleaved with the processing ofmessages from
-other LPs so that all events are processed in time stamp order, however, this is easy
-to accomplish.
 
 
-* AXM5500 							   :noexport:
-
-A family of communication processors developped by Axxia, formerly owned by LSI (now Intel).
-
-*From the press release of AXM5500:*
-
-The AXM5500 is a flexible combination of general-purpose processors and specialized packet-processing acceleration engines.
-These processors and engines use Virtual Pipeline technology, a message-passing control path to efficiently and autonomously process packets.
 
 
 * Graveyard of potentially usefull phrases 			   :noexport:
@@ -1493,8 +1436,8 @@ How to realize the DE MoC on top of completely heterogeneous HPC platform
 #+LATEX_HEADER: \setcounter{tocdepth}{3}
 #+LATEX_HEADER: \setcounter{secnumdepth}{5}
 #+LATEX_HEADER: \renewcommand{\headrulewidth}{0pt}
-#+LATEX_HEADER: \lhead{K.Sotiropoulos: Master's Thesis}
-#+LATEX_HEADER: \chead{Project Plan version 1}
+#+LATEX_HEADER: \lhead{Konstantinos Sotiropoulos}
+#+LATEX_HEADER: \chead{Ms Thesis Intermediate Report}
 #+LATEX_HEADER: \rhead{\date{\today}}
 #+LATEX_HEADER: \makeatletter
 #+LATEX_HEADER: \let\ps@plain\ps@fancy 

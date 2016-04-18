@@ -261,7 +261,7 @@ we will yield semantically equivalent and scalable simulations with respect to t
 
 * Purpose
 The vision of a fully automated and connected society, the IoT revolution has promised to deliver,
-is depending on the industry's ablate to deliver novel, complex and heterogeneous cyber-physical systems with short time-to-market constraints.
+is depending on the industry's ability to deliver novel, complex and heterogeneous cyber-physical systems with short time-to-market constraints.
 To live up to these expectations, the engineering discipline of ESLD must provide an answer to a number of questions:
 \newline
 *High-Level Synthesis*: How a system described in a SLDL can be realized in a structured and automatic way? 
