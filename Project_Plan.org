@@ -43,7 +43,7 @@
 * Organization
 This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
 Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
-while professor [[https://people.kth.se/~ingo/][Ingo Sander]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se})are the examiner and supervisor from KTH. 
+while professor [[https://people.kth.se/~ingo/][Ingo Sander]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se}) are the examiner and supervisor from KTH. 
 The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company 
 (document title: "Statement of Terms and Conditions of Fixed Term Employment"). 
 
@@ -226,7 +226,7 @@ This is a meta-implication of the host platform's shared memory architecture.
 [[file:Figures/causality_shared_state.png]]
 
 The second and most difficult to deal with source of causality errors is depicted in figure [[fig:causality_safe_events]]. 
-Event $E_1$ affects $E_2$ by scheduling a third event $E_3$ which, for the shake of argument, modifies the state of $P_2$. 
+Event $E_1$ affects $E_2$ by scheduling a third event $E_3$ which, for the sake of argument, modifies the state of $P_2$. 
 This scenario necessitates sequential execution of all three events. 
 Thus the fundamental problem in PDES, in the context of this scenario, becomes the question: how can we deduce that it is safe to execute $E_2$ in parallel with $E_1$, without actually executing $E_1$ \cite{Fujimoto1990}?
 However, one must notice that the kind of interaction that yields this problematic situation is explicitly stated in the model.
