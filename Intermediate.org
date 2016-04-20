@@ -3,7 +3,9 @@
 #+EMAIL:   kisp@kth.se
 #+STARTUP: overview
 
-
+DO NOT FORGET TO SPELLCHECK
+DO NOT FORGET TO INSERT THE IMAGES
+DO NOT FORGET TO CHECK LINKS
 
 
 * Acronyms 							   
@@ -656,7 +658,7 @@ Hence, we fill obliged to provide a quick introduction into the SystemC TLM 2.0 
 The chapter assumes a basic understanding of C++ and SystemC.
 
 In unit [[Overview of SystemC TLM 2.0 API]] we enumerate the features of the SystemC TLM 2.0 API.
-In units [[Transactions, Initiators and Targets]] and [[Generic Payload]] we define the fundamental notions of the transaction, initiator and target components.
+In units [[Transactions, Sockets, Initiators and Targets]] and [[Generic Payload]] we have a look at the fundamental notions of transaction, initiator and target components, socket and generic payload.
 In unit [[Coding Styles]] we present the two coding styles (Loosely Timed and Approximately Timed) and give their typical use cases.
 In unit [[An Example]] we provide the implementation of a simple initiator, interconnect and target model.
 In unit [[Criticism]] we present the dominant source of criticism for TLM 2.0.
@@ -689,77 +691,51 @@ TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features 
 
 
 ** Transactions, Sockets, Initiators and Targets
-Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
-In a transaction one can distinguish two actors:
-the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the target's request.
-The communication between initiators and actors is routed through *interconnect* components, that usually encapsulate the functionallity of a memory-mapped buses.
-Essentially, communication is reduced to function calls, from the initiator to the target through an arbitrary number of interconnect components,  without involving any context switches from the simulation kernel.
+*Transactions* are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
+In a transaction one can distinguish two roles;
+the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the initiator's request.
+A component is not limited to either of these two roles; it can assume both.
+For example, *interconnect* components encapsulate the behavior of memory-mapped buses, being responsible for routing transactions to the correct target.
+From the initiator's perspective, they act as targets and from the target's perpective they act as initiators.
 
-A socket is basically a convinience class, wrapping up a port and an export.
+Implementation-wise, communication in TLM 2.0 is reduced to method calls, 
+from the initiator to the target through an arbitrary number of interconnect component, without involving any context switches from the simulation kernel.
+
+A component's role is signified by the type of *sockets* it contains.
+Initiator sockets are used to forward method calls "up and out of" a component, while target sockets are used to allow method calls "down and into" a component \cite{doulos}.
+Socket binding is the act of connecting components together, thus defining the component whose method call will be eventually executed to service the transaction.
+From SystemC's viewpoint, a socket is basically a convenience class, wrapping a sc_port and an sc_export.
+
+Maybe explain in more detail SystemC's export and port mechanisms?
+Maybe you need to adopt a more SystemC like terminology? For example change the word "component" to "module".
 
 
 ** Generic Payload
-It supports the _abstract modeling of memory-mapped buses_, 
-together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
+The basic argument that is passed, by reference, in communicative method calls is called the *generic payload*.
+It is a structure that contains all the necesseray information about the transaction.
+It supports the abstract modeling of memory-mapped buses, together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
 
-The main features of the generic payload are:
+The main features/fields of the generic payload are:
 - Command 
   Is it read or write?
 - Address
-  What is the address
+  What is the address, who is supposed to serve the transaction.
 - Data
-  A pointer to the physical data as an array of bytes
-- Byte Enable Mask
+  A pointer to the physical data as an array of bytes.
+- Phase
+  Since a transaction is a non-atomic operation, this indicates the stage of the transaction. It is used for a detailed modeling of communication protocols.  
 - Response
-  An indication of whether the transaction was successful, and if not the nature of the error
+  An enumeration, indicating whether the transaction was successful, and if not, what is the nature of the error.
+
 
 
 
 ** Coding Styles
-LT is suited for describing virtual platforms intended for software development
+LT is suited for describing virtual platforms intended for software development.
 However, where additional timing accuracy is required, typically for software performance estimation and architectural analysis use cases, the AT style is employed.
 Virtual platforms typically do not contain many cycle-accurate models of complex components because of the performance impact. 
 
-Communication protocols 
-The LT coding style associates a transaction with 
-_FAST-NOT ACCURATE_ (In terms of timing?): Less detail means faster simulation. Less context switching means also faster simulation.
-A fast, loosely-timed model is typically expected to use the _blocking transport interface_ the _DMI_ and _temporal decoupling_.
-_Older terminology:_ UnTimed - Programmer's View
-_Use Cases:_
-- Early Software Development
-_Characteristics:_
-- Only sufficient timing detail to _boot O/S and run multi-core systems. It can express the modeling of _timers and _interrupts_
-- Processes can run ahead of simulation time (_temporal decoupling_)
-- Each transaction has _2 timing points_: begin and end
-- Uses direct memory interface (_DMI_)
-
-_Temporal decoupling:_
-Each process runs ahead up to quantum boundary.
-sc_time_stamp() advances in multiples of the quantum.
-Deterministic communication requires explicit synchronization.
-Individual SystemC processes are permitted to run ahead in a local "time warp" without actually advancing simulation time
-until they need to synchronize with the rest of the system.
-Temporal decoupling can result in very fast simulation for certain systems because it increases the data and code locality and reduces scheduling overhead of the simulator.
-
-*Each process is allowed to run for a certain time slice or quantum before switching to the next, or instead may yield control when it reaches an explicit synchronization point.*
-
-The quantum value represents a tradeoff between simulation speed and accuracy.
-
-For a fine grained model, the overhead of event scheduling and process context switching becomes the dominant factor in simulation speed.
-Therefore allowing a process to run ahead of the simulation time will speed up the simulation.
-Until it needs to interact with another process, for example read or update a variable belonging to another process.
-
-The processs that runs ahead of simulation time creates a time warp
-
-Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
-When a process encounters an external dependency it has two choices: either force synchronization, 
-which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
-
-_DMI:_
-When combined with temporal decoupling may lead to completely crappy situations.
-The language neither the simulator do not protect the designer.
-It is like a hole in the legal system.
- 
+This is a quite problematic section. You need to elaborate more, do not forget LT is on your thesis title. 
 
 
 ** An Example
@@ -1196,6 +1172,19 @@ sc_elab_and_sim
 main
 
 
+** sc_export
+An export gives a structured way to express the fact that
+a module provides an interface whose methods may be called from outside the module.
+In a sense, an export is the opposite of a port.
+Whereas a port allows interface method calls "up and out of" a module, an export allows interface method calls "down and into" a module.
+
+An export should be bound to a channel or to another export in the constructor of the module in which it is declared.
+Unlike a multiport, an export cannot be bound to more than one channel.
+
+As for ports, you could create specialized classes derived from sc_export if you wanted to, 
+but unlike sc_port, there are none built in to the SystemC class library.
+
+
 * TLM 2.0 							   :noexport:
 ** General
 The story of Virtual Platform is old
@@ -1368,6 +1357,25 @@ _Use cases:_
 
 
 ** Loosely-timed coding style and temporal decoupling
+*Each process is allowed to run for a certain time slice or quantum before switching to the next, or instead may yield control when it reaches an explicit synchronization point.*
+
+The quantum value represents a tradeoff between simulation speed and accuracy.
+
+For a fine grained model, the overhead of event scheduling and process context switching becomes the dominant factor in simulation speed.
+Therefore allowing a process to run ahead of the simulation time will speed up the simulation.
+Until it needs to interact with another process, for example read or update a variable belonging to another process.
+
+The processs that runs ahead of simulation time creates a time warp
+
+Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
+When a process encounters an external dependency it has two choices: either force synchronization, 
+which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
+
+_DMI:_
+When combined with temporal decoupling may lead to completely crappy situations.
+The language neither the simulator do not protect the designer.
+It is like a hole in the legal system.
+
 Individual SystemC processes are permitted to run ahead in a local "time warp" without actually advancing simulation time
 until they need to synchronize with the rest of the system.
 Temporal decoupling can result in very fast simulation for certain systems because it increases the data and code locality and reduces scheduling overhead of the simulator.
