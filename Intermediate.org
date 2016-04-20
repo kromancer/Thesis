@@ -1,4 +1,4 @@
-#+TITLE: Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
+#+TITLE:   Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
 #+AUTHOR:  Konstantinos Sotiropoulos
 #+EMAIL:   kisp@kth.se
 #+STARTUP: overview
@@ -135,29 +135,14 @@ the partitioning of the application to the elements of the platform.
 
 ** Transaction-Level Model
 A *Transaction-Level Model* (TLM) can now be defined as the point in the Y-Chart where the structural axis meets the system abstraction level.
-As mentioned in the previous unit, a TLM can be thought of as a platform model, or *virtual platform*, where an application can/is mapped.
+As mentioned in the previous unit, a TLM can be thought of as a platform model, or *virtual platform*, where an application can/is mapped \cite{Rigo2011}.
 It is the model that facilitates co-simulation of hardware and software.
-The notion of the transaction as an abstraction of communication will be explained in later units.
+The notion of the transaction as an abstraction of communication will be clarified in [[SystemC & TLM 2.0]].
 
 What are the pragmatic reasons that make the development of a virtual platform imperative?
 To begin with, an increasing amount of an ES's functionality is becoming software based. 
 Moreover, ES related companies are facing the economical pressure of reducing new products' time to market.
 Thus, software engineers must be equipped with a virtual platform they can use for software development, early on in the design flow, without needing to wait for the actual silicon to arrive.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ** SystemC and TLM
@@ -167,9 +152,11 @@ a language with which system-level models can be expressed.
 It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than EDA synthesizable models.
 The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized (IEEE 1666-2011 \cite{OpenSystemCInitiative2012}).
 
-TODO:
-1. Present SystemC as a SDL_
-2. Talk about SystemC's support for TLM
+Why is SystemC regarded as Specific Domain Language (SDL)?
+In what way does SystemC provide support for Transaction Level Modeling? Through the TLM 1.0 and 2.0 API.
+
+
+
 
 
 
@@ -179,8 +166,7 @@ TODO:
 
 
 ** Document Overview
-TODO:
-- In the end
+This unit be completed in the end
 \clearpage
 
 
@@ -364,94 +350,7 @@ The automation and generality the tools could deliver will be emulated by manual
 \clearpage
 
 
-* Part II: SystemC & TLM 2.0
-Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
-In a transaction one can distinguish two actors:
-the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the target's request.
-The communication between initiators and actors is routed through *interconnect* components, that usually encapsulate the functionallity of a memory-mapped buses.
-
-** SystemC and TLM 2.0
-A *virtual platform* is a fully functional software model of a complete system, 
-typically used for software development in the absence of hardware, 
-or prior to hardware being available. 
-It is complete in that it models not only System-on-Chip (SoC) devices but also board components, user interfaces, and real-world I/O too. 
-To be suitable for productive software development it needs to be fast, booting operating systems in seconds, and accurate enough 
-such that code developed using standard tools on the virtual platform will run unmodified on real hardware. \cite{Leupers2010}.
-
-To enable interoperabillity between IP and facilitate the simulation under a refernce simulation kernel, that of SystemC
-
-
-Industry driven to tackle time-to-market pressure new SoCs face (but lacks a theoretical framework?)
-
-LT is suited to virtual platforms intended for software development
-
-However, where additional timing accuracy is required, typically for soft-
-ware performance estimation and architectural analysis use cases, the AT style is employed.
-
-Virtual platforms typically do not contain many cycle-accurate models of complex com- ponents because of the performance impact. 
-And these models can take so long to develop and validate that the benefits of early virtual platform availability for pre-silicon software development are lost.
-
-The starting point is the specification for the component, “Component Speci-
-fication” at the top of the diagram. For a loosely timed TLM, a programmer’s specification describing signals, memory-map, registers, and their functionality is usually sufficient to create a model.
-
-selecting communication architectures, arbitration, and scheduling policies, as well as task and communication priorities require more detailed performance simulations.
-
-
-
-** Rationale
-Essentially, communication is reduced to function calls between simulation models without involving the simulation kernel.
-Device models in Simics are designed as mainly passive reactive units.
-
-
-** Simics and TLM 2.0
-Simics full system simulator, mature, 
-
-
-
-
-** Message Passing Interface
-
-
-** Synchronization Algorithms
-
-
-** Transaction Level Modeling					  
-*Transaction Level Modeling (TLM)* enhances SystemC's expressiveness in order to facilitate the more abstract description (compared to RTL) of systems.  
-TLM 2.0 allows model interoperability and the rapid development of fast virtual platforms to be deployed in software development, early on in the system's design procedure.
-
-Transaction-level models represent one specific type of the DE MoC \cite{Grotker2002}.
-Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
-The set of messages exchanged during a transaction are modeled using function calls and represent the different phases of a communication protocol.
-In a transaction one can distinguish two actors:
-the *initiator*, the process which initiated the communication, and the *target*, the process which is supposed to service the target's request.
-
-TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features:
-- A set of core interfaces
-  - A Blocking interface which is coupled with the *Loosely-Timed (LT)* coding style.
-  - A non-blocking interface, which is coupled with the *Approximately-Timed (AT)* coding style.
-  - The *Direct Memory Interface (DMI)* to enable an initiator to have direct access to a target's memory, bypassing the usual path through the interconnect components used by the transport interfaces. 
-  - The *Debug transport interface* to allow an non-intrusive inspection of the system's state.
-- The *global quantum* used by the *temporal decoupling* mechanism of the LT coding style, which facilitates faster simulations by reducing the number of context switches performed by the kernel. 
-- Initiator and target *sockets* to denote the links (causal dependencies) between processes.
-- The *generic payload* which supports the abstract modeling of memory-mapped buses.
-- A set of *utilities* to facilitate the rapid development of models.
-
-Figure demonstrates the typical use cases for TLM's different features.
-#+CAPTION: TLM 2.0 use cases (adopted from \cite{OpenSystemCInitiative2009}).
-#+NAME: fig:tlm_use_cases
-[[file:Figures/tlm_use_cases.png]]
-
-The root problem with TLM 2.0 lies in the elimination of explicit channels, which were a key contribution in the early days of research on system-level design.
-As most researchers agreed, the concept of separation of concerns was of highest importance, and for system-level design in particular, this meant the clear separation of computation (in behaviors or modules) and communication (in channels)
-Regrettably, SystemC TLM 2.0 chose to implement communication interfaces directly as sockets in modules and this indifference between channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
-Without such channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
-Without such channels, there is very little opportunity for safe parallel execution \cite{Liu2015}.
-
-
-
-
-
-* Part III: Implementation 
+* Out of Order PDES with MPI
 ** Existing PDES
 TODO:
 
@@ -729,7 +628,7 @@ Whenever a process is about to become blocked because the incoming link with the
 it requests the next message (null or otherwise) from the process on the sending side of the link.
 The process resumes execution when the response to this request is achieved.
 This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
-
+\clearpage
 
 
 ** Super Important Issues 					   :noexport:
@@ -750,12 +649,161 @@ other LPs so that all events are processed in time stamp order, however, this is
 to accomplish.
 
 
-* Part IV: Use Case
+* SystemC TLM 2.0
+It is beyond the scope of this project to provide a comprehensive guide to system-level modeling in SystemC TLM 2.0.
+However, at the time of writing and to the best of our knowledge, we can not verify the existance of a comprehensive guide about system-level modeling with SystemC TLM 2.0.
+Hence, we fill obliged to provide a quick introduction into the SystemC TLM 2.0 Loosely-Timed (LT) coding style, by means of a simple example.
+The chapter assumes a basic understanding of C++ and SystemC.
+
+In unit [[Overview of SystemC TLM 2.0 API]] we enumerate the features of the SystemC TLM 2.0 API.
+In units [[Transactions, Initiators and Targets]] and [[Generic Payload]] we define the fundamental notions of the transaction, initiator and target components.
+In unit [[Coding Styles]] we present the two coding styles (Loosely Timed and Approximately Timed) and give their typical use cases.
+In unit [[An Example]] we provide the implementation of a simple initiator, interconnect and target model.
+In unit [[Criticism]] we present the dominant source of criticism for TLM 2.0.
+Finally, in unit [[Simics and TLM 2.0]] we provide a comparison between the dominant industry frameworks for ESLD, Simics and SystemC TLM.
+
+** Overview of SystemC TLM 2.0 API
+As stated in unit [[Transaction Level Model]], a Transaction Level Model is considered a virtual platform where an appliation can/is mapped.
+A *virtual platform* is a fully functional software model of a complete system, typically used for software development in the absence of hardware, or prior to hardware being available. 
+To be suitable for productive software development it needs to be fast, booting operating systems in seconds, and accurate enough such that code developed using standard tools on the virtual platform will run unmodified on real hardware. \cite{Leupers2010}.
+
+The TLM 2.0 API enhances SystemC's expressiveness in order to facilitate the description and fast simulation of virtual platforms.
+TLM 2.0 allows *IP interoperability* for the rapid development of fast virtual platforms and facilitate the simulation under a refernce simulation kernel, that of SystemC.
+
+TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features ([[fig:TLM_features]]):
+- A set of core interfaces
+  - A Blocking interface which is coupled with the *Loosely-Timed (LT)* coding style.
+  - A non-blocking interface, which is coupled with the *Approximately-Timed (AT)* coding style.
+  - The *Direct Memory Interface (DMI)* to enable an initiator to have direct access to a target's memory, bypassing the usual path through the interconnect components used by the transport interfaces. 
+  - The *Debug transport interface* to allow an non-intrusive inspection of the system's state.
+- The *global quantum* used by the *temporal decoupling* mechanism of the LT coding style, which facilitates faster simulations by reducing the number of context switches performed by the kernel. 
+- Initiator and target *sockets* to denote the links (causal dependencies) between processes.
+- The *generic payload* which supports the abstract modeling of memory-mapped buses.
+- A set of *utilities*, in the form of preconfigured sockets and interconnect components, to facilitate the rapid development of models.
+
+#+CAPTION: TLM 2.0 use cases (adopted from \cite{OpenSystemCInitiative2009}).
+#+NAME: fig:TLM_features
+[[file:Figures/TLM_features.png]]
+
+*** Provide some clarification concerning the term IP :noexport:
 
 
-* Part V: Appendices
-** Appendix A
-Evaluation
+** Transactions, Sockets, Initiators and Targets
+Transactions are non-atomic communications, normally with bidirectional data transfer, and consist of a set of messages that are usually modeled as atomic communications.
+In a transaction one can distinguish two actors:
+the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the target's request.
+The communication between initiators and actors is routed through *interconnect* components, that usually encapsulate the functionallity of a memory-mapped buses.
+Essentially, communication is reduced to function calls, from the initiator to the target through an arbitrary number of interconnect components,  without involving any context switches from the simulation kernel.
+
+A socket is basically a convinience class, wrapping up a port and an export.
+
+
+** Generic Payload
+It supports the _abstract modeling of memory-mapped buses_, 
+together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
+
+The main features of the generic payload are:
+- Command 
+  Is it read or write?
+- Address
+  What is the address
+- Data
+  A pointer to the physical data as an array of bytes
+- Byte Enable Mask
+- Response
+  An indication of whether the transaction was successful, and if not the nature of the error
+
+
+
+** Coding Styles
+LT is suited for describing virtual platforms intended for software development
+However, where additional timing accuracy is required, typically for software performance estimation and architectural analysis use cases, the AT style is employed.
+Virtual platforms typically do not contain many cycle-accurate models of complex components because of the performance impact. 
+
+Communication protocols 
+The LT coding style associates a transaction with 
+_FAST-NOT ACCURATE_ (In terms of timing?): Less detail means faster simulation. Less context switching means also faster simulation.
+A fast, loosely-timed model is typically expected to use the _blocking transport interface_ the _DMI_ and _temporal decoupling_.
+_Older terminology:_ UnTimed - Programmer's View
+_Use Cases:_
+- Early Software Development
+_Characteristics:_
+- Only sufficient timing detail to _boot O/S and run multi-core systems. It can express the modeling of _timers and _interrupts_
+- Processes can run ahead of simulation time (_temporal decoupling_)
+- Each transaction has _2 timing points_: begin and end
+- Uses direct memory interface (_DMI_)
+
+_Temporal decoupling:_
+Each process runs ahead up to quantum boundary.
+sc_time_stamp() advances in multiples of the quantum.
+Deterministic communication requires explicit synchronization.
+Individual SystemC processes are permitted to run ahead in a local "time warp" without actually advancing simulation time
+until they need to synchronize with the rest of the system.
+Temporal decoupling can result in very fast simulation for certain systems because it increases the data and code locality and reduces scheduling overhead of the simulator.
+
+*Each process is allowed to run for a certain time slice or quantum before switching to the next, or instead may yield control when it reaches an explicit synchronization point.*
+
+The quantum value represents a tradeoff between simulation speed and accuracy.
+
+For a fine grained model, the overhead of event scheduling and process context switching becomes the dominant factor in simulation speed.
+Therefore allowing a process to run ahead of the simulation time will speed up the simulation.
+Until it needs to interact with another process, for example read or update a variable belonging to another process.
+
+The processs that runs ahead of simulation time creates a time warp
+
+Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
+When a process encounters an external dependency it has two choices: either force synchronization, 
+which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
+
+_DMI:_
+When combined with temporal decoupling may lead to completely crappy situations.
+The language neither the simulator do not protect the designer.
+It is like a hole in the legal system.
+ 
+
+
+** An Example
+This unit will provide a literate code listing for the model in figure [[fig:TLM_tutorial]]
+#+CAPTION: A simple system-level model. The initiator, for example, could represent a processor, the interconnect component a memory bus and the target a memory.
+#+NAME: fig:TLM_tutorial
+[[file:Figures/TLM_tutorial.png]]
+
+
+** Criticism
+The root problem with TLM 2.0 lies in the elimination of explicit channels, which were a key contribution in the early days of research on system-level design.
+As most researchers agreed, the concept of separation of concerns was of highest importance, 
+and for system-level design in particular, this meant the clear separation of computation (in behaviors or modules) and communication (in channels).
+Regrettably, SystemC TLM 2.0 chose to implement communication interfaces directly as sockets in modules and this indifference between channels and modules thus breaks the assumption of communication being safely encapsulated in channels.
+Without such channels, there is very little opportunity for safe parallel execution \cite{Liu2015}.
+
+For the above reason some designers consider TLM 2.0 a step towards the wrong direction and revert back to TLM 1.0.
+Do you agree with this trend? 
+Maybe tell us the major difference with TLM 1.0?
+
+This is why SystemC TLM 2.0 model needs to be *recoded* to allow parallel execution.
+The recoding must reconstitute the seperation of concerns between computation and communication.
+A modification of just the kernel will not suffice.
+
+
+
+** Simics and TLM 2.0
+Everything you do with SystemC TLM 2.0 you can do with Simics.
+Simics is the main alternative to SystemC TLM 2.0 for system-level design.
+Can you briefly outline the differences between the two tools/frameworks?
+Is Simics capable of PDES?
+\clearpage
+
+
+* Use Case
+** Platform modeling
+
+** Application modeling
+What kind of application am I going to run on this platform?
+I see that most of the papers out there do some kind of mpeg2 decoding. That seems complex.
+
+
+
+
 
 
 * References
@@ -1355,6 +1403,8 @@ main
 
 
 * Graveyard of potentially usefull phrases 			   :noexport:
+praxis
+
 An MoC for describing the application at the system-level
 
 Like a wagnerian leitmotif
@@ -1386,7 +1436,6 @@ Although this may seem to work with VHDL, with SystemC this is chaotic, since ar
   For example, two SystemC processes may safely execute x++ on a shared variable, but running two such processes in parallel cannot be allowed.
   The co-routine semantics of the SystemC kernel guarantee that there will be no race conditions.
   Evaluate-update paradigm
-
 
 How to realize the DE MoC on top of completely heterogeneous HPC platform 
 
