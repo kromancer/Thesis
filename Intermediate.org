@@ -18,7 +18,9 @@ DO NOT FORGET TO CHECK LINKS
 | *FPGA*:  | Field Programmable Gate Array           |
 | *HDL*    | Hardware Description Language           |
 | *HPC*:   | High Performance Computing              |
+| *IC*     | Integrated Circuit                      |
 | *MoC*:   | Model of Computation                    |
+| *MPI*    | Message Passing Interface               |
 | *MPSoC*: | Multicore System on Chips               |
 | *OoO*:   | Out-of-Order                            |
 | *PDES*:  | Parallel Discrete Event Simulation      |
@@ -345,47 +347,32 @@ the project's self-actualization would require the development/production of the
 1. At least two OoO PDE simulation mechanisms implementing proposed conservative synchronization algorithms.
 2. A proof of concept application of the proposed mechanism, on a sufficiently parallel TLM model.
 3. A static analysis/introspection tool for parsing the SystemC description of the model and extracting a pure representation in XML.
-4. A code generation tool for constructing the realizing the model outside SystemC.
+4. A code generation tool for realizing the model outside SystemC.
+For the critical task of analyzing the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Hosein2012}.
+Using SystemC's well defined API for module hierarchy (e.g. \texttt{get\_child\_objects()}), along with the introduction of meta objects, the system's structure can be
+serialized at runtime, in the pre simulation phase of elaboration.
 
 Given the time constraints, the primary focus falls on the first two objectives.
 The automation and generality the tools could deliver will be emulated by manual and ad-hoc solutions.
+
+_COMMENT:_ Your thesis' value (to external parties) depends highly on delivering point 4.
+
 \clearpage
 
 
 * Out of Order PDES with MPI
-** Existing PDES
-TODO:
+The goal of this chapter is to present two conservative process synchronization algorithms and give their implementation using the MPI API.
 
-SystemC-SMP \cite{Mello2010} and SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
-sc_during \cite{Moy}
-
-Finally, before committing into modifying the SystemC DES, we should mention the existence of less intrusive approaches that, instead of redesigning, extend the reference kernel.
-The example of the sc-during SystemC library \cite{Moy} is characteristic. 
-To exploit parallelism, each process must be redefined as a sequence of atomic tasks that have duration (in simulation time).
-The term atomic is used to represent the fact that these tasks are insensitive to input/output events for their duration.
-Thus, the kernel can safely assign them to a different operating system thread and allow them to execute independently from the rest of the simulation.
+In units [[The Chandy/Misra/Bryant synchronization algorithm]] and [[On Demand Synchronization]] we present the conservative synchronization algorithms that will be evaluated.
+In unit [[Semantics of point-to-point communication in MPI]] and [[MPI Communication Modes]] we present the semantics of the Message Passing Interface (MPI) communication primitives.
+In unit [[MPI Realization of CMB]] we provide pseudocode for the realization of the CMB using the MPI communication primitives.
+In unit [[Existing PDES]] we give an overview of prior art in the field of PDES in ESLD.
 
 
-** Methods
-*** Assumptions and delimitations
-The IEEE Standard for SystemC states the following about non reference implementations of the kernel:
-"An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
-provided that the behavior appears identical to the co-routine semantics defined in this subclause.
-In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics " \cite{OpenSystemCInitiative2012}.
-We assume that our implementation, since it is designed to deliver causal simulations, has a strong coverage over this directive (consider the TLM 2.0 temporal decoupling technique which often yields inaccurate simulations)
-
-However, the feasibility of the introspection and code generation procedures, imposes certain limitations on SystemC's expressive capabilities.
-This is the main reason our kernel can not be considered to be compliant with the standard.
-
-We also state that by assuming/enforcing the principle of one process per module and not allowing a module to execute another module's functions in its context (TLM 2.0 blocking transport interface), 
-we hope to avoid causality errors caused by processes sharing system variables.
-
-
-
-
-*** Process synchronization algorithm 
-We will begin our experimentations using a class of conservative synchronization algorithms originating from the work of *Chandy/Misra/Bryant (CMB)* \cite{Bryant} \cite{Chandy1979}.
-Listing \ref{alg:kernel} demonstrates how these algorithms deal with the fundamental dilemma presented in section [[Problem statement]], figure [[fig:causality_safe_events]].
+** The Chandy/Misra/Bryant synchronization algorithm
+The first conservative synchronization algorithm that will be examined originate from the work of *Chandy/Misra/Bryant (CMB)* \cite{Bryant} \cite{Chandy1979}.
+Listing \ref{alg:kernel} demonstrates how the algorithm deals with the fundamental dilemma presented in section [[Problem statement]], figure [[fig:causality_safe_events]].
+Events arriving on each incoming link can be stored in a first-in-first-out (FIFO) queue.
 
 #+BEGIN_LATEX
 \begin{algorithm}
@@ -393,63 +380,190 @@ Listing \ref{alg:kernel} demonstrates how these algorithms deal with the fundame
 \label{alg:initial_CMB}
 \begin{algorithmic}[2]
 
-   \While{simulation is not over}  
+   \While{process clock < some T}  
       \State \textbf{Block} until each incoming link queue contains at least one event
-      \State remove event with the smallest time-stamp M from its queue.
-      \State set clock = M
-      \State process M
+      \State remove event M with the smallest time-stamp from its queue.
+      \State set clock = time-stamp(M)
+      \State process event M
    \EndWhile
 
 \end{algorithmic}
 \end{algorithm}
 #+END_LATEX
 
-However, a naive realization of the algorithm leads to deadlock situations like the one depicted in figure [[fig:deadlock]].
+This naive realization of the individual process' event loop, however, leads to deadlock situations like the one depicted in figure [[fig:deadlock]].
 The queues placed along the red loop are empty, thus simulation has halted, even though there are pending events (across the blue loop).
 
 #+CAPTION: adopted from \cite{Fujimoto1999}
 #+NAME: fig:deadlock
 [[file:Figures/Deadlock.png]]
 
-The deadlock avoidance mechanism that lies in the core of the CMB class of algorithms can be demonstrated with the following example:
+The deadlock avoidance mechanism that lies in the core of the CMB algorithm can be demonstrated with the following example:
 Let us assume that $P_3$ is at time 5.
 Furthermore, let us assume that we have the *a priori* knowledge that $P_3$ has a minimum event processing time of 3 (simulated).
 We will call this knowledge *lookahead*.
 $P_3$ could create a *null event*, with no data value, but with a time-stamp $t$(8) = clock(5) + lookahead(3) and place it on its outgoing links.
 A null event is still an event, so $P_2$ by processing it would advance its clock to 8.
-In the same fashion, let us assume that $P_2$ has a lookahead of 2 and upon processing $P_3$ null event, 
+In the same fashion, let us assume that $P_2$ has a lookahead of 2 and upon processing $P_3$'s null event, 
 it will generate a null event for $P_1$ with time-stamp 10. 
-Eventually $P_1$ can now safely process actual event with time-stamp 9, thus unfreezing the simulation.
+Eventually $P_1$ can now safely process the actual event with time-stamp 9, thus unfreezing the simulation.
 
+Thus, the modified, for deadlock avoidance, algorithm is described in listing \ref{alg:null-message}.
 The important points one must notice with this deadlock avoidance mechanism are that:
-- Null events are created when a process updates its clock.
+- Null events are created when a process updates its clock, that is upon processing an event.
 - Each process propagates null events on all of its outgoing links.
-- This mechanism is mostly dependent to determine sufficiently large lookaheads.
+- The efficiency of this mechanism is highly dependent on the designer's ability to determine sufficiently large lookaheads. The lookahead is not necessary a fixed value. It can be a function of the process' state and/or the simulation time.
+
+#+BEGIN_LATEX
+\begin{algorithm}
+\caption{Process event loop, with deadlock avoidance, adopted from \cite{Fujimoto1999}}
+\label{alg:null-message}
+\begin{algorithmic}[2]
+
+   \While{process clock < some T}  
+      \State \textbf{Block} until each incoming link queue contains at least one event
+      \State remove event M with the smallest time-stamp from its queue.
+      \State set clock = time-stamp(M)
+      \State process event M
+      \State send either a null or meaningfull event to each outgoing link L with time-stamp = clock + Lookahead(clock,L,...)
+   \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+#+END_LATEX
+
+
+_COMMENT:_ This is a rather big unit. You should consider restructuring the material in a couple of shorter units. Are there any formal proofs about the properties (deadlock free, causality) of this algorithm? 
+
+
+
+** On Demand Synchronization
+The principal disadvantage of the CMB algorithm is that a large number of null events can be generated, particularly if the lookahead is small \cite{Fujimoto1999}.
+An alternative approach to sending a null event after processing each event is a demand-driven approach.
+Whenever a process is about to become blocked because an incoming link is empty, it requests an event (null or otherwise) from the process on the sending side of the link.
+The process resumes execution when the response to this request is achieved.
+
+_COMMENT:_ The description of this algorithm is not complete. 
+
+
+** Semantics of point-to-point Communication in MPI
+The framework chosen for implementing the PDES is the *Message Passing Interface* 3.0 (MPI).
+Events are modeled as structured messages, while event diffusion/communication as message passing.
+MPI is a message passing library interface specification, standardized and maintained by the Message Passing Interface Forum \cite{citation_needed}.
+It is currently available for C/C++, Fortran and Java from multiple vendors (Intel, IBM, OpenMPI) \cite{citation_needed}.
+MPI addresses primarily the message passing parallel programming model, 
+in which data is moved from the address space of one process to that of another process through cooperative operations on each process \cite{MessagePassingInterfaceForum2012}.
+
+The basic communication primitives are the functions \texttt{MPI_Send(...)} and \texttt{MPI_Recv(...)}.
+Their arguments specify, among others things, a data buffer and the peer process' or processes' unique id assigned by the MPI runtime.
+By default, message reception is blocking, while message transmition may or may not block.
+One can think of message transfer as consisting of the following three phases
+1. Data is pulled out of the send buffer and a message is assembled
+2. A message is transferred from sender to receiver
+3. Data is pulled from the incoming message and disassembled into the receive buffer
+
+*Order:*
+Messages are non-overtaking.
+If a sender sends two messages in succession to the same destination, 
+and both match the same receive (a call to \texttt{MPI_Recv}), 
+then this operation cannot receive the second message if the first one is still pending. 
+If a receiver posts two receives in succession,
+and both match the same message, 
+then the second receive operation cannot be satisfied by this message, if the first one is still pending. 
+This requirement facilitates matching of sends to receives and also guarantees that message passing code is deterministic.
+
+*Fairness:*
+MPI makes no guarantee of fairness in the handling of communication. 
+Suppose that a send is posted. 
+Then it is possible that the destination process repeatedly posts a receive that matches this send, 
+yet the message is never received, 
+because it is each time overtaken by another message, 
+sent from another source. 
+It is the programmer’s responsibility to prevent starvation in such situations.
+
+_COMMENT:_ Why did you choose MPI?
+
+
+** MPI Communication Modes
+The MPI API contains a number of variants, or modes, for the basic communiction primitives.
+They are distinguished by a single letter prefix (e.g. \texttt{MPI_Isend(...)}, \texttt{MPI_Irecv(...)}).
+As dictated by the MPI version 3.0, the following communication modes are supported \cite{MessagePassingInterfaceForum2012}:
+
+*No-prefix for standard mode: \texttt{MPI_Send(...)}*
+In this mode, it is up to MPI to decide whether outgoing messages will be buffered. 
+MPI may buffer outgoing messages. 
+In such a case, the send call may complete before a matching receive is invoked. 
+On the other hand, buffer space may be unavailable, or MPI may choose not to buffer outgoing messages, for performance reasons. 
+In this case, the send call will not complete, blocking the transimiting process, until a matching receive has been posted, and the data has been moved to the receiver.
+
+*B for buffered mode: \texttt{MPI_Bsend(...)}* 
+A buffered mode send operation can be started whether or not a matching receive has been posted. 
+It may complete before a matching receive is posted. 
+However, unlike the standard send, this operation is local, and its completion does not depend on the occurrence of a matching receive. 
+Thus, if a send is executed and no matching receive is posted, then MPI must buffer the outgoing message, so as to allow the send call to complete. 
+A buffered send operation that cannot complete because of a lack of buffer space is erroneous. 
+When such a situation is detected, an error is signaled that may cause the program to terminate abnormally. 
+On the other hand, a standard send operation that cannot complete because of lack of buffer space will merely block, 
+waiting for buffer space to become available or for a matching receive to be posted. 
+This behavior is preferable in many situations. 
+Consider a situation where a producer repeatedly produces new values and sends them to a consumer. 
+Assume that the producer produces new values faster than the consumer can consume them. 
+If buffered sends are used, then a buffer overflow will result. 
+Additional synchronization has to be added to the program so as to prevent this from occurring. 
+
+*S for synchronous mode: \texttt{MPI_Ssend(...)}*
+A send that uses the synchronous mode can be started whether or not a matching receive was posted. 
+However, the send will complete successfully only if a matching receive is posted, and the receive operation has started to receive the message sent by the synchronous send.
+Thus, the completion of a synchronous send not only indicates that the send buffer can be reused, 
+but it also indicates that the receiver has reached a certain point in its execution, 
+namely that it has started executing the matching receive. 
+If both sends and receives are blocking operations then the use of the synchronous mode provides synchronous communication semantics: 
+a communication does not complete at either end before both processes *rendezvous* at the communication point.
+
+*R for ready mode: \texttt{MPI_Rsend(...)}*
+A send that uses the ready communication mode may be started only if the matching receive is already posted. 
+Otherwise, the operation is erroneous and its outcome is undefined.
+Ready sends are an optimization when it can be guaranteed that a matching receive has already been posted at the destination.
+On some systems, this allows the removal of a hand-shake operation that is otherwise required and results in improved performance. 
+A send operation that uses the ready mode has the same semantics as a standard send operation, or a synchronous send operation; 
+it is merely that the sender provides additional information to the system (namely that a matching receive is already posted), that can save some overhead. 
+
+*I for non-blocking mode: \texttt{MPI_Isend(...)}, \texttt{MPI_Ibsend(...)}, \texttt{MPI_Issend(...)} and \texttt{MPI_Irecv(...)*
+Non-blocking message passing calls return control immediately (hence the prefix I), 
+but it is the user's responsibillity to ensure that communication is complete, 
+before modifying/using the content of the data buffer.
+It is a complementary communication mode that works en tandem with all the previous.
+The MPI API contains special functions for testing whether a communication is complete, or even explicitly waiting until it is finished.
 
 
 
 
-*** Introspection and code generation
-For the critical task of analyzing the model, identifying the processes and the links between them, we will follow ForSyDe SystemC's approach \cite{Hosein2012}.
-Using SystemC's well defined API for module hierarchy (e.g. \texttt{get\_child\_objects()}), along with the introduction of meta objects, the system's structure can be
-serialized at runtime, in the pre simulation phase of elaboration.
+** MPI realization of CMB
+Listing \ref{alg:CMB_mpi} is a pseudocode, sketching out the CMB process event loop, using MPI's communication primitives.
+#+BEGIN_LATEX
+\begin{algorithm}
+\caption{CMB Process event loop in MPI}
+\label{alg:CMB_mpi}
+\begin{algorithmic}[2]
+
+   \While{process clock < some T}  
+      \State post a \textbf{MPI_Irecv} on each incoming peer process
+      \State post a \textbf{MPI_Wait}: block until every receive has been completed
+      \State save each message received in a seperate, per incoming link, FIFO.
+      \State identify message M with the smallest time-stamp
+      \State set clock = time-stamp(M)
+      \State process message M
+      \State post a \textbf{MPI_Issend} to each outgoing link L with time-stamp = clock + Lookahead(clock,L,...)
+   \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+#+END_LATEX
 
 
-
-
-*** Hardware and Software tools 
-To ensure efficiency and code readability, we will use the explicit threading mechanisms that come with the latest standards of C++.
-The Intel Parallel Studio XE 2016 toolchain will be used for compilation, code analysis and optimization.
-We will initially use the Intel® Xeon Phi™ 5120D Coprocessor as the host platform for the simulation.
-The coprocessor is situated in a Intel® Xeon E5-2600M v3 server (named lovisa).
-
-
-
-*** Evaluation Metrics
-The first evaluation metric of the proposed kernel will be its strong scalability against the reference SystemC kernel.
-It will be determined by keeping the simulation's size constant and varying the number of processing elements.
-Furthermore, we will also measure weak scalability, by varying the number of processing elements and the simulation's size symmetrically,
-and trying to achieve constant time to simulation end.
+** Evaluation Metrics
+The first evaluation metric of the proposed PDES implementation will be its performance against the reference SystemC kernel.
+It will be measured by experimentations on the project's use case.
 
 The simulation's size can be easily related to the duration of the simulation (in simulated time).
 Another way of describing the simulation's size is through the conception of a formula involving the number of system processes, the number of links, the system's topology and the amount of events generated.
@@ -457,198 +571,24 @@ Another way of describing the simulation's size is through the conception of a f
 The accuracy of the simulation can be measured by the aggregate number of causality errors.
 The detection of causality errors must be facilitated in a per process level and the aggregation shall be performed at the end of the simulation.
 A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a time-stamp lower than its clock (the time-stamp of the last processed event).
+Ideally, if the synchronization algorithms have been realized correctly, no causality errors should be detected.
+
+_COMMENT:_ This section will become more concrete when we start experimentations.
 
 
+** Existing PDES
+The most important:
+RISC: Recoding infrastructure for SystemC \cite{Liu2015}.
 
-** What is Blocking and Non-Blocking in MPI's context
-The classification is with respect to whether the buffer involved in the communication primitive
-is available for re-use in case of send or use in case of receive.
+Miscellaneous:
+SystemC-SMP \cite{Mello2010}
+SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
+sc_during \cite{Moy}
 
-The 4 communication modes still apply for both categories.
-
-_A *nonblocking send* call indicates_
-that the system may start copying data out of the send buffer. 
-The sender should not modify any part of the send buffer after a nonblocking send operation is called, 
-until the send completes.
-
-The completion of a send operation indicates that the sender is now free to update the locations in the send buffer 
-It does not indicate that the message has been received, rather, 
-it may have been buffered by the communication subsystem.
-
-However, if a *synchronous mode* send was used, the completion of the send operation indicates 
-that a matching receive was initiated, 
-and that the message will eventually be received by this matching receive.
-
-
-_A *nonblocking receive* call indicates_
-that the system may start writing data into the receive buffer. 
-The receiver should not access any part of the receive buffer after a nonblocking receive operation is called, until the receive completes.
-
-The completion of a receive operation indicates that the receive buffer contains the received message, 
-the receiver is now free to access it, and that the status object is set. 
-It does not indicate that the matching send operation has completed (but indicates, of course, that the send was initiated).
-
-
-
-
-
-
-** MPI_Status
-The source or tag of a received message may not be known if wildcard values were used in the receive operation. 
-Also, if multiple requests are completed by a single MPI function (see Section 3.7.5), a distinct error code may need to be returned for each request.
-
-The status argument also returns information on the length of the message received.
-However, this information is not directly available as a field of the status variable and a call to MPI_GET_COUNT is required to “decode” this information.
-
-
-** MPI Communication modes
-As dictated by the MPI version 3.0 standard the following communication modes
-are supported \cite{MessagePassingInterfaceForum2012}
-
-_No-prefix for *standard mode*_
-In this mode, it is up to MPI to decide whether outgoing messages will be buffered. 
-
-MPI may buffer outgoing messages. 
-In such a case, the send call may complete before a matching receive is invoked. 
-
-On the other hand, buffer space may be unavailable, or MPI may choose not to buffer outgoing messages, for performance reasons. 
-In this case, the send call will not complete until a matching receive has been posted, and the data has been moved to the receiver.
-
-_B for *buffered mode*_ 
-A buffered mode send operation can be started whether or not a matching receive has been posted. 
-It may complete before a matching receive is posted. 
-
-However, unlike the standard send, this operation is local, and its completion does not depend on the occurrence of a matching receive. 
-Thus, if a send is executed and no matching receive is posted, then MPI *must buffer the outgoing message*, so as to allow the send call to complete. 
-*An error will occur if there is insufficient buffer space*. 
-
-The amount of available buffer space is controlled by the user — see Section 3.6. 
-Buffer allocation by the user may be required for the buffered mode to be effective.
-
-_S for *synchronous mode*_
-A send that uses the synchronous mode can be started whether or not a matching receive was posted. 
-However, *the send will complete successfully only if a matching receive is posted*, and the receive operation has started to receive the message sent by the synchronous send. 
-
-Thus, the completion of a synchronous send not only indicates that the send buffer can be reused, 
-but it also indicates that the receiver has reached a certain point in its execution, 
-namely that it has started executing the matching receive. 
-
-If both sends and receives are blocking operations then the use of the synchronous mode provides synchronous communication semantics: 
-a communication does not complete at either end before both processes *rendezvous* at the communication.
-
-_*R for ready mode*_
-A send that uses the ready communication mode may be started *only if the matching receive is already posted*. 
-
-Otherwise, the operation is erroneous and its outcome is undefined.
-Ready sends are an optimization when it can be guaranteed that a matching receive has already been posted at the destination.
-
-On some systems, this allows the removal of a hand-shake operation that is otherwise required and results in improved performance. 
-
-The completion of the send operation does not depend on the status of a matching receive, and merely indicates that the send buffer can be reused. 
-
-A send operation that uses the ready mode has the same semantics as a standard send operation, or a synchronous send operation; 
-it is merely that the sender provides additional information to the system (namely that a matching receive is already posted), that can save some overhead. 
-
-In a correct program, therefore, a ready send could be replaced by a standard send with no effect on the behavior of the program other than performance.
-
-The communication modes are indicated by a one letter prefix.
-
-
-** Semantics of point-to-point communication
-One can think of message transfer as consisting of the following three phases
-1. Data is pulled out of the send buffer and a message is assembled
-2. A message is transferred from sender to receiver
-3. Data is pulled from the incoming message and disassembled into the receive buffer
-
-In a multithreaded implementation of MPI, the system may de-schedule a thread that is blocked on a send or receive operation,
-and schedule another thread for execution in the same address space.
-*In such a case it is the user's responsibility not to modify a communication buffer until the communication completes*.
-Otherwise, the outcome of the computation is undefined
-
-_Order:_
-Messages are non-overtaking.
-
-If a sender sends two messages in succession to the same destination, 
-and both match the same receive, 
-then this operation cannot receive the second message if the first one is still pending. 
-
-If a receiver posts two receives in succession,
- and both match the same message, 
-then the second receive operation cannot be satisfied by this message, if the first one is still pending. 
-
-This requirement facilitates matching of sends to receives. 
-It guarantees that message-passing code is deterministic, 
-if processes are single-threaded and the wildcard MPI_ANY_SOURCE is not used in receives. 
-(Some of the calls described later, such as MPI_CANCEL or MPI_WAITANY, are additional sources of nondeterminism.)
-
-_Progress:_
-?
-
-_Fairness:_
-MPI makes no guarantee of fairness in the handling of communication. 
-
-Suppose that a send is posted. 
-Then it is possible that the destination process repeatedly posts a receive that matches this send, 
-yet the message is never received, 
-because it is each time overtaken by another message, 
-sent from another source. 
-
-Similarly, suppose that a receive was posted by a multithreaded process. 
-Then it is possible that messages that match this receive are repeatedly received, 
-yet the receive is never satisfied, 
-because it is overtaken by other receives posted at this node (by other executing threads). 
-
-It is the programmer’s responsibility to prevent starvation in such situations.
-
-_Resource limitations:_
-A buffered send operation that cannot complete because of a lack of buffer space is erroneous. 
-When such a situation is detected, an error is signaled that may cause the program to terminate abnormally. 
-On the other hand, a standard send operation that cannot complete because of lack of buffer space will merely block, 
-waiting for buffer space to become available or for a matching receive to be posted. 
-This behavior is preferable in many situations. 
-
-Consider a situation where a producer repeatedly produces new values and sends them to a consumer. 
-Assume that the producer produces new values faster than the consumer can consume them. 
-If buffered sends are used, then a buffer overflow will result. 
-Additional synchronization has to be added to the program so as to prevent this from occurring. 
-If standard sends are used, then the producer will be automatically throttled,
-
-_A program is *safe* if no message buffering is required for the program to complete_. 
-One can replace all sends in such program with synchronous sends, and the program will still run correctly. 
-This conservative programming style provides the best portability, 
-since program completion does not depend on the amount of buffer space available or on the communication protocol used.
-
-
-** Failed Attempt to implement the original Bryant Chandi Misra
-
-
-** Fujimoto
-*Lookahead:* If a logical process at simulation time T can only schedule new events with thime stamp of at least T+L, then KL is referred to as the lookahead for the logical process.
-
-An alternative approach to sending a null message after processing each event is a demand-driven approach.
-Whenever a process is about to become blocked because the incoming link with the smallest link clock value has no messages waiting to be processed,
-it requests the next message (null or otherwise) from the process on the sending side of the link.
-The process resumes execution when the response to this request is achieved.
-This approach helps to reduce the amount of null message traffic, though a longer delay may be required to receive null messages because two message transmissions are required.
+_COMMENT:_ This section is incomplete that should not be incomplete in an Intermediate report. 
+Are you reinventing the wheel? 
+Did you try at least one of these tools?
 \clearpage
-
-
-** Super Important Issues 					   :noexport:
-\cite{Fujimoto1999}
-If each LP adheres to the local causality constraint, then the
-parallel/distributed execution will yield exactly the same results as a sequential
-executlOn of the same simulation program provided that events containing the same
-timestamp are processed in the same order in both the sequential and parallel
-execution. Events containing the same time stamp are referred to as simultaneous
-events.
-
-\cite{Fujimoto1999}
-Messages arriving on each incoming link can be stored in a first-in-first-out
-(FIFO) queue, which is also time stamp order because of the above restrictions.
-*Here, we ignore "local" events that are scheduled by an LP for itself*
-In practice, processing ofthese events must be interleaved with the processing ofmessages from
-other LPs so that all events are processed in time stamp order, however, this is easy
-to accomplish.
 
 
 * SystemC TLM 2.0
@@ -771,10 +711,24 @@ Is Simics capable of PDES?
 
 
 * Use Case
+In this chapter we describe the transaction level model we are going to use for conducting our experimentations.
+The purpose of the experimentations is twofold;
+verify whether we achieve better faster simulation compared to the reference SystemC kernel and evaluate the proposed process synchronization algorithms.
+
 ** Platform modeling
+A block diagram of the platform that will be modeled is seen in figure [[fig:Platform]].
+The platform is a shared memory, cache-coherent, symmetric multiprocessor system based on the OpenRisc 1200 Instruction Set Simulator.
+
+
+
+#+CAPTION: Categorization of three of the most explored MoCs: State Machine, Synchronous Dataflow and Discrete Event(adopted from \cite{Editor2014})
+#+NAME: fig:Platform
+[[file:Figures/MoCs.pdf]]
 
 ** Application modeling
-What kind of application am I going to run on this platform?
+We have the baremetal (newlib based) toolchain for compiling applications for the OpenRisc ISS.
+
+_COMMENT;_ What kind of application am I going to run on this platform?
 I see that most of the papers out there do some kind of mpeg2 decoding. That seems complex.
 
 
@@ -1008,6 +962,43 @@ The dynamic_cast operator does exactly that.
       dangerous(d, 10);
   }
 #+END_SRC
+
+
+* MPI 								   :noexport:
+** What is Blocking and Non-Blocking in MPI's context
+The classification is with respect to whether the buffer involved in the communication primitive
+is available for re-use in case of send or use in case of receive.
+
+The 4 communication modes still apply for both categories.
+
+_A *nonblocking send* call indicates_
+that the system may start copying data out of the send buffer. 
+The sender should not modify any part of the send buffer after a nonblocking send operation is called, 
+until the send completes.
+
+The completion of a send operation indicates that the sender is now free to update the locations in the send buffer 
+It does not indicate that the message has been received, rather, 
+it may have been buffered by the communication subsystem.
+
+However, if a *synchronous mode* send was used, the completion of the send operation indicates 
+that a matching receive was initiated, 
+and that the message will eventually be received by this matching receive.
+
+
+_A *nonblocking receive* call indicates_
+that the system may start writing data into the receive buffer. 
+The receiver should not access any part of the receive buffer after a nonblocking receive operation is called, until the receive completes.
+
+The completion of a receive operation indicates that the receive buffer contains the received message, 
+the receiver is now free to access it, and that the status object is set. 
+It does not indicate that the matching send operation has completed (but indicates, of course, that the send was initiated).
+
+** MPI_Status
+The source or tag of a received message may not be known if wildcard values were used in the receive operation. 
+Also, if multiple requests are completed by a single MPI function (see Section 3.7.5), a distinct error code may need to be returned for each request.
+
+The status argument also returns information on the length of the message received.
+However, this information is not directly available as a field of the status variable and a call to MPI_GET_COUNT is required to “decode” this information.
 
 
 * SystemC 							   :noexport:
