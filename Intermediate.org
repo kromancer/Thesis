@@ -3,9 +3,6 @@
 #+EMAIL:   kisp@kth.se
 #+STARTUP: overview
 
-DO NOT FORGET TO SPELLCHECK
-DO NOT FORGET TO INSERT THE IMAGES
-DO NOT FORGET TO CHECK LINKS
 
 
 * Acronyms 							   
@@ -62,7 +59,7 @@ The structure of this document is given in unit [[Document Overview]].
 
 ** The Design Process
 We define the process of *designing* as the engineering art of incarnating a desired functionality into a perceivable, thus concrete, artifact.
-An engineering artifact is predominantly reffered to as a *system*, 
+An engineering artifact is predominantly referred to as a *system*, 
 to emphasize the fact that it can be viewed as a structured collection of components and that its behavior is a product of the interaction among its components.
 
 Conceptually, designing implies a movement from abstract to concrete, fueled by the engineer's *design decisions*, incrementally adding implementation details.
@@ -72,14 +69,14 @@ The design flow can be now semi-formally defined as a process of model refinemen
 We use the term semi-formal to describe the process of model refinement, because to the best of our knowledge, 
 such model semantics and algebras that would establish formal transformation rules and equivalence relations are far from complete \cite{Gajski2009}.
 
-A desired property of a model is executabillity; that is its ability to demonstrate portions of the final artifact's desired functionallity in a controlled environment.
+A desired property of a model is executability that is its ability to demonstrate portions of the final artifact's desired functionality in a controlled environment.
 An *executable model*, allows the engineer to form hypotheses, conduct experiments on the model and finally evaluate design decisions.
-It is now evident that executable models can firmly associate the desing process with the scientific method.
+It is now evident that executable models can firmly associate the design process with the scientific method.
 The execution of a model is also known as *simulation* \cite{Editor2014}.
 
 
 ** Electronic Systems Design
-An Electronic System (ES) provides a desired functionallity, by manipulating the flow of electrons.
+An Electronic System (ES) provides a desired functionality, by manipulating the flow of electrons.
 Electronic systems are omnipotent in every aspect of human activity; 
 most devices are either electronic systems or have an embedded electronic system for their cybernisis.
 
@@ -87,13 +84,18 @@ The prominent way for visualizing the ES design/abstraction space is by means of
 The concept was first presented in 1983 \cite{Gajski1983} and has been constantly evolving to capture and steer industry practices.
 Figure \ref{fig:Y-Chart} presents the form of the Y-Chart found in \cite{Gajski2009}.
 
+#+CAPTION: The Y-Chart (adopted from \cite{Gajski2009})
+#+NAME: fig:Y-Chart
+[[file:Figures/y-chart.png]]
+
+
 The Y-Chart quantizes the design space into four levels of abstraction; system, processor, logic and circuit, represented as the four concentric circles.
 For each abstraction level, one can use different ways for describing the system; behavioral, structural and physical.
 These are represented as the three axises, hence the name Y-Chart.
 Models can now be identified as points in this design space.
 
-A typical design flow for an Intergrated Circuit (IC) begins with a high-level behavioral model capturing the system's specifications and 
-proceeds non-monotonically to a lower level structural represenantation, expressed as a netlist of, still abstract, components.
+A typical design flow for an Integrated Circuit (IC) begins with a high-level behavioral model capturing the system's specifications and 
+proceeds non-monotonically to a lower level structural representation, expressed as a netlist of, still abstract, components.
 From there, Electronic Design Automation (EDA) tools will pick up the the task of reducing the abstraction of a structural model by translating the netlist of abstract components to a netlist of standard cells.
 The nature of the standard cells is determined by the IC's fabrication technology (FPGA, gate-array or standard-cell ASIC).
 Physical dimensionality is added by place and route algorithms, 
@@ -101,7 +103,7 @@ part of an EDA framework,
 signifying the exit from the design space, 
 represented in the Y-Chart by the transition from the structural to the physical axis.
 
-We have used the adjective non-monotic to describe the design flow, because as a movement in the abstraction space, it is iterative; 
+We have used the adjective non-monotonic to describe the design flow, because as a movement in the abstraction space, it is iterative; 
 design \rightarrow test/verify \rightarrow redesign or proceed.
 This cyclic nature of the design flow is implied by the errors the human factor introduces, under the lack of formal model transformation methodologies in the upper abstraction levels.
 The term *synthesis* is therefore introduced to describe a monotonic movement from a behavioral to a structural model, or the realization of an upper level structural model using finer components.
@@ -114,7 +116,7 @@ Low-level synthesis is a reality modern EDA tools achieve, while high-level synt
 *** Notes for completing this section 				   :noexport:
 Explain processor, logic, circuit, structural, behavioral, etc
 Physical dimensionality added by automated place and route software.
-geometrical positioning of the components on the silicon waffer
+geometrical positioning of the components on the silicon wafer
 The final result is a from the chosen device technology (standard cell ASIC, gate array ASIC, FPGA)
 Verification and validation 
 High-Level synthesis
@@ -128,8 +130,8 @@ In the Y-Chart the most abstract level, depicted as the outer circle, is the sys
 At this level the distinction between hardware and software is a mere design choice thus *co-simulation of hardware and software* is one of the main objectives.
 Thereby the term *system-level design* is used to describe design flows that enter the design space at this level.
 
-A common practice among modern systen-level design tools/methodologies, 
-like Intel's CoFluent Studio \cite{NEEDED}, 
+A common practice among modern system-level design tools/methodologies, 
+like Intel's CoFluent Studio \cite{citation}, 
 is for the designer to construct two intermediate models;
 An application model, that is the behavioral view of the system and 
 a platform model, assembled using a component database of Processing Elements (PE, processors, hardware accelerators etc) and Communication Elements (CE, buses, interfaces etc).
@@ -151,7 +153,7 @@ Thus, software engineers must be equipped with a virtual platform they can use f
 
 ** SystemC and TLM
 One fundamental question, for completing the presentation of ESLD, remains; How can executable models be expressed on the system level?
-While maintaining the expressivenes of a Hardware Description Language (HDL), *SystemC* is meant to act as an *Electronic System Level Design Language* (ESLDL);
+While maintaining the expressiveness of a Hardware Description Language (HDL), *SystemC* is meant to act as an *Electronic System Level Design Language* (ESLDL);
 a language with which system-level models can be expressed.
 It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than EDA synthesizable models.
 The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized (IEEE 1666-2011 \cite{OpenSystemCInitiative2012}).
@@ -183,7 +185,7 @@ In unit [[Models of Computation]] we link the concepts of operational semantics 
 In units [[The Discrete Event Model of Computation]] and [[The Discrete Event Simulation(or)]] the SystemC simulation engine or kernel is presented as an algorithm that realizes the operational semantics of a Discrete Event (DE) MoC.
 Units [[Parallel Discrete Event Simulation(or)]] and [[Causality and Synchronization]] introduce the concept of Parallel Discrete Event Simulation (PDES) and present the fundamental causality hazards it introduces.
 The problem statement is presented in a concise way in [[Problem statement]].
-Unit [[Objectives]] introduces the objectives, that is the engineering endeavour of this project.
+Unit [[Objectives]] introduces the objectives, that is the engineering endeavor of this project.
 
 ** Models of Computation
 A *language* is a set of symbols, rules for combining them (its syntax), and rules for interpreting combinations of symbols (its semantics). 
@@ -194,7 +196,7 @@ This definition implies that languages are not computational models themselves, 
 
 How does the concept of a MoC fit specifically in ESLDLs?
 Above all the engineer needs executable models.
-Furthermore, an ESLDL descibes an electronic artifact as a system; a (hierarchical) network of interacting components.
+Furthermore, an ESLDL describes an electronic artifact as a system; a (hierarchical) network of interacting components.
 Therefore, a MoC is a collection of rules to define what constitutes a component and what are the semantics of execution, communication and concurrency of the abstract machine that will execute the model \cite{Jantsch2005} \cite{Editor2014}.
 To ensure meaningful simulations, the MoC of the abstract machine that simulates a model must be equivalent with that of the abstract machine that will realize the system.
 
@@ -243,7 +245,7 @@ The kernel maintains a *centralized event queue* that is sorted by time-stamp an
 Runnable processes have had events to which they are sensitive triggered and are waiting for the running process to yield to the kernel so that they can be scheduled.
 The kernel controls the execution order by selecting the earliest event in the event queue and making its time-stamp the current simulation time.
 It then determines the process the event is destined for, and finds all other events in the event queue with the same time-stamp that are destined for the same process \cite{Black2010}.
-The operation of the kernel is exemplified in Alg \ref{alg:kernel}.
+The operation of the kernel is exemplified in listing \ref{alg:kernel}.
 
 #+BEGIN_LATEX
 \begin{algorithm}
@@ -365,7 +367,7 @@ The goal of this chapter is to present two conservative process synchronization 
 
 In units [[The Chandy/Misra/Bryant synchronization algorithm]] and [[On Demand Synchronization]] we present the conservative synchronization algorithms that will be evaluated.
 In unit [[Semantics of point-to-point communication in MPI]] and [[MPI Communication Modes]] we present the semantics of the Message Passing Interface (MPI) communication primitives.
-In unit [[MPI Realization of CMB]] we provide pseudocode for the realization of the CMB using the MPI communication primitives.
+In unit [[MPI Realization of CMB]] we provide pseudo code for the realization of the CMB using the MPI communication primitives.
 In unit [[Existing PDES]] we give an overview of prior art in the field of PDES in ESLD.
 
 
@@ -425,7 +427,7 @@ The important points one must notice with this deadlock avoidance mechanism are 
       \State remove event M with the smallest time-stamp from its queue.
       \State set clock = time-stamp(M)
       \State process event M
-      \State send either a null or meaningfull event to each outgoing link L with time-stamp = clock + Lookahead(clock,L,...)
+      \State send either a null or meaningful event to each outgoing link L with time-stamp = clock + Lookahead(clock,L,...)
    \EndWhile
 
 \end{algorithmic}
@@ -449,14 +451,14 @@ _COMMENT:_ The description of this algorithm is not complete.
 ** Semantics of point-to-point Communication in MPI
 The framework chosen for implementing the PDES is the *Message Passing Interface* 3.0 (MPI).
 Events are modeled as structured messages, while event diffusion/communication as message passing.
-MPI is a message passing library interface specification, standardized and maintained by the Message Passing Interface Forum \cite{citation_needed}.
-It is currently available for C/C++, Fortran and Java from multiple vendors (Intel, IBM, OpenMPI) \cite{citation_needed}.
+MPI is a message passing library interface specification, standardized and maintained by the Message Passing Interface Forum \cite{citation}.
+It is currently available for C/C++, FORTRAN and Java from multiple vendors (Intel, IBM, OpenMPI) \cite{citation}.
 MPI addresses primarily the message passing parallel programming model, 
 in which data is moved from the address space of one process to that of another process through cooperative operations on each process \cite{MessagePassingInterfaceForum2012}.
 
-The basic communication primitives are the functions \texttt{MPI_Send(...)} and \texttt{MPI_Recv(...)}.
+The basic communication primitives are the functions \texttt{MPI\_Send(...)} and \texttt{MPI\_Recv(...)}.
 Their arguments specify, among others things, a data buffer and the peer process' or processes' unique id assigned by the MPI runtime.
-By default, message reception is blocking, while message transmition may or may not block.
+By default, message reception is blocking, while message transmission may or may not block.
 One can think of message transfer as consisting of the following three phases
 1. Data is pulled out of the send buffer and a message is assembled
 2. A message is transferred from sender to receiver
@@ -465,7 +467,7 @@ One can think of message transfer as consisting of the following three phases
 *Order:*
 Messages are non-overtaking.
 If a sender sends two messages in succession to the same destination, 
-and both match the same receive (a call to \texttt{MPI_Recv}), 
+and both match the same receive (a call to \texttt{MPI\_Recv}), 
 then this operation cannot receive the second message if the first one is still pending. 
 If a receiver posts two receives in succession,
 and both match the same message, 
@@ -485,18 +487,18 @@ _COMMENT:_ Why did you choose MPI?
 
 
 ** MPI Communication Modes
-The MPI API contains a number of variants, or modes, for the basic communiction primitives.
-They are distinguished by a single letter prefix (e.g. \texttt{MPI_Isend(...)}, \texttt{MPI_Irecv(...)}).
+The MPI API contains a number of variants, or modes, for the basic communication primitives.
+They are distinguished by a single letter prefix (e.g. \texttt{MPI\_Isend(...)}, \texttt{MPI\_Irecv(...)}).
 As dictated by the MPI version 3.0, the following communication modes are supported \cite{MessagePassingInterfaceForum2012}:
 
-*No-prefix for standard mode: \texttt{MPI_Send(...)}*
+*No-prefix for standard mode: \texttt{MPI\_Send(...)}*
 In this mode, it is up to MPI to decide whether outgoing messages will be buffered. 
 MPI may buffer outgoing messages. 
 In such a case, the send call may complete before a matching receive is invoked. 
 On the other hand, buffer space may be unavailable, or MPI may choose not to buffer outgoing messages, for performance reasons. 
-In this case, the send call will not complete, blocking the transimiting process, until a matching receive has been posted, and the data has been moved to the receiver.
+In this case, the send call will not complete, blocking the transmitting process, until a matching receive has been posted, and the data has been moved to the receiver.
 
-*B for buffered mode: \texttt{MPI_Bsend(...)}* 
+*B for buffered mode: \texttt{MPI\_Bsend(...)}* 
 A buffered mode send operation can be started whether or not a matching receive has been posted. 
 It may complete before a matching receive is posted. 
 However, unlike the standard send, this operation is local, and its completion does not depend on the occurrence of a matching receive. 
@@ -511,7 +513,7 @@ Assume that the producer produces new values faster than the consumer can consum
 If buffered sends are used, then a buffer overflow will result. 
 Additional synchronization has to be added to the program so as to prevent this from occurring. 
 
-*S for synchronous mode: \texttt{MPI_Ssend(...)}*
+*S for synchronous mode: \texttt{MPI\_Ssend(...)}*
 A send that uses the synchronous mode can be started whether or not a matching receive was posted. 
 However, the send will complete successfully only if a matching receive is posted, and the receive operation has started to receive the message sent by the synchronous send.
 Thus, the completion of a synchronous send not only indicates that the send buffer can be reused, 
@@ -520,7 +522,7 @@ namely that it has started executing the matching receive.
 If both sends and receives are blocking operations then the use of the synchronous mode provides synchronous communication semantics: 
 a communication does not complete at either end before both processes *rendezvous* at the communication point.
 
-*R for ready mode: \texttt{MPI_Rsend(...)}*
+*R for ready mode: \texttt{MPI\_Rsend(...)}*
 A send that uses the ready communication mode may be started only if the matching receive is already posted. 
 Otherwise, the operation is erroneous and its outcome is undefined.
 Ready sends are an optimization when it can be guaranteed that a matching receive has already been posted at the destination.
@@ -528,9 +530,9 @@ On some systems, this allows the removal of a hand-shake operation that is other
 A send operation that uses the ready mode has the same semantics as a standard send operation, or a synchronous send operation; 
 it is merely that the sender provides additional information to the system (namely that a matching receive is already posted), that can save some overhead. 
 
-*I for non-blocking mode: \texttt{MPI_Isend(...)}, \texttt{MPI_Ibsend(...)}, \texttt{MPI_Issend(...)} and \texttt{MPI_Irecv(...)*
+*I for non-blocking mode: \texttt{MPI\_Isend(...)}, \texttt{MPI\_Ibsend(...)}, \texttt{MPI\_Issend(...)} and \texttt{MPI\_Irecv(...)*
 Non-blocking message passing calls return control immediately (hence the prefix I), 
-but it is the user's responsibillity to ensure that communication is complete, 
+but it is the user's responsibility to ensure that communication is complete, 
 before modifying/using the content of the data buffer.
 It is a complementary communication mode that works en tandem with all the previous.
 The MPI API contains special functions for testing whether a communication is complete, or even explicitly waiting until it is finished.
@@ -539,7 +541,7 @@ The MPI API contains special functions for testing whether a communication is co
 
 
 ** MPI realization of CMB
-Listing \ref{alg:CMB_mpi} is a pseudocode, sketching out the CMB process event loop, using MPI's communication primitives.
+Listing \ref{alg:CMB_mpi} is a pseudo code, sketching out the CMB process event loop, using MPI's communication primitives.
 #+BEGIN_LATEX
 \begin{algorithm}
 \caption{CMB Process event loop in MPI}
@@ -547,13 +549,13 @@ Listing \ref{alg:CMB_mpi} is a pseudocode, sketching out the CMB process event l
 \begin{algorithmic}[2]
 
    \While{process clock < some T}  
-      \State post a \textbf{MPI_Irecv} on each incoming peer process
-      \State post a \textbf{MPI_Wait}: block until every receive has been completed
-      \State save each message received in a seperate, per incoming link, FIFO.
+      \State post a MPI\_Irecv on each incoming peer process
+      \State post a MPI\_Wait: block until every receive has been completed
+      \State save each message received in a separate, per incoming link, FIFO.
       \State identify message M with the smallest time-stamp
       \State set clock = time-stamp(M)
       \State process message M
-      \State post a \textbf{MPI_Issend} to each outgoing link L with time-stamp = clock + Lookahead(clock,L,...)
+      \State post a MPI\_Issend to each outgoing link L with time-stamp = clock + Lookahead(clock,L,...)
    \EndWhile
 
 \end{algorithmic}
@@ -563,7 +565,7 @@ Listing \ref{alg:CMB_mpi} is a pseudocode, sketching out the CMB process event l
 
 ** Evaluation Metrics
 The first evaluation metric of the proposed PDES implementation will be its performance against the reference SystemC kernel.
-It will be measured by experimentations on the project's use case.
+It will be measured by experimentation on the project's use case.
 
 The simulation's size can be easily related to the duration of the simulation (in simulated time).
 Another way of describing the simulation's size is through the conception of a formula involving the number of system processes, the number of links, the system's topology and the amount of events generated.
@@ -573,7 +575,7 @@ The detection of causality errors must be facilitated in a per process level and
 A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a time-stamp lower than its clock (the time-stamp of the last processed event).
 Ideally, if the synchronization algorithms have been realized correctly, no causality errors should be detected.
 
-_COMMENT:_ This section will become more concrete when we start experimentations.
+_COMMENT:_ This section will become more concrete when we start experimentation.
 
 
 ** Existing PDES
@@ -583,7 +585,7 @@ RISC: Recoding infrastructure for SystemC \cite{Liu2015}.
 Miscellaneous:
 SystemC-SMP \cite{Mello2010}
 SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
-sc_during \cite{Moy}
+sc\_during \cite{Moy}
 
 _COMMENT:_ This section is incomplete that should not be incomplete in an Intermediate report. 
 Are you reinventing the wheel? 
@@ -593,7 +595,7 @@ Did you try at least one of these tools?
 
 * SystemC TLM 2.0
 It is beyond the scope of this project to provide a comprehensive guide to system-level modeling in SystemC TLM 2.0.
-However, at the time of writing and to the best of our knowledge, we can not verify the existance of a comprehensive guide about system-level modeling with SystemC TLM 2.0.
+However, at the time of writing and to the best of our knowledge, we can not verify the existence of a comprehensive guide about system-level modeling with SystemC TLM 2.0.
 Hence, we fill obliged to provide a quick introduction into the SystemC TLM 2.0 Loosely-Timed (LT) coding style, by means of a simple example.
 The chapter assumes a basic understanding of C++ and SystemC.
 
@@ -605,12 +607,12 @@ In unit [[Criticism]] we present the dominant source of criticism for TLM 2.0.
 Finally, in unit [[Simics and TLM 2.0]] we provide a comparison between the dominant industry frameworks for ESLD, Simics and SystemC TLM.
 
 ** Overview of SystemC TLM 2.0 API
-As stated in unit [[Transaction Level Model]], a Transaction Level Model is considered a virtual platform where an appliation can/is mapped.
+As stated in unit [[Transaction Level Model]], a Transaction Level Model is considered a virtual platform where an application can/is mapped.
 A *virtual platform* is a fully functional software model of a complete system, typically used for software development in the absence of hardware, or prior to hardware being available. 
 To be suitable for productive software development it needs to be fast, booting operating systems in seconds, and accurate enough such that code developed using standard tools on the virtual platform will run unmodified on real hardware. \cite{Leupers2010}.
 
 The TLM 2.0 API enhances SystemC's expressiveness in order to facilitate the description and fast simulation of virtual platforms.
-TLM 2.0 allows *IP interoperability* for the rapid development of fast virtual platforms and facilitate the simulation under a refernce simulation kernel, that of SystemC.
+TLM 2.0 allows *IP interoperability* for the rapid development of fast virtual platforms and facilitate the simulation under a reference simulation kernel, that of SystemC.
 
 TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features ([[fig:TLM_features]]):
 - A set of core interfaces
@@ -621,7 +623,7 @@ TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features 
 - The *global quantum* used by the *temporal decoupling* mechanism of the LT coding style, which facilitates faster simulations by reducing the number of context switches performed by the kernel. 
 - Initiator and target *sockets* to denote the links (causal dependencies) between processes.
 - The *generic payload* which supports the abstract modeling of memory-mapped buses.
-- A set of *utilities*, in the form of preconfigured sockets and interconnect components, to facilitate the rapid development of models.
+- A set of *utilities*, in the form of pre configured sockets and interconnect components, to facilitate the rapid development of models.
 
 #+CAPTION: TLM 2.0 use cases (adopted from \cite{OpenSystemCInitiative2009}).
 #+NAME: fig:TLM_features
@@ -636,7 +638,7 @@ In a transaction one can distinguish two roles;
 the *initiator*, the component which initiated the communication, and the *target*, the component which is supposed to service the initiator's request.
 A component is not limited to either of these two roles; it can assume both.
 For example, *interconnect* components encapsulate the behavior of memory-mapped buses, being responsible for routing transactions to the correct target.
-From the initiator's perspective, they act as targets and from the target's perpective they act as initiators.
+From the initiator's perspective, they act as targets and from the target's perspective they act as initiators.
 
 Implementation-wise, communication in TLM 2.0 is reduced to method calls, 
 from the initiator to the target through an arbitrary number of interconnect component, without involving any context switches from the simulation kernel.
@@ -652,7 +654,7 @@ Maybe you need to adopt a more SystemC like terminology? For example change the 
 
 ** Generic Payload
 The basic argument that is passed, by reference, in communicative method calls is called the *generic payload*.
-It is a structure that contains all the necesseray information about the transaction.
+It is a structure that contains all the necessary information about the transaction.
 It supports the abstract modeling of memory-mapped buses, together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
 
 The main features/fields of the generic payload are:
@@ -675,12 +677,12 @@ LT is suited for describing virtual platforms intended for software development.
 However, where additional timing accuracy is required, typically for software performance estimation and architectural analysis use cases, the AT style is employed.
 Virtual platforms typically do not contain many cycle-accurate models of complex components because of the performance impact. 
 
-This is a quite problematic section. You need to elaborate more, do not forget LT is on your thesis title. 
+_COMMENT:_ This is a quite problematic section. You need to elaborate more, do not forget LT is on your thesis title. 
 
 
 ** An Example
 This unit will provide a literate code listing for the model in figure [[fig:TLM_tutorial]]
-#+CAPTION: A simple system-level model. The initiator, for example, could represent a processor, the interconnect component a memory bus and the target a memory.
+#+CAPTION: A simple system-level model. The initiator, for example, could model a processor, the interconnect component a memory bus and the target a memory.
 #+NAME: fig:TLM_tutorial
 [[file:Figures/TLM_tutorial.png]]
 
@@ -697,7 +699,7 @@ Do you agree with this trend?
 Maybe tell us the major difference with TLM 1.0?
 
 This is why SystemC TLM 2.0 model needs to be *recoded* to allow parallel execution.
-The recoding must reconstitute the seperation of concerns between computation and communication.
+The recoding must reconstitute the separation of concerns between computation and communication.
 A modification of just the kernel will not suffice.
 
 
@@ -711,22 +713,27 @@ Is Simics capable of PDES?
 
 
 * Use Case
-In this chapter we describe the transaction level model we are going to use for conducting our experimentations.
-The purpose of the experimentations is twofold;
+In this chapter we describe the transaction level model we are going to use for conducting our experimentation.
+The purpose of the experimentation is twofold;
 verify whether we achieve better faster simulation compared to the reference SystemC kernel and evaluate the proposed process synchronization algorithms.
 
 ** Platform modeling
 A block diagram of the platform that will be modeled is seen in figure [[fig:Platform]].
-The platform is a shared memory, cache-coherent, symmetric multiprocessor system based on the OpenRisc 1200 Instruction Set Simulator.
+The platform is a shared memory, cache-coherent, symmetric multiprocessor system based on the [[http://opencores.org/or1k/Or1ksim][OpenRisc 1200 Instruction Set Simulator]].
+Cache coherence is enforced by a directory residing in the inclusive L2 cache.
+Every component is/will be implemented in C/C++ and wrapped in SystemC modules using the TLM 2.0 API for communication. 
+The exact number of processors is yet to be determined.
 
-
-
-#+CAPTION: Categorization of three of the most explored MoCs: State Machine, Synchronous Dataflow and Discrete Event(adopted from \cite{Editor2014})
+#+CAPTION: A model of a shared memory, cache-coherent, symmetric multiprocessor system
 #+NAME: fig:Platform
-[[file:Figures/MoCs.pdf]]
+[[file:Figures/platform.png]]
+
+
+_COMMENT:_ Can you be more specific about the cache coherence protocol? Maybe provide a state diagram?
+
 
 ** Application modeling
-We have the baremetal (newlib based) toolchain for compiling applications for the OpenRisc ISS.
+We have the bare metal (newlib based) toolchain for compiling applications for the OpenRisc ISS.
 
 _COMMENT;_ What kind of application am I going to run on this platform?
 I see that most of the papers out there do some kind of mpeg2 decoding. That seems complex.
