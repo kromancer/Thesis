@@ -121,6 +121,11 @@ The extern keyword applied to a function prototype does absolutely nothing.
 The extern keyword applied to a function definition is, of course, non-sensical. 
 A function prototype is always a declaration and never a definition.
 
+This technique is commonly used to produce a C++ header from a C header.
+Alternatively, conditional compilation can be used to create a common C and C++ header.
+ #+BEGIN_SRC cpp
+ #ifde
+ #+END_SRC
 
 ** Initialization
 Initialization using {} _list initialization_ does not allow narrowing.

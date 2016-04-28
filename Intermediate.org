@@ -5,14 +5,14 @@
 
 
 * Abstract
-In this the co-simulation speed of 
+
 
 
 
 *Keywords:* Parallel discrete event simulation, Conservative synchronization algorithms, Transaction level models, SystemC TLM
 
 
-* Maguire's Notes for Writing an Abstract :noexport:
+* Maguire's Notes for Writing an Abstract 			   :noexport:
 _1. What is the topic area?_
 The vision of a connected and automated society, 
 the IoT revolution has promised to deliver,
@@ -20,33 +20,32 @@ is depending on the industry's ability
 to design novel and complex electronic systems,
 while maintaining a short time to market.
 
-Design flow originates at the system level
 
 _2. Short problem statement_
-One early stage in the design of such systems is the in tandem simulation of hardware and software.
+One early *stage* in the design of such systems is the in tandem simulation of hardware and software.
 Transaction Level Models, expressed in the SystemC TLM 2.0  modeling language, can facilitate this co-simulation.
+However, the sequential nature of the SystemC's Discrete Event simulation engine is a limiting factor.
+Poor simulation performance often limits the scope and depth of the design decisions that can be evaluated.
 
-The sequential nature of the SystemC's discrete event simulation engine is a limiting factor for complex 
 
-poor simulation performance often limits the scope and depth of the design decisions that can be evaluated.
 
-Parallelizing the simulation and preserving causality is a challenging
+_3. Why was this problem worth a Master's thesis project? Why no one else solved it yet?_
+Avoiding causality errors is the major obstacle one faces when trying to parallelize the simulation.
+Transaction Level Modeling increasing complexity -> raise the abstraction layer of -> thus TLM was born -> quite new field that is why no one has solved it.
 
-_3. Why was this problem worth a Master's thesis project?_
-    Why no one else solved it yet?
 
 _4. How did you solve the problem?_
-Using prior art parallel simulation distributed high performance computing
-
-where the designer can maintain
-
-translation
+Reducing the causality problem to a synchronization problem,
+and applying prior art in the field of ....
+we have achieved a that uses a distributed notion of simulation time thus does not require centralized simulation moderation.
 
 
-5. Results/Conclusions/Consequences/Impact: 
-   What are your key results/conclusions?
-   What will others do based upon your results?
-   What can be done now that you have finished - that could not be done before your thesis project was completed?
+_5. Results/Conclusions/Consequences/Impact:_
+   _What are your key results/conclusions?_
+   _What will others do based upon your results?_
+   _What can be done now that you have finished - that could not be done before your thesis project was completed?_
+
+to allow this automatic translation the features of TLM 2.0  supported by the framework is quite limited, Loosely Timed
 
 
 * Acronyms 							   
@@ -1509,7 +1508,7 @@ Although this may seem to work with VHDL, with SystemC this is chaotic, since ar
 How to realize the DE MoC on top of completely heterogeneous HPC platform 
 
 
-* Companies List
+* Companies List 						   :noexport:
 Mentor Graphics
 Cadence
 Synopsys
