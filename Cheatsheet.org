@@ -2,7 +2,11 @@
 #+STARTUP: overview
 
 
-
+* OpenRisc 1000 instruction set simulator
+** Compilation flags for re-entrant
+#+BEGIN_SRC sh
+./configure --prefix=/opt/or1ksim_reentrant --enable-debug
+#+END_SRC
 * Linux topics 							   :noexport:
 ** Finding Contect
 #+BEGIN_SRC sh

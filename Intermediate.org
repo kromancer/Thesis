@@ -4,6 +4,50 @@
 #+STARTUP: overview
 
 
+* Abstract
+In this the co-simulation speed of 
+
+
+
+*Keywords:* Parallel discrete event simulation, Conservative synchronization algorithms, Transaction level models, SystemC TLM
+
+
+* Maguire's Notes for Writing an Abstract :noexport:
+_1. What is the topic area?_
+The vision of a connected and automated society, 
+the IoT revolution has promised to deliver,
+is depending on the industry's ability 
+to design novel and complex electronic systems,
+while maintaining a short time to market.
+
+Design flow originates at the system level
+
+_2. Short problem statement_
+One early stage in the design of such systems is the in tandem simulation of hardware and software.
+Transaction Level Models, expressed in the SystemC TLM 2.0  modeling language, can facilitate this co-simulation.
+
+The sequential nature of the SystemC's discrete event simulation engine is a limiting factor for complex 
+
+poor simulation performance often limits the scope and depth of the design decisions that can be evaluated.
+
+Parallelizing the simulation and preserving causality is a challenging
+
+_3. Why was this problem worth a Master's thesis project?_
+    Why no one else solved it yet?
+
+_4. How did you solve the problem?_
+Using prior art parallel simulation distributed high performance computing
+
+where the designer can maintain
+
+translation
+
+
+5. Results/Conclusions/Consequences/Impact: 
+   What are your key results/conclusions?
+   What will others do based upon your results?
+   What can be done now that you have finished - that could not be done before your thesis project was completed?
+
 
 * Acronyms 							   
 | *ASIC*:  | Application Specific Integrated Circuit |
@@ -719,7 +763,7 @@ verify whether we achieve better faster simulation compared to the reference Sys
 
 ** Platform modeling
 A block diagram of the platform that will be modeled is seen in figure [[fig:Platform]].
-The platform is a shared memory, cache-coherent, symmetric multiprocessor system based on the [[http://opencores.org/or1k/Or1ksim][OpenRisc 1200 Instruction Set Simulator]].
+The platform is a shared fmemory, cache-coherent, symmetric multiprocessor system based on the [[http://opencores.org/or1k/Or1ksim][OpenRisc 1000 Instruction Set Simulator]].
 Cache coherence is enforced by a directory residing in the inclusive L2 cache.
 Every component is/will be implemented in C/C++ and wrapped in SystemC modules using the TLM 2.0 API for communication. 
 The exact number of processors is yet to be determined.
@@ -922,7 +966,8 @@ Iterators decouple the algorithm from the data source; an algorithm has no knowl
                 such as one pointer type to another in the same class hierarchy, 
                 an integral type to an enumeration, or a floating-point type to an integral type
 
-2. reinterpret_cast: handles conversions between unrelated types such as an integer to a pointer
+2. reinterpret_cast: handles conversions between unrelated types 
+                     such as an integer to a pointer
                      or a pointer to an unrelated pointer type
 
 3. const_cast:  converts between types that differ only in const and volatile qualifiers
@@ -1185,33 +1230,39 @@ but unlike sc_port, there are none built in to the SystemC class library.
 
 * TLM 2.0 							   :noexport:
 ** General
-The story of Virtual Platform is old
+A standardized way to connect models described at the untimed or approximately timed transaction level.
+Instead of every vendor of system-level virtual platforms having their own proprietary languages, models and tools
+every major developer of these platforms is now beginning to standardize on the use of TLM 2.0 as the way in which
+to interconnect models or is planning to do so within their next development cycle.
 
-- Transaction-level memory-mapped _bus modeling_.
-- Register accurate and functionally complete.
-- Fast enough to boot software O/S in seconds.
-- Loosely-timed and approximately-timed modeling.
-- Interoperable API for memory-mapped bus modeling.
-- Generic payload and extension mechanism
-- Avoid adapters where possible
+Models developed for one system will be able to work on another, meaning that the problem of model availability and
+true interoperability is now being solved. 
 
-Facilitating the simulation of systems, with inter communicating components.
-The components are modeled on a functional level.
+TLM 2.0 provides communications and timing capabilities that enable modeling at various levels of timing accuracy.
 
-TLM 2.0 consists of:
-- A set of core interfaces
-  - Blocking
-  - Non-blocking
-  - DMI
-  - Debug transport interface
-- The global quantum
-- Initiator and target sockets
-- Generic payload
-- Base protocol
-- Utilities
+This chapter also demonstrates the transition that is going on in the industry: away from proprietary systems
+and interfaces toward open standards.
+
+platform-based development approach
+
+An example of an extension is the TLM 2.0 library which creates additional communications capabilities
+that mimic bus-based semantics. 
+While this still remains within the discrete event MoC, it illustrates how additional semantics can be
+built upon the base.
+
+With the introduction of TLM 2.0 another huge barrier was removed, which was model interoperability.
+SystemC does not define the semantics of communications between models as it only provides the essential primitives
+necessary for communications. Thus there was no agreement in the industry about how these interfaces should
+be constructed.
+
+Several EDA vendors, such as CoWare, attempted to create and proliferate communications libraries,
+but these saw no uptake because of the proprietary nature of them.
+Today we are seeing rapid adoption of TLM 2.0 by the industry with significant support coming from 
+all of the major EDA players.
+
+\cite{Bailey2010}
 
 
-References to a single transaction object are passed along the forward and backward paths.
 
 
 #+BEGIN_LATEX
@@ -1239,7 +1290,7 @@ References to a single transaction object are passed along the forward and backw
 \end{figure}
 #+END_LATEX
 
-The TLM LRM provides guidance for constructing interoperable models
+
 
 
 ** Transaction
@@ -1276,7 +1327,13 @@ The main features of the generic payload are:
 In case of *multi-beat* transactions 
 the ratio of the data length over the streaming width will give the number of beats. 
 
+
 *** Byte Enable Mask Pointer
+The elements in the byte enable array shall be interpreted as follows.
+A value of 0 shall indicate that that corresponding byte is disabled, and a value of 0xff shall indicate that
+the corresponding byte is enabled.
+The meaning of all other values shall be undefined. 
+The value 0xff has been chosen that the byte enable array can be used directly as a mask.
 
 
 ** Initiators and Targets
@@ -1409,6 +1466,12 @@ main
 
 
 * Graveyard of potentially usefull phrases 			   :noexport:
+Activities that lie in between the time span an idea became a product is design
+
+_This chapter delves_ into the world of hardware-software codesign
+
+something real and tangible
+
 praxis
 
 An MoC for describing the application at the system-level
@@ -1444,6 +1507,13 @@ Although this may seem to work with VHDL, with SystemC this is chaotic, since ar
   Evaluate-update paradigm
 
 How to realize the DE MoC on top of completely heterogeneous HPC platform 
+
+
+* Companies List
+Mentor Graphics
+Cadence
+Synopsys
+Tensilica
 
 
 * Latex Headers 						   :noexport:
