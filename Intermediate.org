@@ -15,14 +15,13 @@
 * Maguire's Notes for Writing an Abstract 			   :noexport:
 _1. What is the topic area?_
 The vision of a connected and automated society, 
-the IoT revolution has promised to deliver,
+the Internet of Things era has promised,
 is depending on the industry's ability 
 to design novel and complex electronic systems,
 while maintaining a short time to market.
 
-
 _2. Short problem statement_
-One early *stage* in the design of such systems is the in tandem simulation of hardware and software.
+One of the first steps in the design of such systems is the in tandem simulation of hardware and software.
 Transaction Level Models, expressed in the SystemC TLM 2.0  modeling language, can facilitate this co-simulation.
 However, the sequential nature of the SystemC's Discrete Event simulation engine is a limiting factor.
 Poor simulation performance often limits the scope and depth of the design decisions that can be evaluated.
@@ -46,6 +45,9 @@ _5. Results/Conclusions/Consequences/Impact:_
    _What can be done now that you have finished - that could not be done before your thesis project was completed?_
 
 to allow this automatic translation the features of TLM 2.0  supported by the framework is quite limited, Loosely Timed
+
+Describing the system with an xml based language
+Generate the SystemC TLM 2.0 description and the MPI parallel simulation
 
 
 * Acronyms 							   
@@ -1465,6 +1467,8 @@ main
 
 
 * Graveyard of potentially usefull phrases 			   :noexport:
+Form must follow function - Le Corbusier
+
 Activities that lie in between the time span an idea became a product is design
 
 _This chapter delves_ into the world of hardware-software codesign

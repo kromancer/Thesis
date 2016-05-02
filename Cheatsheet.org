@@ -116,16 +116,93 @@ To the Linux kernel, all threads are unique processes.
 The kernel simply views threads as processes that share resources.
 
 * C++ topics 							   :noexport:
-** Extern
+** Linkage
+The way a program is organized into files can help emphasize its logical structure, 
+help a human reader understand the program, 
+and help the compiler enforce that logical structure.
+
+The result of preprocessing is called a *translation unit*
+*Declarations* help the compiler analyze a translation unit in isolation from the rest of the program.
+
+The linker is the program that binds together the separately compiled parts.
+A linker is sometimes confusingly called a loader.
+
+*** Extern keyword
 The extern keyword applied to a function prototype does absolutely nothing.
 The extern keyword applied to a function definition is, of course, non-sensical. 
 A function prototype is always a declaration and never a definition.
 
+
+*** External linkage and internal linkage
+A *name* that can be used in translation units different from the one in which it was defined 
+is said to have *external linkage*.
+
+#+BEGIN_SRC cpp
+static int x1 = 1;   // internal linkage: not accessible from other translation units
+const char x2 = 'a'; // internal linkage: not accessible from other translation units
+#+END_SRC
+1. When used in namespace scope, the keyword static means "not accessible from other source files"
+2. The keyword const implies default internal linkage, so if you wanted x2 to have external linkage, you need to precede its definitions with extern.
+
+
+
+#+BEGIN_SRC cpp
+int x1 = 1;                // external linkage: accessible from other translation units
+extern const char x2 = 'a';// external linkage: accessible from other translation units
+#+END_SRC
+
+
+*** Linkage Errors
+#+BEGIN_SRC cpp
+  // file1.cpp
+  int x = 1;
+  int b = 1;
+  extern int c;
+
+  // file2.cpp
+  int x;          // means "int x = 0;"
+  extern double b;
+  extern int c;
+#+END_SRC
+Therea are three errors here:
+1. *x* is defined twice
+2. *b* is declared twice with different types
+3. *c* is declared twice but not defined
+
+These errors cannot be detected by a compiler that looks at only one file at a time.
+Many, however, are detectable by the linker. 
+For example, all implementations I know of correctly diagnose the double definition of *x*.
+
+However, the inconsistent declarations of *b* are uncaught on popular implementations,
+and the missing definition of *c* is typically only caught if *c* is used.
+
+
+
+
+*** Extern "C"
+When you state that a function has extern "C" linkage in C++,
+the C++ compiler does not mangle.
+
+Propably because some C binary wants to access this function
+
+To obey C linkage conventions, a C++ function must be declared to have C linkage
 This technique is commonly used to produce a C++ header from a C header.
 Alternatively, conditional compilation can be used to create a common C and C++ header.
- #+BEGIN_SRC cpp
- #ifde
- #+END_SRC
+#+BEGIN_SRC cpp
+  #ifdef __cplusplus
+  extern "C" {
+  #endif
+      // ...
+      char* strcpy(char*, const char*);
+      // ...
+  #ifdef __cplusplus
+  }
+  #endif
+#+END_SRC
+
+
+** using keyword
+
 
 ** Initialization
 Initialization using {} _list initialization_ does not allow narrowing.
