@@ -601,3 +601,44 @@ An uncertain fate dances
 
 The degree of a variable is approximately equal to the
 number of constraints this variable appears in.
+* Networking
+** Fundamentals
+A *protocol* is a set of rules governing the communication between two or more hosts.
+The WWW, or the webpages, is only of tens of services provided by the Internet.
+hubs
+switches
+routers
+
+simplex     -> radio
+half-duplex -> walky-talkies
+Open System Interconnection -> OSI
+
+
+** OSI
+- Application Layer
+- Presentation Layer
+  NO PDU
+  Compression - Encryption - Translation
+- Session Layer
+  NO PDU
+- Transport Layer
+¨ PDU -> segment
+- Network Layer
+  PDU -> packet
+- Data Link Layer
+  PDU -> frame
+- Physical Layer
+  PDU -> bit
+
+*Encapsulation:* The flow of data from the application layer to the physical layer.
+*Decapsulation:* The opposite flow
+
+The unit in which a certain layer handles data 
+is called a *Protocol Data Unit (PDU)*
+
+The osi model works in a *peer-layer strategy*.
+This strategy implies that the control information added to the PDU
+by one layer is meant to reach the peer layer in the receiving entity.
+* XML
+A *metamarkup* language: The set of tags is not predefined.
+A *scheme* defines a XML based language
