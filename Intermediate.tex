@@ -98,7 +98,7 @@ while maintaining a short time to market.
 One of the first steps in the design of such systems is the in tandem simulation of hardware and software.
 Transaction Level Models, expressed in the SystemC modeling language, can facilitate this co-simulation.
 However, the sequential nature of the SystemC's Discrete Event simulation kernel is a limiting factor.
-Poor simulation performance often limits the scope and depth of the design decisions that can be evaluated.
+Poor simulation performance often constraints the scope and depth of the design decisions that can be evaluated.
 
 The increase in computing power, modern processing units deliver, is only avalailable for applications that can expose parallel operations.
 The major obstacle one faces, when trying to parallelize a simulation, is the preservation of causality; simulation events need to be processed in a chronological order.
@@ -110,14 +110,30 @@ It is implemented using the Message Passing Interface 3.0 framework.
 To demonstrate our approach and evaluate different process synchronization algorithms,
 we use the model of a cache-coherent, symmetric multiprocessor based on the OpenRisc 1000 Instruction Set Simulator. Our results indicate a significant speedup against the reference SystemC simulation.
 
-
+Keywords: parallel discrete event simulation, conservative synchronization algorithms, transaction level models, SystemC TLM 2.0
 \end{abstract}
+\clearpage
+
 
 
 
 \tableofcontents
 \clearpage
 
+\section*{Preface}
+\label{sec-2}
+This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
+Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
+while professor \href{https://people.kth.se/~ingo/}{Ingo Sander} (\texttt{ingo@kth.se}) and PhD student \href{http://people.kth.se/~ugeorge/}{George Ungureanu} (\texttt{ugeorge@kth.se}) are the examiner and supervisor from KTH. 
+The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company.
+
+The scope of this project has been mutually agreed on and dialectically determined between the company's needs and the institute's research agenda.
+As Master's Thesis project, it will expose a scientific ground on which the engineering effort shall be rooted.
+
+All the necessary equipment (software and hardware) has been kindly provided by the company.
+The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
+but will conform to the general context dictated by the documents already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
+\clearpage
 
 
 \section*{Acronyms}
@@ -153,20 +169,6 @@ we use the model of a cache-coherent, symmetric multiprocessor based on the Open
 
 
 
-\section*{Preface}
-\label{sec-2}
-This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
-Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
-while professor \href{https://people.kth.se/~ingo/}{Ingo Sander} (\texttt{ingo@kth.se}) and PhD student \href{http://people.kth.se/~ugeorge/}{George Ungureanu} (\texttt{ugeorge@kth.se}) are the examiner and supervisor from KTH. 
-The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company.
-
-The scope of this project has been mutually agreed on and dialectically determined between the company's needs and the institute's research agenda.
-As Master's Thesis project, it will expose a scientific ground on which the engineering effort shall be rooted.
-
-All the necessary equipment (software and hardware) has been kindly provided by the company.
-The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
-but will conform to the general context dictated by the documents already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
-\clearpage
 
 
 \section{Introduction}

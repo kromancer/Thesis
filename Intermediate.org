@@ -5,11 +5,7 @@
 
 
 * Abstract
-
-
-
-
-*Keywords:* Parallel discrete event simulation, Conservative synchronization algorithms, Transaction level models, SystemC TLM
+Keywords: parallel discrete event simulation, conservative synchronization algorithms, transaction level models, SystemC TLM 2.0
 
 
 * Maguire's Notes for Writing an Abstract 			   :noexport:
@@ -25,7 +21,7 @@ _2. Short problem statement_
 One of the first steps in the design of such systems is the in tandem simulation of hardware and software.
 Transaction Level Models, expressed in the SystemC modeling language, can facilitate this co-simulation.
 However, the sequential nature of the SystemC's Discrete Event simulation kernel is a limiting factor.
-Poor simulation performance often limits the scope and depth of the design decisions that can be evaluated.
+Poor simulation performance often constraints the scope and depth of the design decisions that can be evaluated.
 
 
 _3. Why was this problem worth a Master's thesis project? Why no one else solved it yet?_
