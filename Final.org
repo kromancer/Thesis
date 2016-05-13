@@ -92,10 +92,6 @@ but will conform to the general context dictated by the documents already signed
 
 
 * Introduction
-Felix, qui potuit rerum cognoscere causas...
-(Happy, he who could capture the origins of things...)
-Publio Virgilio Marone, Mantova 70 B.C.  Brindisi 19 B.C.
-
 The aim of this chapter is to present the general context of the problem statement.
 that is the engineering discipline of *Electronic System-Level Design (ESLD)*.
 
@@ -1380,7 +1376,33 @@ A socket is basically a convinience class, wrapping up a port and an export.
 This interface allows only two timing points to be associated with each transaction, 
 corresponding to the call to and return from the blocking transport function.
 
+The b_transport method has a timing annotation argument.
+This single argument is used on both the call to and the return from b_transport to indicate the time of
+the start and end of the transaction, respectively, relative to the current simulation time.
 
+
+*** Class Definition
+#+BEGIN_SRC cpp
+  namespace tlm {
+      template<typename TRANS=tlm_generic_payload>
+      class tlm_blocking_transport_if: public virtual sc_core::sc_interface{
+      public:
+          virtual void b_transport(TRANS& trans, sc_core::sc_time& t)=0;
+      };
+  }
+#+END_SRC
+
+
+
+*** Rules
+1. The b_transport may call wait, directly or indirectly
+2. The b_transport method shall not be called from a method process.
+3. The initiator may *re-use* a transaction object from one cal to the next and across calls to the transport interfaces, DMI, and the debug transport interface
+4. *The call to b_transport marks the first timing point of the transaction. The return from b_transport marks the final timing point of the transaction.*
+5. The timing annotation argument allows the timing points to be offset from the simulation times (value returned by sc_time_stamp()) at which the function call and return are executed.
+6. The callee may modify or update the transaction object, subject to any constraints imposed by the transaction class TRANS.
+7. It is recommmended that the transaction object should not contain timing information. Timing should be annotated using the sc_time argument to b_transport.
+8. Typically, an interconnect component should pass the b_transport call along the forward path from initiator to target. In other words, the implementation of b_transport for the target socket of the interconnect component may call the b_transport method of an initiator socket.
 
 ** Loosely Timed Coding Style
 Notes from Video Lecture: [[http://videos.accellera.org/tlm20tutorial/David_Black/player.html][David Black, XtremeEDA USA: TLM Mechanics]]					   
@@ -1468,9 +1490,6 @@ main
 
 
 
-* SAX 								   :noexport:
-
-
 * Graveyard of potentially usefull phrases 			   :noexport:
 Form must follow function - Le Corbusier
 
@@ -1518,13 +1537,10 @@ How to realize the DE MoC on top of completely heterogeneous HPC platform
 
 
 * Companies List 						   :noexport:
-_Who wants to work in these companies?_
 Mentor Graphics
 Cadence
 Synopsys
 Tensilica
-
-I would rather work at Doulos with John Ansley
 
 
 * Latex Headers 						   :noexport:
