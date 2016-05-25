@@ -92,6 +92,8 @@ but will conform to the general context dictated by the documents already signed
 
 
 * Introduction
+Arxi sofias twn onomatwn h episkepsis Antisthenes
+
 The aim of this chapter is to present the general context of the problem statement.
 that is the engineering discipline of *Electronic System-Level Design (ESLD)*.
 
@@ -492,6 +494,8 @@ _COMMENT:_ The description of this algorithm is not complete.
 
 
 ** Semantics of point-to-point Communication in MPI
+_There is a problem here: There are two sections. Semantics of Nonblocking and Blocking communications in the MPI manual_
+
 The framework chosen for implementing the PDES is the *Message Passing Interface* 3.0 (MPI).
 Events are modeled as structured messages, while event diffusion/communication as message passing.
 MPI is a message passing library interface specification, standardized and maintained by the Message Passing Interface Forum \cite{citation}.
@@ -530,7 +534,7 @@ _COMMENT:_ Why did you choose MPI?
 
 
 ** MPI Communication Modes
-The MPI API contains a number of variants, or modes, for the basic communication primitives.
+The MPI API contains a number of variants, or *modes*, for the basic communication primitives.
 They are distinguished by a single letter prefix (e.g. \texttt{MPI\_Isend(...)}, \texttt{MPI\_Irecv(...)}).
 As dictated by the MPI version 3.0, the following communication modes are supported \cite{MessagePassingInterfaceForum2012}:
 
@@ -572,6 +576,8 @@ Ready sends are an optimization when it can be guaranteed that a matching receiv
 On some systems, this allows the removal of a hand-shake operation that is otherwise required and results in improved performance. 
 A send operation that uses the ready mode has the same semantics as a standard send operation, or a synchronous send operation; 
 it is merely that the sender provides additional information to the system (namely that a matching receive is already posted), that can save some overhead. 
+
+Maybe you should consider non-blocking communication not as a *mode*.
 
 *I for non-blocking mode: \texttt{MPI\_Isend(...)}, \texttt{MPI\_Ibsend(...)}, \texttt{MPI\_Issend(...)} and \texttt{MPI\_Irecv(...)*
 Non-blocking message passing calls return control immediately (hence the prefix I), 
@@ -802,6 +808,131 @@ I see that most of the papers out there do some kind of mpeg2 decoding. That see
 
 
 
+* Caches
+
+** Directory Based Cache Coherence
+Avoid broadcast.
+
+The absence of any centralized data structure that tracks the state of the caches is both the fundamental
+advantage of a snooping-based scheme, since it allows it to be inexpensive, as well as its Achille's heel
+when it comes to scalability.
+
+The sharing status of a particular block of physical memory is kept in one location,
+called the *directory*.
+There are two very different types of directory-based cache coherence.
+In an *SMP*, we can use one centralized directory, 
+associated with the memory or some other _single serialization point_, such as the outermost cache in a multicore.
+
+In a *DSM*, it makes no sense to have a single directory, since that would create a single point of contention
+and make it difficult to scale to many multicore chips given the memory demands of multicores with eight or more cores.
+
+A directory keeps the state of every block that may be cached.
+Information in the directory includes:
+    1. which caches (or collections of caches) have copies of the block
+    2. whether it is dirty, and so on.
+
+Within a multicore with a shared outermost cache (say, L3), it is *easy* to implement a directory scheme.
+_Simply keep a bit vector of the size equal to the number of cores for each L3 block._
+The bit vector indicates which private caches may have copies of a blockin L3, and invalidations are only sent to those caches.
+This works perfectly for a single multicore if *L3 is inclusive*, 
+and _this scheme is the one used in the Intel i7_.
+
+
+*** Basics
+
+Just as with snooping protocol, there are two primary operations that a directory protocol must implement:
+    1. handling a read miss
+    2. handling a write to a shared ( thus clean) cache block.
+
+To implement these operatations, a directory must track the state of each cache block.
+In a simple protocol, these states could be the following:
+   1. *Shared:* One of more nodes have the block cached, and the value in memory is up to date (as well as in all the caches)
+   2. *Uncached:* No node has a copy of the cache block.
+   3. *Modified:* Exactly one node has a copy of the cache block, 
+       and it has written the block, so the memory copy is out of date. 
+
+In addition to tracking the state of each potentially shared memory block, 
+we must track which nodes have copies of that block, 
+since those copies will need to be invalidated on a write.
+
+_The simplest way to do this is to keep a bit vector for each memory block._
+
+We can also use the bit vector to keep track of the owner of the block when the block is in the exclusive state.
+_For efficiency reasons, we also track the state of each cache block at the individual caches._
+
+The states and transitions for the state machine at each cache are identical to what we used for the snooping cache,
+although the actions on a transition are slightly different.
+The processes of invalidating and locating an exclusive copy of a data item are different,
+since the both involve communication between the requesting node and the directory 
+and between the directory an one or more remote nodes.
+
+In a snooping protocol, these two steps are combined through the use of a broadcast to all the nodes.
+
+
+
+*** Coherence Messages
+
+A catalog of the message types that may be sent between the processors and the directories
+for the purpose of handling misses and maintaining coherence.
+
+| Message Type        | Source         | Destination    | Message contents | Function of this message                                                                                            |
+|---------------------+----------------+----------------+------------------+---------------------------------------------------------------------------------------------------------------------|
+| 1. Read Miss        | Local cache    | Home directory | P, A             | Node P has a read miss at address A; request data and make P a read sharer                                          |
+| 2. Write Miss       | Local cache    | Home directory | P, A             | Node P has a write miss at address A; request data and make P the exclusive owner                                   |
+| 3. Invalidate       | Local cache    | Home directory | A                | Request to send invalidates to all remote caches that are caching the block at address A                            |
+| 4. Invalidate       | Home directory | Remote cache   | A                | Invalidate a shared copy of data at address A                                                                       |
+| 5. Fetch            | Home directory | Remote cache   | A                | Fetch the block at address A and sent it to its home directory; change the state of A in the remote cache to shared |
+| 6. Fetch/invalidate | Home directory | Remote cache   | A                | Fetch the block at address A and send it to its home directory; invalidate the block in the cache                   |
+| 7. Data value reply | Home directory | Local cache    | D                | Return a data value from the home memory                                                                            |
+| 8. Data write-back  | Remote cache   | Home directory | A, D             | Write-back a data value for address A                                                                               |
+
+- The first 3 messages are requests sent by the local node to the home.
+- The 4 through 6 messages are messages sent to a remote node by the home 
+  when the home needs the data to satisfy a read or write miss request.
+- Data value replies are used to send a value from the home node back to the requesting node.
+- Data value write-backs occur for two reasons: 
+     a. When a block is replaced in a cache and must be written back to its home memory
+     b. In reply to fetch or fetch/invalidate messages from the home.
+
+_Writing back the data value whenever the block becomes shared_
+simplifies the number of states in the protocol since 
+     a. Any dirty block must be exclusive 
+     b. Any shared block is always available in the home memory.
+  
+
+*** State Machine for individual cache block
+
+The basic states of a cache block in a directory-based protocol are exactly like those in a snooping protocol.
+Thus, we can start with simple state diagrams that show 
+    1. The state transitions for *an individual cache block*
+    2. The state for the *directory entry* corresponding to each block in memory.
+
+
+
+** MESI
+Adds the state *Exclusive* to the basic MSI protocol
+to indicate when a cache block is resident only in a single cache but is clean.
+
+If a block is in the *E* state, it can be written without generating any invalidates,
+which optimizes the case where a block is read by a single cache before being written by that same cache.
+
+Of course, when a *read miss* to a block in the *E* state occurs, the block must be changed
+to the *S* state to maintain coherence.
+
+Because all sugsequent accesses are snooped, it is possible to maintain the accuracy of this state.
+In particular, if another processor issues a read miss, the state is changed from exclusive to shared.
+The advantage of adding this state is that a subsequent write to a block in the exclusive state
+by the same core need not acquire bus access or generate any invalidate, since the block is known to be
+exclusively in this local cache; the processor merely changes the state to modified.
+
+This state is easily added by using the bit that encodes the coherent state as an exclusive state
+and using the dirty bit to indicate that a block is modified.
+
+The Intel i7 uses a variant of a MESI protocol, called MESIF, which adds a state (Forward) to designate
+which sharing processor should respond to a request. It is designed to enhance performance in distributed
+memory organizations.
+
+
 * Computer Science Cheatsheet 					   :noexport:
 _Semantics:_ As a necessary propery of a modeling language whose models are meant to undergo
              synthesis and refinement. In order to have well-defined semantics, we need to
@@ -1016,33 +1147,117 @@ The dynamic_cast operator does exactly that.
 
 
 * MPI 								   :noexport:
-** What is Blocking and Non-Blocking in MPI's context
-The classification is with respect to whether the buffer involved in the communication primitive
-is available for re-use in case of send or use in case of receive.
+** Nonblocking Communication
+One can improve performance on many systems by overlapping communication and computation.
+This is especially true on systems where communication can be executed autonomously by an intelligent communication controller.
 
-The 4 communication modes still apply for both categories.
+*Light-weight* threads are one mechanism for achieving such overlap.
+An alternative mechanism that often leads to better performance is to use *nonblocking communication*.
 
-_A *nonblocking send* call indicates_
-that the system may start copying data out of the send buffer. 
-The sender should not modify any part of the send buffer after a nonblocking send operation is called, 
-until the send completes.
+A *non-blocking send start* call initiates the send operation, but does not complete it.
+The send start call can return before the message was *copied out* of the send buffer.
+A seperate send complete call is needed to complete the communication, i.e., to verify that the data has been copied out of the send buffer.
+With suitable hardware, the transfer of data out of the sender memory may proceed concurrently with computations done at the sender after the send was initiated and before
+it completed.
 
-The completion of a send operation indicates that the sender is now free to update the locations in the send buffer 
-It does not indicate that the message has been received, rather, 
-it may have been buffered by the communication subsystem.
+Similarly, a *non-blocking receive start* call initiates the receive operation, but does not complete it.
+The call can return before a message is stored into the receive buffer.
+A separate receive complete call is needed to complete the receive operation and verify that the data has been recived into the receive buffer.
+With suitable hardware, the transfer of data into the receiver memory may proceed concurrently with computations done after the receive was initiated and before it completed.
+_The use of nonblocking receives may also avoid system buffering and memory-to-memory copying, as information is provided early on the location of the receive buffer._
 
-However, if a *synchronous mode* send was used, the completion of the send operation indicates 
-that a matching receive was initiated, 
-and that the message will eventually be received by this matching receive.
+_Nonblocking send start calls can use the same four modes as blocking sends: standard, buffered, synchronous and ready._
+These carry the same meaning.
+
+Sends of all modes, ready excepted, can be started whether a matching receive has been posted or not;
+a nonblocking *ready* send can be started only if a matching receive is posted.
+In all cases, the send start call is local: it returns immediately, irrespective of the status of other processes.
+If the call causes some system resource to be exhausted, then it will fail and return an error code.
+Quality implementations of MPI should ensure that this happens only in "pathological" cases.
+That is, an MPI implementation should be able to support a large number of pending nonblocking operations.
+The send-complete call returns when data has been copied out of the send buffer.
+It may carry additional meaning, depending on the send mode.
+
+If the send mode is *synchronous*, then the send can complete only if a matching receive has started.
+That is, a receive has been posted, and has been matched with the send.
+_In this case, the send-complete call is non-local_
+Note that a synchronous, nonblocking send may complete, if matched by a nonblocking receive, before the receive complete call occurs.
+(It can complete as soon as the sender knows the transfer will complete, but before the receiver knwos the transfer will complete.)
+
+If the send mode is *buffered* then the message must be buffered if there is no pending receive.
+In this case, the send-complete call is local, and must succeed irrespective of the status of a matching receive.
+
+If the send mode is *standard* then the send-complete call _may_ return before a matching receive is posted, if the message is buffered.
+On the other hand, the receive-complete may not complete until a matching receive is posted, and the message was copied into the receive buffer.
+
+_Nonblocking sends can be matched with blocking receives, and vice-versa._
+
+The completion of a send operation may be delayed, for standard mode, and must be delayed, for synchronous mode, until a matching receive is posted.
+The use of nonblocking sends in these two cases allows the sender to proceed ahead of the receiver, so that the computation is more tolerant of fluctuations in the speeds of the two processes.
+
+Nonblocking sends in the buffered and ready modes have a more limited impact, 
+e.g., the blocking version of buffered send is capable of completing regardless of when a matching receive call is made.
+However, separating the start from the completion of these sends still gives some opportunity for optimization within the MPI library.
+For example, starting a buffered send gives an implementation more flexibility in determining if and how the message is buffered.
+There are also advantages for both nonblocking buffered and ready modes when data copying can be done concurrently with computation.
+
+The message-passing model implies that communication is initiated by the sender.
+_The communication will generally have lower overhead if a receive is already posted whene the sender initiates the communication_
+_(data can be moved directly to the receive buffer, and there is no need to queue a pending send request)_
+However, a receive operation can complete only after the matching send has occured.
+The use of nonblocking receives allows one to achieve lower communication overheads without blocking the receiver while it waits for the send.
 
 
-_A *nonblocking receive* call indicates_
-that the system may start writing data into the receive buffer. 
-The receiver should not access any part of the receive buffer after a nonblocking receive operation is called, until the receive completes.
+** MPI_Request
+Nonblocking communications use opaque request objects to identify communication operations 
+and match the operation that initiates the communication with the operation that terminates it.
+These are system objects that are accessed via a handle.
+A request object identifies various properties of a communication operation, 
+such as the *send mode*, 
+the *communication buffer* that is associated with it,
+its *context*,
+the *tag* and *destinationa* arguments to be used for a send,
+or the *tag* and *source* arguments to be used for a receive.
+In addition, this object stores information about the status of the pending communication operation.
 
-The completion of a receive operation indicates that the receive buffer contains the received message, 
-the receiver is now free to access it, and that the status object is set. 
-It does not indicate that the matching send operation has completed (but indicates, of course, that the send was initiated).
+A *null* handle is a handle with value *MPI_REQUEST_NULL*
+A persistent request and the handle to it are *inactive* if the request is not associated with any ongoing communication.
+A handle is *active* if it is neither null or inactive.
+
+
+** MPI_Status
+An *empty* status is a status which is set to return 
+tag=MPI_ANY_TAG, 
+source=MPI_ANY_SOURCE, 
+error=MPI_SUCCESS, and is also internally configured so that calls to MPI_GET_COUNT, MPI_GET_ELEMENTS, and MPI_GET_ELEMENTS_X return count = 0 and MPI_TEST_CANCELLED returns false.
+We set a status variable to empty when the value returned by it is not significant.
+Status is set in this way so as to prevent errors due to accesses of stale information.
+
+
+** MPI_{TEST|WAIT}{ALL|SOME|ANY}
+#+BEGIN_SRC cpp
+  MPI_Wait(
+      MPI_Request *request,
+      MPI_Status  *status
+      );
+#+END_SRC
+A call to MPI_WAIT returns when the operation identified by request is complete.
+If the request is an active persistent request, it is marked inactive.
+Any other type of request is and the request handle is set to MPI_REQUEST_NULL.
+MPI_WAIT is a non-local operation.
+
+The call returns, in *status* information on the completed operation.
+
+One is allowed to call MPI_WAIT with a null or inactive request argument.
+In this case the operation returns immediately with empty status.
+
+Successful return of MPI_WAIT after a MPI_IBSEND implies that the used send buffer can be reused.
+(data has been sent out or copied into a buffer attached with MPI_BUFFER_ATTACH)
+Note that, at this point, we can no longer cancel the send.
+If a matching receive is never posted, then the buffer cannot be freed.
+This runs somewhat counter to the stated goal of MPI_CANCEL
+(always being able to free program space that was committed to the communication subsystem).
+
 
 ** MPI_Status
 The source or tag of a received message may not be known if wildcard values were used in the receive operation. 
@@ -1050,6 +1265,20 @@ Also, if multiple requests are completed by a single MPI function (see Section 3
 
 The status argument also returns information on the length of the message received.
 However, this information is not directly available as a field of the status variable and a call to MPI_GET_COUNT is required to “decode” this information.
+
+
+** MPI_Irecv
+#+BEGIN_SRC cpp
+  MPI_Irecv(
+      void *buf,
+      int   count,
+      MPI_Datatype datatype,
+      int   source,
+      int   tag,
+      MPI_Comm comm,
+      MPI_Request *request
+  )
+#+END_SRC
 
 
 * SystemC 							   :noexport:

@@ -387,6 +387,7 @@ Beware, there are two more parameters that have a default value.
 
 *** make_pair()
 
+
 *** iterators
 A map offers *bidirectional* and *reverse* iterators.
 
@@ -712,6 +713,8 @@ VFIO
 BAR
 
 * Bernstein 							   :noexport:
+Sounds that have a *notational* tone.
+
 ...that was only a description, not a grammatical explanation.
 You have not pointed out the functions and interactions of these tokens.
 
@@ -794,3 +797,15 @@ by one layer is meant to reach the peer layer in the receiving entity.
 * XML
 A *metamarkup* language: The set of tags is not predefined.
 A *scheme* defines a XML based language
+* UML
+Investigating the semantics of UML diagrams.
+What does UML notation denotes in terms of code?
+** Class Diagrams
+*** Association
+Association from A to B means that A uses B directrly,
+for example a reference to an instance of B is passed as an argument to method of A.
+
+*** Aggregation
+An object acts a container class of the other.
+**** Shared Aggregation
+**** Composition
