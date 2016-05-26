@@ -1,42 +1,7 @@
 #ifndef CACHE_L1_H
 #define CACHE_L1_H
 
-#include <string>
-
-using namespace std;
-using Address  = unsigned int;
-using SetIndex = unsigned int;
-using BlockTag = unsigned int;
-
-enum BlockState             {INVALID, SHARED, MODIFIED};
-enum CoherenceMessageType   {INV, FETCH_INV, FETCH, READ_MISS, WRITE_MISS};
-enum Operation              {READ, WRITE};
-
-//81: Define cache size in bytes
-#define CACHE_SIZE 32768
-
-//82: Define cache block size
-#define BLOCK_SIZE 2
-
-//83: Define cache associativity
-#define N_WAYS 1
-
-//84: Define replacement policy
-#define POLICY 1
-
-
-constexpr int numSets (int cacheSize, int blockSize, int ways) { return cacheSize/(blockSize*ways); }
-
-
-// Emulates a generic payload?
-struct ProtocolResponse
-{
-    Address       a;
-    Operation     op;
-    unsigned char *bytes;
-    CoherenceMessageType msg;
-};
-
+#include "memory_hierarchy_configuration.hpp"
 
 /***********************************************************
  * CLASS BLOCK
@@ -65,10 +30,12 @@ public:
     unsigned char bytes[BLOCK_SIZE];    
     bool pending;
     
-    void respondInvalidate( ProtocolResponse *resp);
-    void respondFetch( ProtocolResponse *resp);
-    void respondCpuReadMiss( ProtocolResponse *resp);
-    void respondCpuWriteHit( ProtocolResponse *resp);
+    void respondInvalidate(   ProtocolResponse *resp);
+    void respondFetch(        ProtocolResponse *resp);
+    void respondCpuReadHit(   ProtocolResponse *resp);
+    void respondCpuReadMiss(  ProtocolResponse *resp);
+    void respondCpuWriteHit(  ProtocolResponse *resp);
+    void respondCpuWriteMiss( ProtocolResponse *resp);
     void setDirty();
     int  getTag();
     
@@ -90,9 +57,10 @@ public:
     bool   free[N_WAYS];
     bool   isSetFull();
     int    numOfBlocks;
-    void   evict( ProtocolResponse *resp);
-    void   insert( Block newBlock );
-    Block *getBlock(BlockTag);
+
+    void       insert( Block newBlock );
+    Block     *getBlock(BlockTag);
+    SetIndex   evict();
 };
 
 /***********************************************************
@@ -105,10 +73,9 @@ class CacheL1
 {
 public:
     CacheL1();
-    void getSetIndexAndTag( Address, SetIndex*, BlockTag*);
-    void respondToDirectory( CoherenceMessageType, Address, ProtocolResponse*  );
-    void respondToCPU(       Operation,            Address, ProtocolResponse* );
-    bool isBlockPresent( SetIndex, BlockTag );
+    void respondToDirectory( ProtocolResponse*  );
+    void respondToCPU(       ProtocolResponse* );
+    Block *checkBlockPresence( SetIndex, BlockTag );
     
 private:
     Set sets[ numSets(CACHE_SIZE, BLOCK_SIZE, N_WAYS) ];

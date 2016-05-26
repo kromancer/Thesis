@@ -1,8 +1,8 @@
 #include "cache_L1.hpp"
 #include <iostream>
-#include <cmath>
 
-//STATUS: working on CPU Write Miss from SHARED
+
+//STATUS: working on CPU Write hit, block SM actions
 
 /***********************************************************
  * CLASS BLOCK
@@ -18,6 +18,7 @@
  *     1. SHARED
  *     2. MODIFIED
  *     3. INVALID
+ * The state of the block is also maintained in the directory.
  *
  * For the exact state transition diagram see:
  *    Hennessy & Patterson "Computer Architecture: A Quantitative Approach"
@@ -37,110 +38,64 @@ int Block::getTag()
 
 void Block::respondInvalidate( ProtocolResponse *resp)
 {
-    state = INVALID;
-    switch (state)
-    {
-    case SHARED:
-    {
-	break;
-    }
-    case MODIFIED:
-    {
+    if (state == MODIFIED)
 	resp->bytes = bytes;
-	break;
-    }
-    case INVALID:
-    {
-	cout << "This should not have happened: INV from INVALIDATE" << endl;
-	break;
-    }
-    }
+
+    state = INVALID;
 }
 
 
 void Block::respondFetch( ProtocolResponse *resp)
 {
-    switch (state)
-    {
-    case MODIFIED:
-    {
-	state = SHARED;
-	resp->bytes = bytes;
-	break;
-    }
-    case SHARED:
-    {
-	cout << "This should not have happened: FETCH from SHARED" << endl;
-	break;
-    }
-    case INVALID:
-    {
-	cout << "This should not have happened: FETCH from INVALID" << endl;
-	break;
-    }
-    }
+    resp->bytes = bytes;
+    state = SHARED;
 }
 
 
+void Block::respondCpuReadHit( ProtocolResponse *resp)
+{
+    if (state == INVALID)
+	resp->msg = READ_MISS;
+    else
+	resp->bytes = bytes;
+
+    state = SHARED;
+}
+
+// The Set Class has already decided that this block will be evicted
+// see Set::evict()
 void Block::respondCpuReadMiss( ProtocolResponse *resp)
 {
-    switch (state) {
-    case MODIFIED:
-    {
-	state = SHARED;
-	pending = true;
+    if (state == MODIFIED)
 	resp->bytes = bytes;
-	break;
-    }
-    case SHARED:
-    {
-	break;
-    }
-    case INVALID:
-    {
-	break;
-    }
-    }
+    else
+	resp->bytes = NULL;
+
+    state = SHARED;
 }
 
 void Block::respondCpuWriteHit( ProtocolResponse *resp)
 {
-    switch (state) {
-    case MODIFIED:
+    resp->bytes = bytes;
+    if (state == INVALID)
     {
-	break;
+	resp->msg   = WRITE_MISS;
+	resp->bytes = NULL;
     }
-    case SHARED:
-    {
-	state = MODIFIED;
+    else if (state == SHARED)
 	resp->msg = INV;
-	break;
-    }
-    case INVALID:
-    {
-	break;
-    }
-    }
+
+    state = MODIFIED;
 }
 
 void Block::respondCpuWriteMiss( ProtocolResponse *resp)
 {
-    switch (state) {
-    case MODIFIED:
-    {
-	break;
-    }
-    case SHARED:
-    {
-	state = MODIFIED;
-	resp->msg = INV;
-	break;
-    }
-    case INVALID:
-    {
-	break;
-    }
-    }
+    if (state == MODIFIED)
+	resp->bytes = bytes;	
+    else
+	resp->bytes = NULL;
+
+    state = MODIFIED;
 }
 
 
@@ -181,14 +136,14 @@ bool Set::isSetFull()
 }
 
 
-void Set::evict( ProtocolResponse *resp)
+SetIndex Set::evict()
 {
     switch(POLICY)
     {
     case 1: // ALWAYS THE FIRST WAY
     {
 	free[0] = true;
-	ways[0].respondCpuReadMiss(resp);
+	return 0;
     }
     }
 }
@@ -209,53 +164,47 @@ CacheL1::CacheL1()
     
 }
 
-bool CacheL1::isBlockPresent(SetIndex i, BlockTag t)
+Block* CacheL1::checkBlockPresence(SetIndex i, BlockTag t)
 {
-    if ( sets[i].getBlock(t) )
-	return true;
+    Block *result = sets[i].getBlock(t);
+    if ( result )
+	return result;
     else
-	return false;
+	return NULL;
 }
 
 
-void CacheL1::getSetIndexAndTag(Address a, SetIndex *setIndex, BlockTag *blockTag)
-{
-    // Discard byte index
-    Address discardedBlockOffset = a >> (unsigned int)(log2(BLOCK_SIZE) ) ;
-
-    // Create set index mask
-    Address setIndexLength = log2(numSets(CACHE_SIZE, BLOCK_SIZE, N_WAYS));
-    Address setIndexMask   = numSets(CACHE_SIZE, BLOCK_SIZE, N_WAYS) - 1;
-
-    // Find set index and block tag
-    *blockTag = discardedBlockOffset >> setIndexLength;
-    *setIndex = setIndexMask & discardedBlockOffset;
-}
-
-
-
-void CacheL1::respondToDirectory( CoherenceMessageType m, Address a, ProtocolResponse *resp )
+void CacheL1::respondToDirectory( ProtocolResponse *resp )
 {
     // Do the proper analysis of the address to extract set index and block tag
+    Address              a  = resp->address;
+    CoherenceMessageType m  = resp->msg;
     SetIndex setIndex;
     BlockTag blockTag;
     getSetIndexAndTag(a, &setIndex, &blockTag);
 
 
+    // Remember that the directory knows whether the block is present or not
+    // We do not have to do any presence checks
     switch (m)
     {
     case INV:
     {
+	// Another CPU has issued a WRITE_MISS
 	sets[setIndex].getBlock(blockTag)->respondInvalidate(resp);
 	break;
     }
     case FETCH_INV:
     {
+	// Another CPU has issued a WRITE_MISS
+	// The directory knows that this cache has the block in MODIFIED
 	sets[setIndex].getBlock(blockTag)->respondInvalidate(resp);
 	break;
     }
     case FETCH:
     {
+	// The directory knows that this cache has the block in MODIFIED.
+	// Another CPU has issued a READ_MISS.
 	sets[setIndex].getBlock(blockTag)->respondFetch(resp);
 	break;
     }
@@ -264,43 +213,65 @@ void CacheL1::respondToDirectory( CoherenceMessageType m, Address a, ProtocolRes
     }
 }
 
-void CacheL1::respondToCPU(Operation op, Address a, ProtocolResponse *resp)
+void CacheL1::respondToCPU( ProtocolResponse *resp )
 {
     // Do the proper analysis of the address to extract set index and block tag
+    Address  a = resp->address;
+    Operation op = resp->op;
     SetIndex setIndex;
     BlockTag blockTag;
     getSetIndexAndTag(a, &setIndex, &blockTag);
 
     switch(op){
+    //----------------------------------------------------------------------
     case READ:
     {
-	if ( isBlockPresent(setIndex, blockTag) )
-	    ;
+	Block *block = checkBlockPresence(setIndex, blockTag);
+	// READ_HIT
+	if ( block )
+	    block->respondCpuReadHit(resp);
+	// READ_MISS
 	else
 	{
+	    resp->msg = READ_MISS;
+	    resp->address = a;
 	    if ( sets[setIndex].isSetFull() )
 	    {
-		sets[setIndex].evict(resp);
+		// Cache must first EVICT
+		int i = sets[setIndex].evict();
+		sets[setIndex].ways[i].respondCpuReadMiss(resp);
+		// Cache must now fetch and place memory block
 	    }
 	    else
 	    {
-
+		// Cache must fetch and place memory block
 	    }
-	    resp->op = READ;
-	    resp->a  = a;
 	}
 	break;
     }
+    //----------------------------------------------------------------------
     case WRITE:
     {
-	if ( isBlockPresent(setIndex, blockTag) )
+	Block *block = checkBlockPresence(setIndex, blockTag);
+	// WRITE_HIT
+	if ( block )
 	    sets[setIndex].getBlock(blockTag)->respondCpuWriteHit( resp );
+	// WRITE_MISS
 	else
 	{
-
+	    resp->msg = WRITE_MISS;
 	    if ( sets[setIndex].isSetFull() )
-
+	    {
+		// Cache must first EVICT
+		int i = sets[setIndex].evict();
+		sets[setIndex].ways[i].respondCpuWriteMiss(resp);
+		// Cache must now fetch and place memory block
 		
+	    }
+	    else
+	    {
+		
+	    }
 	}
 	break;
     }
@@ -328,7 +299,7 @@ int main(int argc, char *argv[])
     SetIndex i;
     BlockTag t;
 
-    c.getSetIndexAndTag(0x4000, &i, &t);
+    getSetIndexAndTag(0x4000, &i, &t);
     std::cout << "Set Index: " << i << " Block Tag: " << t << std::endl;
 
     return 0;

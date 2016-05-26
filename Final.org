@@ -834,6 +834,7 @@ Information in the directory includes:
 Within a multicore with a shared outermost cache (say, L3), it is *easy* to implement a directory scheme.
 _Simply keep a bit vector of the size equal to the number of cores for each L3 block._
 The bit vector indicates which private caches may have copies of a blockin L3, and invalidations are only sent to those caches.
+
 This works perfectly for a single multicore if *L3 is inclusive*, 
 and _this scheme is the one used in the Intel i7_.
 
@@ -900,13 +901,34 @@ simplifies the number of states in the protocol since
      b. Any shared block is always available in the home memory.
   
 
-*** State Machine for individual cache block
+*** Protocol from the Cache's Side
 
 The basic states of a cache block in a directory-based protocol are exactly like those in a snooping protocol.
 Thus, we can start with simple state diagrams that show 
     1. The state transitions for *an individual cache block*
     2. The state for the *directory entry* corresponding to each block in memory.
 
+
+
+*** Protocol from the Diretory's Side
+
+A message sent to a directory  causes two different types of actions:
+  1. Updating the directory state.
+  2. Send additional messages to satisfy the request.  
+
+The memory block may be 
+  1. Uncached by any node, 
+  2. Cached in multiple nodes and readable (shared).
+  3. Cached exclusively and writable in exactly one node.
+
+In addition to the state of each block, the directory must track the set of nodes that
+have a copy of a block; we use a set called Sharers to perform this function.
+_Directory requests need to update the set Sharers and also read the set to perform invalidations._
+
+The directory receives three different requests: read miss, write miss, and data write-back.
+
+_Our simplified protocol assumes that some actions are atomic, such as requesting a value and sending it to another node;
+a realistic implementation cannot use this assumption_
 
 
 ** MESI
@@ -1144,6 +1166,27 @@ The dynamic_cast operator does exactly that.
       dangerous(d, 10);
   }
 #+END_SRC
+
+
+** Inline
+
+*** Keyword
+Functions declared in the header must be marked *inline*,
+otherwise,
+every *translation unit* which includes the header will contain a definition of the function,
+and
+the linker will complain about multiple definitions (a violation of the One Definition Rule).
+_The inline keyword suppresses this, allowing multiple translation units to contain identical definitions._
+
+
+*** Optimization
+A C++ compiler is free to apply the inlining optimization any time it likes,
+as long as it doesn't alter the observable behavior of the program.
+
+The inline keyword makes it easier for the compiler to apply this optimization, 
+by allowing the function definition to be visible in multiple translation units,
+but _using the keyword doesn't mean the compiler has to inline the function_, 
+and _not using the keyword doesn't forbid the compiler from inlining the function._
 
 
 * MPI 								   :noexport:
