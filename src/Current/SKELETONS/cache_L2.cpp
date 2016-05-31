@@ -1,9 +1,12 @@
 #include "cache_L2.hpp"
 
 // Currently working on respondToInv
-  
+Directory::Directory()
+{
+    
+}
 
-void Directory::respondToL1Caches(ProtocolResponse *resp)
+void Directory::respondToL1Caches(CacheTransaction *resp)
 {
     CoherenceMessageType msg = resp->msg;
     Address                i = resp->address >> BLOCK_SIZE;
@@ -20,8 +23,18 @@ void Directory::respondToL1Caches(ProtocolResponse *resp)
 
 }
 
-void DirectoryEntry::respondToInv( ProtocolResponse *resp)
+void Directory::DirectoryEntry::respondToInv( CacheTransaction *resp)
 {
-    
-    state = MODIFIED;
+    for( int i=0; i<8; i++ )
+    {
+	if ( (sharers >> i) & 1 )
+	    parent->sendInv(i);
+    }
+
+    state = INVALID;
+}
+
+void Directory::sendInv(uint l1Cache)
+{
+    i_socket[l1Cache]->b_transport();
 }

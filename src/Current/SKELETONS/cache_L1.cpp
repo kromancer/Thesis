@@ -36,7 +36,7 @@ int Block::getTag()
 }
 
 
-void Block::respondInvalidate( ProtocolResponse *resp)
+void Block::respondInvalidate( CacheTransaction *resp)
 {
     if (state == MODIFIED)
 	resp->bytes = bytes;
@@ -45,14 +45,14 @@ void Block::respondInvalidate( ProtocolResponse *resp)
 }
 
 
-void Block::respondFetch( ProtocolResponse *resp)
+void Block::respondFetch( CacheTransaction *resp)
 {
     resp->bytes = bytes;
     state = SHARED;
 }
 
 
-void Block::respondCpuReadHit( ProtocolResponse *resp)
+void Block::respondCpuReadHit( CacheTransaction *resp)
 {
     if (state == INVALID)
 	resp->msg = READ_MISS;
@@ -64,7 +64,7 @@ void Block::respondCpuReadHit( ProtocolResponse *resp)
 
 // The Set Class has already decided that this block will be evicted
 // see Set::evict()
-void Block::respondCpuReadMiss( ProtocolResponse *resp)
+void Block::respondCpuReadMiss( CacheTransaction *resp)
 {
     if (state == MODIFIED)
 	resp->bytes = bytes;
@@ -74,7 +74,7 @@ void Block::respondCpuReadMiss( ProtocolResponse *resp)
     state = SHARED;
 }
 
-void Block::respondCpuWriteHit( ProtocolResponse *resp)
+void Block::respondCpuWriteHit( CacheTransaction *resp)
 {
     resp->bytes = bytes;
     if (state == INVALID)
@@ -88,7 +88,7 @@ void Block::respondCpuWriteHit( ProtocolResponse *resp)
     state = MODIFIED;
 }
 
-void Block::respondCpuWriteMiss( ProtocolResponse *resp)
+void Block::respondCpuWriteMiss( CacheTransaction *resp)
 {
     if (state == MODIFIED)
 	resp->bytes = bytes;	
@@ -174,7 +174,7 @@ Block* CacheL1::checkBlockPresence(SetIndex i, BlockTag t)
 }
 
 
-void CacheL1::respondToDirectory( ProtocolResponse *resp )
+void CacheL1::respondToDirectory( CacheTransaction *resp )
 {
     // Do the proper analysis of the address to extract set index and block tag
     Address              a  = resp->address;
@@ -213,7 +213,7 @@ void CacheL1::respondToDirectory( ProtocolResponse *resp )
     }
 }
 
-void CacheL1::respondToCPU( ProtocolResponse *resp )
+void CacheL1::respondToCPU( CacheTransaction *resp )
 {
     // Do the proper analysis of the address to extract set index and block tag
     Address  a = resp->address;
@@ -255,7 +255,12 @@ void CacheL1::respondToCPU( ProtocolResponse *resp )
 	Block *block = checkBlockPresence(setIndex, blockTag);
 	// WRITE_HIT
 	if ( block )
+	{
 	    sets[setIndex].getBlock(blockTag)->respondCpuWriteHit( resp );
+	    if ( resp->msg == INV)
+		directory->respondToL1Caches( resp );
+	}
+
 	// WRITE_MISS
 	else
 	{

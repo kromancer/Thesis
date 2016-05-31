@@ -2,6 +2,7 @@
 #define CACHE_L1_H
 
 #include "memory_hierarchy_configuration.hpp"
+#include "tlm.h"
 
 /***********************************************************
  * CLASS BLOCK
@@ -30,12 +31,12 @@ public:
     unsigned char bytes[BLOCK_SIZE];    
     bool pending;
     
-    void respondInvalidate(   ProtocolResponse *resp);
-    void respondFetch(        ProtocolResponse *resp);
-    void respondCpuReadHit(   ProtocolResponse *resp);
-    void respondCpuReadMiss(  ProtocolResponse *resp);
-    void respondCpuWriteHit(  ProtocolResponse *resp);
-    void respondCpuWriteMiss( ProtocolResponse *resp);
+    void respondInvalidate(   CacheTransaction *resp);
+    void respondFetch(        CacheTransaction *resp);
+    void respondCpuReadHit(   CacheTransaction *resp);
+    void respondCpuReadMiss(  CacheTransaction *resp);
+    void respondCpuWriteHit(  CacheTransaction *resp);
+    void respondCpuWriteMiss( CacheTransaction *resp);
     void setDirty();
     int  getTag();
     
@@ -72,9 +73,9 @@ public:
 class CacheL1 
 {
 public:
-    CacheL1();
-    void respondToDirectory( ProtocolResponse*  );
-    void respondToCPU(       ProtocolResponse* );
+    CacheL1( );
+    void respondToDirectory( CacheTransaction*  );
+    void respondToCPU(       CacheTransaction* );
     Block *checkBlockPresence( SetIndex, BlockTag );
     
 private:

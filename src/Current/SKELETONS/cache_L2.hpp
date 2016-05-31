@@ -21,14 +21,6 @@ class CacheL2
  * We interpret INVALID as UNCACHED
  * We use 8-bits for the sharers, thus 8 CPUs max
  **********************************************************/
-class DirectoryEntry
-{
-private:
-    BlockState    state;
-    unsigned char sharers;
-    void respondToInv( ProtocolResponse *resp );
-    friend class Directory;
-};
 
 /***********************************************************
  * CLASS Directory
@@ -36,9 +28,29 @@ private:
  **********************************************************/
 class Directory
 {
+    class DirectoryEntry
+    {
+    private:
+	Directory    *parent;
+	BlockState    state;
+	unsigned char sharers;
+    public:
+	void respondToInv( CacheTransaction *resp );
+    };
+
+
 public:
+    Directory();
+    
+    tlm_utils::multi_passthrough_initiator_socket<Directory> i_socket;
+    tlm_utils::multi_passthrough_target_socket<Directory>    t_socket;
+    
+    
     DirectoryEntry   dir[ numMemBlocks(MEM_SIZE, BLOCK_SIZE) ];
-    void             respondToL1Caches( ProtocolResponse*);
+    void             respondToL1Caches( CacheTransaction* );
+    void             sendInv(uint l1cache);
+    
+    
 };
 
 

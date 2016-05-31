@@ -116,6 +116,10 @@ To the Linux kernel, all threads are unique processes.
 The kernel simply views threads as processes that share resources.
 
 * C++ topics 							   :noexport:
+** Access specifiers
+Access specifiers are for the compiler, and are not relevant at runtime.
+Accessing a private member outside of scope is a compile error.
+
 ** Linkage
 The way a program is organized into files can help emphasize its logical structure, 
 help a human reader understand the program, 
@@ -202,7 +206,7 @@ Alternatively, conditional compilation can be used to create a common C and C++ 
 
 
 ** using keyword
-
+   
 
 ** Initialization
 Initialization using {} _list initialization_ does not allow narrowing.
@@ -252,10 +256,6 @@ R value references facilitate the implementation of these concepts:
 *** A Rvalue is
 An expression that refers to a memory location and allows us to take the address of that memory location via the & operator. 
 An rvalue is an expression that is not an lvalue.
-
-*** 
-
-
 
 
 *** Move semantics
@@ -343,6 +343,17 @@ This is known as *single dispatch* call, or simply a virtual function call.
 *Double dispatch* is useful in situations where the choice of computation depends on the runtime types of its arguments.
 
 
+** Deque Containers
+
+*** A Sequence Container
+The sequence containers store elements in a linear sequence.
+/There's no ordering imposed on the elements./
+
+A ~deque<T>~ container is a variable length sequence that grows automatically.
+You can add or delete elements efficiently at both ends of the sequence.
+Deque = *Double Ended Queue*
+
+
 ** Map Containers
 
 *** Associative Container
@@ -390,6 +401,55 @@ Beware, there are two more parameters that have a default value.
 
 *** iterators
 A map offers *bidirectional* and *reverse* iterators.
+
+
+** Delete
+/Is the ~delete~ function called automatically/, when an objects goes out of scope?
+Yes. Check this experiment:
+#+BEGIN_SRC cpp :main no :flags -std=c++11
+    #include <iostream>
+    using namespace std;
+
+    class Foo
+    {
+    public:
+        Foo(){ cout << "Hellow from constructor" << endl;}
+
+        ~Foo(){ cout << "Shit, Desctructor is here" << endl;}
+    };
+
+        int main(int argc, char *argv[])
+        {
+            {
+                Foo a;
+            }
+            return 0;
+        }
+#+END_SRC
+ 
+What would happen if I declared the destructor as a private member?
+#+BEGIN_SRC cpp :main no :flags -std=c++11
+  #include <iostream>
+  using namespace std;
+
+  class Foo
+  {
+  public:
+      Foo(){ cout << "Hellow from constructor" << endl;}
+      ~Foo(){ cout << "Shit, Desctructor is here" << endl;}
+  };
+
+  int main(int argc, char *argv[])
+  {
+      {
+          Foo a;
+          return 0;
+      }
+  }
+#+END_SRC
+
+#+RESULTS:
+
 
 * The Visitor Pattern in tinyXML
 

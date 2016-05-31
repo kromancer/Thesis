@@ -1,26 +1,16 @@
 #ifndef MEM_HIER_CFG_H
 #define MEM_HIER_CFG_H
 
+
 #include <cmath>
+//#include "tlm.h"
+//#include "tlm_utils/multi_passthrough_initiator_socket.h"
+//#include "tlm_utils/multi_passthrough_target_socket.h"
 
 using Address  = unsigned int;
 using SetIndex = unsigned int;
 using BlockTag = unsigned int;
 using uint     = unsigned int;
-
-enum BlockState             {INVALID, SHARED, MODIFIED};
-enum CoherenceMessageType   {INV, FETCH_INV, FETCH, READ_MISS, WRITE_MISS};
-enum Operation              {READ, WRITE};
-
-// Emulates a generic payload?
-struct ProtocolResponse
-{
-    Address              address;
-    Operation            op;
-    unsigned char       *bytes;
-    CoherenceMessageType msg;
-};
-
 
 /*******************************************************
  * L1 Cache Configuration

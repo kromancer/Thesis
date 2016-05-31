@@ -1097,6 +1097,7 @@ This is a historic legacy from telegraphy, in which the line is held high to sho
 
 
 * C++ 								   :noexport:
+
 ** Explicit threading in C++
 #+BEGIN_SRC cpp
 #include <thread>
@@ -1170,7 +1171,8 @@ The dynamic_cast operator does exactly that.
 
 ** Inline
 
-*** Keyword
+*** A questionable interpretation from StackOverflow
+**** Keyword
 Functions declared in the header must be marked *inline*,
 otherwise,
 every *translation unit* which includes the header will contain a definition of the function,
@@ -1179,7 +1181,7 @@ the linker will complain about multiple definitions (a violation of the One Defi
 _The inline keyword suppresses this, allowing multiple translation units to contain identical definitions._
 
 
-*** Optimization
+**** Optimization
 A C++ compiler is free to apply the inlining optimization any time it likes,
 as long as it doesn't alter the observable behavior of the program.
 
@@ -1187,6 +1189,18 @@ The inline keyword makes it easier for the compiler to apply this optimization,
 by allowing the function definition to be visible in multiple translation units,
 but _using the keyword doesn't mean the compiler has to inline the function_, 
 and _not using the keyword doesn't forbid the compiler from inlining the function._
+
+
+*** Semantics in C++
+The inline specifier is a hint to the compiler.
+
+
+** Generic Programming
+Generic Programming seeks to explicitly seperate the notion of "algorithm" from that of a "data-structure".
+The motivation is to: promote component-based development, boost productivity, and reduce configuration management.
+As an example, if you wanted to support four data structures (array, binary tree, linked list, and hash table)
+and three algorithms (sort, find and merge), a traditional approach would require four times three permutations to develop
+and maintain. Whereas, a generic programming approach would only require four plus three configuration items.
 
 
 * MPI 								   :noexport:
@@ -1500,6 +1514,7 @@ but unlike sc_port, there are none built in to the SystemC class library.
 
 
 * TLM 2.0 							   :noexport:
+
 ** General
 A standardized way to connect models described at the untimed or approximately timed transaction level.
 Instead of every vendor of system-level virtual platforms having their own proprietary languages, models and tools
@@ -1560,14 +1575,21 @@ all of the major EDA players.
 \end{tikzpicture}\caption{TLM 2.0 Interoperability layer for bus modeling}
 \end{figure}
 #+END_LATEX
+** Transaction Object
 
+*** Blocking transport interface
 
+1. The lifetime of a given transaction object may extend beyond the return from nb_transport such
+   that _a series of calls to nb_transport may pass a single transaction object_ forward and backward between initiators, interconnect components, and targets.
 
+2. If there are multiple calls to nb_transport associated with a given transaction instance, one and the same transaction object shall be passed as an argument to every such call.
+   _In other words, a given transaction instance shall be represented by a single transaction object._
 
-** Transaction
-A transaction is an abstraction of communication.
-Two way communication.
+3. _An initiator may re-use a given transaction object_ to represent more than one transaction instance, or across calls to the transport interfaces, DMI, and the debug transport interface.
 
+4. Since the lifetime of the transaction object may extend over several calls to nb_transport, either the caller or the callee may modify or update the transaction object, 
+   subject to any constraints imposed by the transaction class TRANS.
+   For example, for the generic payload, the target may update the data array of the transaction object in the case of a read command, but shall not update the command field.
 
 ** Sockets
 A socket combines a port with an export.
@@ -1578,9 +1600,15 @@ Only the most derived classes *tlm_initiator_socket* and *tlm_target_socket* are
 These two sockets are parameterized with a protocol traits class that defines the types used by the forward and backward interfaces.
 Sockets can only be bound together if they have the identical protocol type.
 
-
 ** Generic Payload
-It supports the _abstract modeling of memory-mapped buses_, 
+
+*** Introduction
+
+A specific transation type.
+For *maximum interoperability*, applications should use the default transaction type *tlm_generic_payload* with the base protocol and the default phase type *tlm_phase*.
+Sockets that use interfaces specialized with different transaction types cannot be bound together, providing compile-time checking but restricting interoperability.
+
+It supports the abstract modeling of memory-mapped buses, 
 together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
 
 The main features of the generic payload are:
@@ -1593,6 +1621,10 @@ The main features of the generic payload are:
 - Byte Enable Mask Pointer
 - Response
   An indication of whether the transaction was successful, and if not the nature of the error
+
+The generic payload is the class type offered by the TLM-2.0 standard for transaction objects passed through the core interfaces.
+The generic payload is closely related to the the base protocol, which itself defines further rules to ensure interoperability when using the generic payload.
+
 
 *** Streaming Width
 In case of *multi-beat* transactions 
@@ -1607,6 +1639,38 @@ The meaning of all other values shall be undefined.
 The value 0xff has been chosen that the byte enable array can be used directly as a mask.
 
 
+*** Generic Payload Memory Management
+From section 7.5 of the TLM 2.0.1 LRM
+
+1. The initiator shall be responsible for setting the data pointer and byte enable pointer atrributes to existing
+   storage, which could be static, automatic (stack) or dynamically allocated (new storage). 
+   The initiator shall not delete this storage before the lifetime of the transaction is complete.
+   _The generic payload destructor does not delete these two arrayes._
+
+3. The generic payload supports two distinct approaches to memory management;
+   reference counting with an explicit memory manager and ad hoc memory management by the initiator.
+   The two approaches can be combined.
+   Any memory management approach should manage both the transaction object itself and any extensions to the transaction object.
+
+4. The construction and destruction of objects of type tlm_generic_payload is expected to be expensive in terms of CPU time due to the implementation of the extension array.
+   As a consequence, repeated construction and destruction of generic payload objects should be avoided.
+   There are two recommended strategies; either use a memory manager that implements a pool of transaction objects, 
+   or if using ad hoc memory management, re-use the very same generic payload object across successive calls to *b_transport*
+   (effectively a transaction pool with a size of one).
+   _Having a generic payload object constructed and destructed once per call to transport would be prohibitively slow and should be avoided_
+
+5. A memory manager is a user-defined class that implements at least the *free* method of the abstract base class tlm_mm_interface.
+   The intent is that a memory manager would provide a method to allocate a generic payload transaction object from a pool of transactions,
+   would implement the free method to return a transaction object to that same pool, and would implement a destructor to delete the entire pool.
+   The *free* method is called by the *release* method of class tlm_generic_payload when the reference count of a transaction object reaches 0.
+   The free method of class *tlm_mm_interface* would typically call the reset method of class *tlm_generic_payload* in order to delete any extensions marked for automatic deletion.
+
+6. The methods *set_mm*, *acquire*, *release*, *get_ref_count* and *reset* of the generic payload shall only be used in the presence of a memory manager.
+   By default, a generic payload object does not have a memory manager set.
+
+7. Ad hoc memory management by the initiator without a memory manager requires the initiator to allocate memory for the transaction object before the TLM-2.0
+   core interface call, and delete or pool the transaction object and any extension objects after the call.
+
 ** Initiators and Targets
 A module's processes may act as either initiators or targets.
 An initiator is responsible for creating a payload and calling the transport function to send it.
@@ -1614,7 +1678,6 @@ A target receives payloads from the transport function for processing and respon
 In the case of non-blocking interfaces the target may create new transactions backwards in response to a transaction from an initiator.
 Initiator calls are made through initiator sockets, target calls received through target sockets.
 A module may implement both target and initiator sockets, allowing its threads to both generate and receive traffic.
-
 
 ** Blocking, Non-Blocking, Debug and Interfaces/Transport Call
 _How does TLM contribute to performance boost:_ You do 1 wait, rather than many waits.
@@ -1624,13 +1687,11 @@ With the blocking interface you can have wat() on the target code.
 Why does the nb_transport_if defines 4 phases?
 - To enable
 
-
 ** Direct Memory Interface
-_Characteristics:_
+Characteristics:
 - Allows direct backdoor access into memory
-- *Allows un-inhibited ISS execution:* 
+- Allows un-inhibited ISS execution:
   (Instead of roaming through the hierarchy of a buss system-Fast software execution)
-
 
 ** Socket
 In order to pass transactions between initiators and targets, TLM-2.0 uses sockets.
@@ -1638,7 +1699,6 @@ An initiator sends transactions out through an _initiator socket_, and a target 
 A socket is basically a convinience class, wrapping up a port and an export.
 
 [[file:Figures/tlm_socket.png]]
-
 
 
 
@@ -1675,6 +1735,7 @@ the start and end of the transaction, respectively, relative to the current simu
 6. The callee may modify or update the transaction object, subject to any constraints imposed by the transaction class TRANS.
 7. It is recommmended that the transaction object should not contain timing information. Timing should be annotated using the sc_time argument to b_transport.
 8. Typically, an interconnect component should pass the b_transport call along the forward path from initiator to target. In other words, the implementation of b_transport for the target socket of the interconnect component may call the b_transport method of an initiator socket.
+
 
 ** Loosely Timed Coding Style
 Notes from Video Lecture: [[http://videos.accellera.org/tlm20tutorial/David_Black/player.html][David Black, XtremeEDA USA: TLM Mechanics]]					   
@@ -1760,6 +1821,12 @@ main
 
 
 
+
+
+* Design Patterns 						   :noexport:
+
+Check this website and maybe buy the book
+https://sourcemaking.com/design_patterns
 
 
 * Graveyard of potentially usefull phrases 			   :noexport:
