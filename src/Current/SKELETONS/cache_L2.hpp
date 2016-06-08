@@ -1,7 +1,11 @@
 #ifndef CACHE_L2_H
 #define CACHE_L2_H
 
+#include "tlm.h"
+#include "tlm_utils/multi_passthrough_initiator_socket.h"
+#include "tlm_utils/multi_passthrough_target_socket.h"
 #include "memory_hierarchy_configuration.hpp"
+#include "cache_transaction.hpp"
 
 
 /***********************************************************
@@ -44,7 +48,6 @@ public:
     
     tlm_utils::multi_passthrough_initiator_socket<Directory> i_socket;
     tlm_utils::multi_passthrough_target_socket<Directory>    t_socket;
-    
     
     DirectoryEntry   dir[ numMemBlocks(MEM_SIZE, BLOCK_SIZE) ];
     void             respondToL1Caches( CacheTransaction* );
