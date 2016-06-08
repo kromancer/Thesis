@@ -56,18 +56,15 @@ public:
  * that enables reuse of created transaction objects, 
  * thus minimizing the perforamce overhead of allocation.
  *
- * Private:
  * The object_pool: is a vector of objects.
- * The ticket_pool: is a queue of object pointers (let us call them handles),
- *                  pointing in an object somewhere inside the vector.
  * numObjects:      objects that have been created
  * numAvailable:    available objects. Should be between 0 <= numAvailable <= numObjects
  * 
- * acquire(): request for a pointer to a transaction object. 
- *            If numbAvailable == 0, create one.
- *            else  pop a handle from the front of the queue.
+ * acquire(): request for a reference to a transaction object. 
+ *            If numbAvailable == 0, create a new transaction object.
+ *            else  pop one from the vector.
  * release: notify the manager that a transaction object is not being used.
- *          push back the object handle.
+ *          push back the object to the vector.
  * 
  ******************************************/
 
