@@ -120,6 +120,7 @@ The kernel simply views threads as processes that share resources.
 Access specifiers are for the compiler, and are not relevant at runtime.
 Accessing a private member outside of scope is a compile error.
 
+
 ** Linkage
 The way a program is organized into files can help emphasize its logical structure, 
 help a human reader understand the program, 
@@ -403,8 +404,8 @@ Beware, there are two more parameters that have a default value.
 A map offers *bidirectional* and *reverse* iterators.
 
 
-** Delete
-/Is the ~delete~ function called automatically/, when an objects goes out of scope?
+** Destructor
+/Is the ~destructor~ function called automatically/, when an objects goes out of scope?
 Yes. Check this experiment:
 #+BEGIN_SRC cpp :main no :flags -std=c++11
     #include <iostream>
@@ -427,16 +428,28 @@ Yes. Check this experiment:
         }
 #+END_SRC
  
-What would happen if I declared the destructor as a private member?
-#+BEGIN_SRC cpp :main no :flags -std=c++11
+Does the compiler augment the body of a destructor with a destructor 
+for every non-static data member?
+#+BEGIN_SRC cpp :main no :flags -std=c++11 :results output raw
   #include <iostream>
   using namespace std;
+
+
+  class Bar
+  {
+  public:
+      Bar(){ cout << "Hello from Bar's constructor" << endl;}
+      ~Bar(){ cout << "Shit, Bar's Destructor is here" << endl;}
+  };
+
 
   class Foo
   {
   public:
       Foo(){ cout << "Hellow from constructor" << endl;}
       ~Foo(){ cout << "Shit, Desctructor is here" << endl;}
+  private:
+      Bar bar;
   };
 
   int main(int argc, char *argv[])
@@ -449,7 +462,10 @@ What would happen if I declared the destructor as a private member?
 #+END_SRC
 
 #+RESULTS:
-
+Hello from Bar's constructor
+Hellow from constructor
+Shit, Desctructor is here
+Shit, Bar's Destructor is here
 
 * The Visitor Pattern in tinyXML
 

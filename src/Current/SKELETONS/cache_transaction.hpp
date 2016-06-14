@@ -1,9 +1,15 @@
+#ifndef CACHE_TRANSACTION_H
+#define CACHE_TRANSACTION_H
+
+#include "tlm"
+#include <cassert>
 #include <vector>
 using namespace std;
 
 enum BlockState             {INVALID, SHARED, MODIFIED};
-enum CoherenceMessageType   {INV, FETCH_INV, FETCH, READ_MISS, WRITE_MISS};
+enum CoherenceMessageType   {INV,   FETCH_INV,   FETCH,   READ_MISS,   WRITE_MISS};
 enum Operation              {READ, WRITE};
+enum Phases                 {REQ, RESP};
 
 using uint = unsigned int;
 using Address  = unsigned int;
@@ -11,8 +17,12 @@ using SetIndex = unsigned int;
 using BlockTag = unsigned int;
 using uint     = unsigned int;
 
-
-// Emulates a generic payload?
+/*******************************************
+ * CLASS CacheTransaction
+ *------------------------------------------
+ * Meant to replace tlm_generic_paylooad
+ * 
+ ******************************************/
 class CacheTransaction
 {
 
@@ -24,6 +34,7 @@ public:
 	 msg(READ_MISS)
 	{}
 
+    //Copy Assingment Operator
     CacheTransaction& operator=(const CacheTransaction& a)
 	{
 	    address = a.address;
@@ -41,6 +52,17 @@ public:
 	msg     = READ_MISS;
     };
 
+// Dummy functions, in order to allow the usage of a CacheTransaction payload
+// with the utility sockets (e.g. simple_target_socket, simple_initiator_socket).
+// Warning, the dummy implementation of these functions make the sockets not able
+// to automatically transform blocking <-> non-blocking interface calls. 
+    void set_mm(void *mm) {};
+    bool has_mm()         {return 1;}
+    void acquire()        {};
+    void release()        {};
+    int  get_ref_count()  {return 1;};
+    void set_auto_extension(void *mm){};
+    
 public:
     Address              address;
     Operation            op;
@@ -49,37 +71,45 @@ public:
 };
 
 
+
+struct cache_coherence_protocol
+{
+    typedef CacheTransaction         tlm_payload_type;
+    typedef tlm::tlm_phase           tlm_phase_type;          
+};
+
 /*******************************************
- * CLASS TransactionObjectsPool
+ * CLASS MemoryManager
  *------------------------------------------
  * A simple manager of transaction objects, 
- * that enables reuse of created transaction objects, 
- * thus minimizing the perforamce overhead of allocation.
+ * that enables reuse of created transaction objects.
  *
- * The object_pool: is a vector of objects.
- * numObjects:      objects that have been created
+ * The object_pool: is a vector of transaction objects.
+ * numObjects:      transaction objects that have been created
  * numAvailable:    available objects. Should be between 0 <= numAvailable <= numObjects
  * 
  * acquire(): request for a reference to a transaction object. 
  *            If numbAvailable == 0, create a new transaction object.
  *            else  pop one from the vector.
- * release: notify the manager that a transaction object is not being used.
- *          push back the object to the vector.
+ * release(): notify the manager that a transaction object is not being used.
+ *            push back the object to the vector.
  * 
  ******************************************/
 
-class TransactionObjectsPool
+class MemoryManager
 {
+private:
+    static MemoryManager *manager_Instance;
 public:
-    TransactionObjectsPool();
+    MemoryManager();
+    ~MemoryManager();
+    static MemoryManager& GetSingleton();
     CacheTransaction& acquire();
     void              release( CacheTransaction& );
-    
 public:
     uint numObjects;
     uint numAvailable;
     vector<CacheTransaction> object_pool;
-
-
 };
 
+#endif

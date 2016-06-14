@@ -13,7 +13,7 @@ using BlockTag = unsigned int;
 using uint     = unsigned int;
 
 /*******************************************************
- * L1 Cache Configuration
+ * SYSTEM CONFIGURATION
  ******************************************************/
 
 //80: Define number of CPUs in the system
@@ -27,7 +27,7 @@ using uint     = unsigned int;
 //81: Define cache size in bytes
 #define CACHE_SIZE 32768
 
-//82: Define cache block size
+//82: Define cache block size in bytes
 #define BLOCK_SIZE 2
 
 //83: Define cache associativity
@@ -35,6 +35,18 @@ using uint     = unsigned int;
 
 //84: Define replacement policy
 #define POLICY 1
+
+
+/*******************************************************
+ * Latencies
+ ******************************************************/
+
+//85: Define L1 miss in cycles
+#define L1_MISS 5
+
+
+
+
 
 constexpr uint numSets (uint cacheSize, uint blockSize, uint ways)
 {
@@ -46,7 +58,7 @@ constexpr uint numSets (uint cacheSize, uint blockSize, uint ways)
  ******************************************************/
 
 //85: Define memory size in bytes
-#define MEM_SIZE 1073741824
+#define MEM_SIZE 10485760
 
 constexpr uint numMemBlocks (uint memSize, uint blockSize)
 {
@@ -57,7 +69,7 @@ constexpr uint numMemBlocks (uint memSize, uint blockSize)
 
 /*******************************************************
  * GENERIC HELPER FUNCTIONS
- ******************************************************/
+ *******************************************************/
 inline void getSetIndexAndTag(Address a, SetIndex *setIndex, BlockTag *blockTag)
 {
     // Discard byte index
