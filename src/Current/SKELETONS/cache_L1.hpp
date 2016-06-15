@@ -1,8 +1,11 @@
 #ifndef CACHE_L1_H
 #define CACHE_L1_H
 
-#include "memory_hierarchy_configuration.hpp"
 #include "tlm.h"
+#include "tlm_utils/simple_initiator_socket.h"
+#include "tlm_utils/simple_target_socket.h"
+#include "memory_hierarchy_configuration.hpp"
+#include "cache_transaction.hpp"
 
 /***********************************************************
  * CLASS BLOCK
@@ -11,8 +14,8 @@
  * Maintains the state machine of the block.
  *
  * The block changes states in response to actions from
- *     1. CPU: [read|write] [miss|hit] )
- *     2. The directory: invalidate|fetch|fetch invalidate
+ *     1. CPU: [READ|WRITE]_[MISS|HIT] )
+ *     2. The directory: INV|FETCH|FETCH_INV
  *           
  * The block can be in 3 states:
  *     1. SHARED
@@ -29,22 +32,8 @@ public:
     BlockState state;
     BlockTag tag;
     unsigned char bytes[BLOCK_SIZE];    
-    bool pending;
-    
-    void respondInvalidate(   CacheTransaction *resp);
-    void respondFetch(        CacheTransaction *resp);
-    void respondCpuReadHit(   CacheTransaction *resp);
-    void respondCpuReadMiss(  CacheTransaction *resp);
-    void respondCpuWriteHit(  CacheTransaction *resp);
-    void respondCpuWriteMiss( CacheTransaction *resp);
-    void setDirty();
-    int  getTag();
-    
-    bool   dirty;
-
-
-    
 };
+
 
 /***********************************************************
  * CLASS SET
@@ -57,12 +46,13 @@ public:
     Block  ways[N_WAYS];
     bool   free[N_WAYS];
     bool   isSetFull();
-    int    numOfBlocks;
+    int    freeBlocks;
 
     void       insert( Block newBlock );
-    Block     *getBlock(BlockTag);
+    Block     *getBlock(BlockTag, int&); // return a pointer to the block and in which way it is placed
     SetIndex   evict();
 };
+
 
 /***********************************************************
  * CLASS CacheL1
@@ -70,16 +60,20 @@ public:
  * Models a N-way associative cache meant to operate under
  * a directory based coherence protocol
  **********************************************************/
-class CacheL1 
+class CacheL1: public sc_core::sc_module
 {
 public:
+    tlm_utils::simple_initiator_socket<CacheL1, 32, cache_coherence_protocol> i_socket; // To Directory
+    tlm_utils::simple_target_socket<CacheL1,    32, cache_coherence_protocol> t_socket; // From Directory
+    tlm_utils::simple_target_socket<CacheL1> t_socket_CPU; // From CPU
+    
     CacheL1( );
-    void respondToDirectory( CacheTransaction*  );
-    void respondToCPU(       CacheTransaction* );
-    Block *checkBlockPresence( SetIndex, BlockTag );
+    void respondToDirectory(    CacheTransaction&, sc_core::sc_time& );
+    void respondToCPU(  tlm::tlm_generic_payload&, sc_core::sc_time& );
     
 private:
-    Set sets[ numSets(CACHE_SIZE, BLOCK_SIZE, N_WAYS) ];
+    vector<Set>    sets;
+    MemoryManager &manager;
 };
 
 

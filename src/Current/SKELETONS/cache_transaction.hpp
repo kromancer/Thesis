@@ -68,6 +68,8 @@ public:
     Operation            op;
     unsigned char       *bytes;
     CoherenceMessageType msg;
+    bool                 evicting;
+    BlockState           evictedBlockState;
 };
 
 

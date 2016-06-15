@@ -179,7 +179,7 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
  *     g++ -g -std=c++11 `pkg-config --cflags --libs systemc` directory.cpp cache_transaction.cpp -o directory
  *     ./directory
  *************************************************/
-
+/*
 #include <iostream>
 
 using namespace std;
@@ -199,16 +199,16 @@ SC_MODULE(Dummy_cache)
 	sc_core::sc_time delay(0,sc_core::SC_NS);
 	trans.address = MEM_SIZE / 2;
 
-	// Issue a WRITE_MISS
-	trans.msg = WRITE_MISS;
+	// Issue an INV
+	trans.msg = INV;
 	i_socket->b_transport(trans, delay);
 	
 	// Issue a READ_MISS
 	trans.msg = READ_MISS;
 	i_socket->b_transport(trans, delay);
 
-	// Issue a INV
-	trans.msg = INV;
+	// Issue a WRITE_MISS
+	trans.msg = WRITE_MISS;
 	i_socket->b_transport(trans, delay);
     }
     
@@ -244,10 +244,10 @@ int sc_main(int argc, char **argv)
 
     // Directory Initialization
     dir.dir[MEM_SIZE/2 >> BLOCK_SIZE].state      = SHARED; 
-    dir.dir[MEM_SIZE/2 >> BLOCK_SIZE].sharers[1] = true;
+    dir.dir[MEM_SIZE/2 >> BLOCK_SIZE].sharers[0] = true;
 
     sc_core::sc_start();
 
     return 0;
 }
-
+*/
