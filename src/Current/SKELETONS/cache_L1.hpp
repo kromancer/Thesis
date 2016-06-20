@@ -13,10 +13,6 @@
  * Models the individual block stored in the cache
  * Maintains the state machine of the block.
  *
- * The block changes states in response to actions from
- *     1. CPU: [READ|WRITE]_[MISS|HIT] )
- *     2. The directory: INV|FETCH|FETCH_INV
- *           
  * The block can be in 3 states:
  *     1. SHARED
  *     2. MODIFIED
@@ -50,6 +46,7 @@ public:
 
     void       insert( Block newBlock );
     Block     *getBlock(BlockTag, int&); // return a pointer to the block and in which way it is placed
+    Block     &getFreeBlock();
     SetIndex   evict();
 };
 
@@ -67,7 +64,7 @@ public:
     tlm_utils::simple_target_socket<CacheL1,    32, cache_coherence_protocol> t_socket; // From Directory
     tlm_utils::simple_target_socket<CacheL1> t_socket_CPU; // From CPU
     
-    CacheL1( );
+    CacheL1( sc_core::sc_module_name name );
     void respondToDirectory(    CacheTransaction&, sc_core::sc_time& );
     void respondToCPU(  tlm::tlm_generic_payload&, sc_core::sc_time& );
     

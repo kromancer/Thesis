@@ -10,8 +10,6 @@ Block::Block()
       tag(-1)
 {}
 
-
-
 /***********************************************************
  * CLASS SET
  **********************************************************/
@@ -37,6 +35,19 @@ Block* Set::getBlock(BlockTag tag, int &way)
     return nullptr;
 }
 
+Block &Set::getFreeBlock()
+{
+    assert( freeBlocks >= 1);
+    int i;
+    for (i=0; i < N_WAYS; i++)
+	if ( free[i] )
+	    break;
+    freeBlocks--;
+    free[i] = false;
+    return ways[i];
+}
+
+
 bool Set::isSetFull()
 {
     if ( freeBlocks == 0)
@@ -51,17 +62,11 @@ SetIndex Set::evict()
     return rand() % N_WAYS;
 }
 
-
-
-
-
-
 /***********************************************************
  * CLASS CacheL1
  **********************************************************/
-
-CacheL1::CacheL1()
-    : sc_module("CacheL1"),
+CacheL1::CacheL1( sc_core::sc_module_name name)
+    : sc_module(name),
       sets( numSets(CACHE_SIZE, BLOCK_SIZE, N_WAYS) ),
       manager{ MemoryManager::GetSingleton() },
       i_socket("i_socket"),
@@ -84,6 +89,12 @@ void CacheL1::respondToDirectory( CacheTransaction &trans, sc_core::sc_time &del
     int way;
     Block *block = sets[setIndex].getBlock(blockTag, way);
 
+
+#ifndef NDEBUG
+    CacheTransaction::printTransaction(trans, sc_core::sc_time_stamp());
+#endif
+
+    
     // Remember that the directory knows whether the block is present or not
     // There should not be any incosistency between the directory and the cache
     assert( block != nullptr && way != -1);
@@ -91,9 +102,9 @@ void CacheL1::respondToDirectory( CacheTransaction &trans, sc_core::sc_time &del
     {
     case INV:
     {
-	// Another CPU has issued a WRITE_MISS
+	// Another cache has faced a WRITE_HIT on SHARED block
 	// The directory knows that this cache has the block in SHARED
-	assert( sets[setIndex].freeBlocks < N_WAYS-1 );
+	assert( block && (block->state == SHARED) );
 	sets[setIndex].freeBlocks++;
 	sets[setIndex].free[way] = true;
 	block->state = INVALID;
@@ -136,19 +147,30 @@ void CacheL1::respondToCPU( tlm::tlm_generic_payload &trans, sc_core::sc_time &d
     int way;
     Block *block = sets[setIndex].getBlock(blockTag, way);
 
+
+#ifndef NDEBUG
+    CacheTransaction::printTransaction(trans, sc_core::sc_time_stamp());
+#endif
+
+
+    
+
     switch(op){
-    //----------------------------------------------------------------------
-    case READ: // Case 1
+    //*********************************************************************
+    case tlm::tlm_command::TLM_READ_COMMAND: // Case 1: READ
+    //*********************************************************************
     {
-	// Case 1.1: READ_HIT 
+	// 1.1: READ_HIT
+	//-----------------------------------------------------------------
 	if ( block )
 	{
-	    // Case 1.1.a: The block resides in the cache, but is in INVALID state, therefore READ_MISS
+	    // 1.1.a: The block is in INVALID state, therefore READ_MISS
+	    //-----------------------------------------------------------------
 	    if (block->state == INVALID)
 	    {
 		// Issue a READ_MISS to the directory
 		CacheTransaction trans2 = manager.acquire();
-		sc_core::sc_time delay2(0, sc_core::SC_NS);
+		sc_core::sc_time delay2(5, sc_core::SC_NS);
 		trans2.address = a;
 		trans2.msg     = READ_MISS;
 		trans2.evicting = false;
@@ -166,7 +188,8 @@ void CacheL1::respondToCPU( tlm::tlm_generic_payload &trans, sc_core::sc_time &d
 		// Give the data back to the CPU
 		trans.set_data_ptr(trans2.bytes);
 	    }
-	    // Case 1.1.b: The block resides in the cache
+	    // 1.1.b: The block resides in the cache
+	    //-----------------------------------------------------------------
 	    else
 	    {
 		// Give the data back to the CPU
@@ -174,19 +197,19 @@ void CacheL1::respondToCPU( tlm::tlm_generic_payload &trans, sc_core::sc_time &d
 		// The state of the block remains the same, either MODIFIED or SHARED
 	    }
 	}
-	// Case 1.2: READ_MISS
+	// 1.2: READ_MISS
+	//-----------------------------------------------------------------
 	else
 	{
 	    // Prepare a READ_MISS transaction to the directory
 	    // Do not issue it yet, in case of eviction we need to provide more info
 	    CacheTransaction trans2 = manager.acquire();
-	    sc_core::sc_time delay2(0, sc_core::SC_NS);
+	    sc_core::sc_time delay2(5, sc_core::SC_NS);
 	    trans2.address = a;
 	    trans2.msg     = READ_MISS;
 
-
-	    // Place block in Cache
-	    // Case 1.2.a: Set is full, therefore we need to follow a replacement policy
+	    // 1.2.a: Set is full, therefore we need to follow a replacement policy
+	    //-----------------------------------------------------------------
 	    if ( sets[setIndex].isSetFull() )
 	    {
 		// Cache must first EVICT
@@ -210,7 +233,8 @@ void CacheL1::respondToCPU( tlm::tlm_generic_payload &trans, sc_core::sc_time &d
 		trans.set_data_ptr(block->bytes);
 
 	    }
-	    // Case 1.2.b: Set has at least one available spot
+	    // 1.2.b: Set has at least one available spot
+	    //-------------------------------------------------------------------
 	    else
 	    {
 		// Issue READ_MISS to directory
@@ -218,33 +242,36 @@ void CacheL1::respondToCPU( tlm::tlm_generic_payload &trans, sc_core::sc_time &d
 		i_socket->b_transport(trans2, delay2);
 
                 // Place data on Cache
-		block->tag      = blockTag;
-		block->bytes[0] = trans2.bytes[0];
-		block->bytes[1] = trans2.bytes[1];
-		block->state    = SHARED;
+		Block   &block = sets[setIndex].getFreeBlock();
+		block.tag      = blockTag;
+		block.bytes[0] = trans2.bytes[0];
+		block.bytes[1] = trans2.bytes[1];
+		block.state    = SHARED;
 		
 		// Give the data back to the CPU
-		trans.set_data_ptr(block->bytes);
-
+		trans.set_data_ptr(block.bytes);
 	    }
 	}
 	break;
     }
-    //----------------------------------------------------------------------
-    case WRITE: //Case 2
+    //*********************************************************************
+    case tlm::tlm_command::TLM_WRITE_COMMAND: //Case 2: WRITE
+    //*********************************************************************
     {
-	// Case 2.1: WRITE_HIT
+	// 2.1: WRITE_HIT
+	//----------------------------------------------------------------------
 	if ( block )
 	{
-	    // Case 2.1.a: The block resides in the cache, but is in INVALID state, therefore WRITE_MISS
+	    // 2.1.a: The block is in INVALID state, therefore treat this as a WRITE_MISS
+	    //----------------------------------------------------------------------
 	    if (block->state == INVALID)
 	    {
 		// Issue a WRITE_MISS to the directory
 		CacheTransaction trans2 = manager.acquire();
-		sc_core::sc_time delay2(0, sc_core::SC_NS);
+		sc_core::sc_time delay2(5, sc_core::SC_NS);
 		trans2.address  = a;
 		trans2.msg      = WRITE_MISS;
-		trans2.evicting = false;
+		trans2.evicting = false; 
 		i_socket->b_transport(trans2, delay2);
 
 		// Place block in Cache
@@ -252,31 +279,92 @@ void CacheL1::respondToCPU( tlm::tlm_generic_payload &trans, sc_core::sc_time &d
 		sets[setIndex].freeBlocks--;
 		sets[setIndex].free[ way ] = false;
 		block->tag = blockTag;
-		block->state = SHARED;
 		block->bytes[0] = trans2.bytes[0];
 		block->bytes[1] = trans2.bytes[1];
-		
-		// Give the data back to the CPU
-		trans.set_data_ptr(trans2.bytes);
 
+		// Update cache
+		// Erroneous, you need to check which bytes are modified
+		block->bytes[0] = trans.get_data_ptr()[0];
+		block->bytes[1] = trans.get_data_ptr()[1];
 	    }
-	}
+	    // 2.1.b: The block is in MODIFIED state, just update cache
+	    //----------------------------------------------------------------------
+	    else if (block->state == MODIFIED)
+	    {
+		// Erroneous, you need to check which bytes are modified
+		block->bytes[0] = trans.get_data_ptr()[0];
+		block->bytes[1] = trans.get_data_ptr()[1];
+	    }
+	    // 2.1.c: The block is in SHARED state, invalidate sharers and update cache
+	    //----------------------------------------------------------------------
+	    else
+	    {
+		// Invalidate sharers
+		CacheTransaction trans2 = manager.acquire();
+		sc_core::sc_time delay2(5, sc_core::SC_NS);
+		trans2.address  = a;
+		trans2.msg      = INV;
+		i_socket->b_transport(trans2, delay2);
 
-	// WRITE_MISS
+		// Update cache
+		// Erroneous, you need to check which bytes are modified
+		block->bytes[0] = trans.get_data_ptr()[0];
+		block->bytes[1] = trans.get_data_ptr()[1];
+	    }
+	    // Whatever the state of the block before, now it is MODIFIED
+	    block->state = MODIFIED;
+	}
+	// 2.2: WRITE_MISS
+	//----------------------------------------------------------------------
 	else
 	{
-	    //trans->msg = WRITE_MISS;
+	    // Prepare a WRITE_MISS transaction to the directory
+	    // Do not issue it yet, in case of eviction we need to provide more info
+	    CacheTransaction trans2 = manager.acquire();
+	    sc_core::sc_time delay2(5, sc_core::SC_NS);
+	    trans2.address = a;
+	    trans2.msg     = WRITE_MISS;
+
+	    // Case 2.2.a: Set is full, therefore we need to evict
+	    //----------------------------------------------------------------------
 	    if ( sets[setIndex].isSetFull() )
 	    {
 		// Cache must first EVICT
-		int i = sets[setIndex].evict();
+		int i                    = sets[setIndex].evict();
+		Block &block             = sets[setIndex].ways[i];
+		BlockState state         = block.state;
+		trans2.evicting          = true;
+		trans2.evictedBlockState = state;
+		// If evicted's block state was MODIFIED, we need to write-back the data
+		if (state == MODIFIED)
+		    trans2.bytes = sets[setIndex].ways[i].bytes;
+		i_socket->b_transport(trans2, delay2);
 
-		// Cache must now fetch and place memory block
-		
+
+		// Update Cache
+		block.tag = blockTag;
+
+		// Erroneous, you need to check which bytes are modified
+		block.bytes[0] = trans.get_data_ptr()[0];
+		block.bytes[1] = trans.get_data_ptr()[1];
+		// This means that you must merge what you got, with what the CPU has
+		// if ( trans2.msg == FETCH_INV )
 	    }
+	    // Case 2.2.b: Set is not full
 	    else
 	    {
-		
+		trans2.evicting = false;
+		i_socket->b_transport(trans2, delay2);
+
+		// Update Cache
+		Block &block = sets[setIndex].getFreeBlock();
+		block.tag = blockTag;
+
+		// Erroneous, you need to check which bytes are modified
+		block.bytes[0] = trans.get_data_ptr()[0];
+		block.bytes[1] = trans.get_data_ptr()[1];
+		// This means that you must merge what you got, with what the CPU has
+		// if ( trans2.msg == FETCH_INV )
 	    }
 	}
 	break;
@@ -291,21 +379,85 @@ void CacheL1::respondToCPU( tlm::tlm_generic_payload &trans, sc_core::sc_time &d
 
 
 
-
 /*************************************************
  * UNIT TEST
  *------------------------------------------------
  * Compilation check
  *
  * Uncomment following section, compile and run:
- *     g++ -g -std=c++11 `pkg-config --cflags --libs systemc` cache_L1.cpp -o cache_L1
+ *     g++ -g -std=c++11 `pkg-config --cflags --libs systemc` cache_L1.cpp cache_transaction.cpp -o cache_L1
  *     ./cache_L1
  *************************************************/
 
+#include "directory.hpp"
+
+SC_MODULE(Dummy_cpu)
+{
+    tlm_utils::simple_initiator_socket<Dummy_cpu> i_socket;
+
+    //**********************************************************
+    //* TESTING FUNCTION
+    //**********************************************************
+    void run_module()
+    {
+	tlm::tlm_generic_payload trans;
+	sc_core::sc_time delay(0,sc_core::SC_NS);
+	trans.set_address(1);
+
+	// Issue a READ
+	trans.set_command(tlm::tlm_command::TLM_READ_COMMAND);
+	i_socket->b_transport(trans, delay);
+	std::cout << "Transaction finished" << std::endl;
+	std::cout << "**************************" << std::endl;
+	
+	// Issue a WRITE for the same address
+	trans.set_command(tlm::tlm_command::TLM_WRITE_COMMAND);
+	i_socket->b_transport(trans, delay);
+	std::cout << "Transaction finished" << std::endl;
+	std::cout << "**************************" << std::endl;
+	
+	// Issue a WRITE for the same address
+	trans.set_command(tlm::tlm_command::TLM_WRITE_COMMAND);
+	i_socket->b_transport(trans, delay);
+	std::cout << "Transaction finished" << std::endl;
+	std::cout << "**************************" << std::endl;
+	
+	// Issue a READ for the same address
+	trans.set_command(tlm::tlm_command::TLM_READ_COMMAND);
+	i_socket->b_transport(trans, delay);
+	std::cout << "Transaction finished" << std::endl;
+	std::cout << "**************************" << std::endl;
+	
+	// Issue a READ for the same address
+	trans.set_address(BLOCK_SIZE*2 + 1);
+	trans.set_command(tlm::tlm_command::TLM_READ_COMMAND);
+	i_socket->b_transport(trans, delay);
+	std::cout << "Transaction finished" << std::endl;
+	std::cout << "**************************" << std::endl;
+	
+    }
+
+    SC_CTOR(Dummy_cpu)
+	: i_socket("i_socket")
+	{
+	    SC_THREAD(run_module);
+	}
+};
 
 int sc_main(int argc, char *argv[])
 {
-    //CacheL1 c;
+    new MemoryManager();
+    Dummy_cpu cpu1("cpu1");
+    CacheL1   c1( "cache");
+    Directory d("directory");
+
+    cpu1.i_socket.bind(c1.t_socket_CPU);
+    c1.i_socket.bind  (*d.t_socket[0]);
+    d.i_socket[0]->bind(c1.t_socket);
+
+    // Do a meaningless binding of the non-used directory sockets, so that the systemc runtime will not complain
+    for( int i=1; i < N_CPUS; i++)
+	d.i_socket[i]->bind(*d.t_socket[i]);
 
     sc_core::sc_start();
     

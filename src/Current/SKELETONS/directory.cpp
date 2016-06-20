@@ -8,9 +8,10 @@ DirectoryEntry::DirectoryEntry()
 	sharers[i] = false;
 }
 
-Directory::Directory()
-    :sc_module("Directory"),
+Directory::Directory( sc_core::sc_module_name name)
+    :sc_module(name),
      dir(numMemBlocks(MEM_SIZE, BLOCK_SIZE)),
+     memory( 2 * CACHE_SIZE ),
      manager{ MemoryManager::GetSingleton() }
 {
     for (int i=0; i < N_CPUS; i++)
@@ -23,7 +24,6 @@ Directory::Directory()
 	t_socket[i] = new tlm_utils::simple_target_socket_tagged<Directory,32,cache_coherence_protocol>(txt);
 	t_socket[i]->register_b_transport( this, &Directory::respondToL1Caches, i );
     }
-
     dummy = 3;
 }
 
@@ -32,13 +32,16 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
 {
     CoherenceMessageType msg   = trans.msg;
     Address              block = trans.address >> BLOCK_SIZE;
+
+#ifndef NDEBUG
+    CacheTransaction::printTransaction(trans, sc_core::sc_time_stamp());
+#endif
     
     switch (msg)
     {
-    //----------------------------------------------------------------------
-    // A cache is requesting for every other sharing cache to invalidate their copy
-    // This happens in case of a write hit
-    case INV:
+    //***********************************************************************
+    case INV: // Case 1: A cache is requesting for every other sharing cache to invalidate their copy (e.g. WRITE_HIT on a shared block)
+    //***********************************************************************
     {
 	// That cache should already belong to the sharers
 	assert( dir[block].sharers[id]==true );
@@ -56,17 +59,46 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
 	dir[block].state = MODIFIED;
 	dir[block].owner = id;
 	break;
-    }
-    //----------------------------------------------------------------------
-    case READ_MISS:
+    }// End Case 1
+    //***********************************************************************
+    case READ_MISS: // Case 2: A cache has issued a READ_MISS
+    //***********************************************************************
     {
+	// Check if there is eviction
+	if ( trans.evicting )
+	{
+	    Address temp = trans.evictedBlockAddress;
+	    Address evictedBlock = temp >> BLOCK_SIZE;
+
+	    // There should not be any discrepancy between directory and cache
+	    assert( dir[evictedBlock].state == trans.evictedBlockState);
+
+	    dir[evictedBlock].sharers[id] = false;
+	    if ( trans.evictedBlockState == SHARED )
+	    {
+		// Check if this was the last sharer
+		bool flag = true;
+		for (int i=0; i < N_CPUS; i++)
+		    flag |= dir[evictedBlock].sharers[i];
+		if ( !flag )
+		    dir[evictedBlock].state = INVALID;
+	    }
+	    else
+	    {
+		dir[evictedBlock].state = INVALID;
+		// Maintain inclusion property?
+		// Write back to memory?
+	    }
+
+	}
 	switch ( dir[block].state)
 	{
-	case INVALID: // Remember INVALID for the directory means uncached
+	// 2.1: The block is in INVALID state (uncached)
+	//-------------------------------------------------------------------
+	case INVALID:
 	{
-	    // Request block from Memory
-
-	    // Cache it to L2
+	    // Request block from Memory and store it in L2 cache
+	    // In case of eviction in this level you need to send a BACK-INV
 
 	    // Reply to cache
 	    trans.bytes = &dummy;
@@ -74,6 +106,8 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
 	    dir[block].sharers[id] = true;
 	    break;
 	}
+	// 2.2: The block is in SHARED state
+	//-------------------------------------------------------------------
 	case SHARED:
 	{
 	    // Request block from L2 cache
@@ -81,6 +115,8 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
 	    dir[block].sharers[id] = true;
 	    break;
 	}
+	// 2.3: The block is in MODIFIED state
+	//-------------------------------------------------------------------
 	case MODIFIED:
 	{
 	    // Request data from cache that owns block
@@ -96,24 +132,26 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
 	    dir[block].sharers[id] = true;
 	    break;
 	}
-	}
-    }
-    //----------------------------------------------------------------------
-    case WRITE_MISS:
+	}// End Cases 2.*
+	break;
+    }// End Case 2
+    //*********************************************************
+    case WRITE_MISS: // Case 3: A cache has issued a WRITE_MISS
+    //*********************************************************
     {
 	switch ( dir[block].state )
 	{
-	case INVALID: // Remember INVALID for the directory means uncached
+	// 3.1: The block is in INVALID state (uncached)
+	//----------------------------------------------------
+	case INVALID:
 	{
-	    // Request block from Memory
-
-	    // Reply to cache
-	    trans.bytes = &dummy;
+	    // Update directory entry
 	    dir[block].state       = MODIFIED;
 	    dir[block].sharers[id] = true;
 	    break;
-	    
 	}
+	// 3.2: The block is in SHARED state
+	//----------------------------------------------------
 	case SHARED:
 	{
 	    // Invalidate all sharers
@@ -127,14 +165,13 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
 		}
 	    }
 
-	    // Request block from L2 cache
-
-	    // Reply to cache
-	    trans.bytes = &dummy;
+	    // Update directory entry
 	    dir[block].state       = MODIFIED;
 	    dir[block].sharers[id] = true;
 	    break;
 	}
+	// 3.3: The block is in MODIFIED state 
+	//----------------------------------------------------
 	case MODIFIED:
 	{
 	    // This is the FETCH_INV situation
@@ -148,13 +185,10 @@ void Directory::respondToL1Caches(int id, CacheTransaction &trans, sc_core::sc_t
 	    dir[block].owner = id;
 	    break;
 	}
-	}
-    default:
+	}// End Cases 3.*
 	break;
+    }// End Case 3
     }
-
-    }
-
 }
 
 

@@ -46,18 +46,16 @@ class Directory : public sc_core::sc_module
     
 
 public:
-    Directory();
+    Directory( sc_core::sc_module_name );
     
     tlm_utils::simple_initiator_socket_tagged<Directory,32,cache_coherence_protocol>* i_socket[N_CPUS];
     tlm_utils::simple_target_socket_tagged<Directory,32,cache_coherence_protocol>*    t_socket[N_CPUS];
 
-    // For simplicity, we maintain a directory entry for every possible memory block.
-    // For example, for a main memory of 8GB and a block size of 64B, we have to maintain
-    // 2^33 / 2^6 = 2^27 = 128M directory entries.
     std::vector<DirectoryEntry> dir;
+    std::vector<int>            memory;
+    
     void                   respondToL1Caches( int, CacheTransaction&, sc_core::sc_time& );
     MemoryManager          &manager;
-
     unsigned char dummy;
 };
 

@@ -70,7 +70,42 @@ public:
     CoherenceMessageType msg;
     bool                 evicting;
     BlockState           evictedBlockState;
-};
+    Address              evictedBlockAddress;
+
+
+
+/*****************************************
+ * For Debugging Purposes: Printing the contents of transaction
+ ****************************************/
+#ifndef NDEBUG
+static void printTransaction( tlm::tlm_generic_payload &trans, const sc_core::sc_time &time_stamp)
+{
+    // Pretty printing of enumerations when debugging
+    static const string string_blockState[]   = {"INVALID", "SHARED", "MODIFIED"};
+    static const string string_coherenceMsg[] = {"INV",   "FETCH_INV",   "FETCH",   "READ_MISS",   "WRITE_MISS"};
+    static const string string_gpCommand[]    = {"READ", "WRITE"};
+
+    std::cout << "@ " << time_stamp << std::endl;
+    std::cout << "Type: " << string_gpCommand[trans.get_command()] << std::endl;
+    std::cout << "For Address: " << trans.get_address() << std::endl << std::endl;
+}
+
+static void printTransaction( CacheTransaction &trans, const sc_core::sc_time &time_stamp)
+{
+    // Pretty printing of enumerations when debugging
+    static const string string_blockState[]   = {"INVALID", "SHARED", "MODIFIED"};
+    static const string string_coherenceMsg[] = {"INV",   "FETCH_INV",   "FETCH",   "READ_MISS",   "WRITE_MISS"};
+    static const string string_gpCommand[]    = {"READ", "WRITE"};
+
+
+    std::cout << "@ " << time_stamp << std::endl;
+    std::cout << "Type: " << string_coherenceMsg[trans.msg] << std::endl;
+    std::cout << "Address: " << trans.address << std::endl << std::endl;
+    std::cout << "Eviction: " << ((trans.evicting) ? "True" : "False") << std::endl;
+    
+}
+#endif
+}; // End of CacheTransaction class declaration
 
 
 
@@ -115,3 +150,5 @@ public:
 };
 
 #endif
+
+
