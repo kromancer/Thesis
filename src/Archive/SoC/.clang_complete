@@ -1,0 +1,7 @@
+-std=c++11
+-I/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include
+-I/opt/mpe/include
+-I/opt/intel/compilers_and_libraries_2016.2.181/linux/mkl/include
+-I/usr/include/SDL2
+-I/opt/systemc-2.3.1/include
+-I/opt/or1ksim/include

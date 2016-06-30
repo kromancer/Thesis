@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kisp/Bear_src/libear/ear.c
+config.h
+/home/kisp/Bear_src/libear/config.h
+stddef.h
+-
+stdarg.h
+-
+stdlib.h
+-
+stdio.h
+-
+string.h
+-
+unistd.h
+-
+dlfcn.h
+-
+pthread.h
+-
+spawn.h
+-
+crt_externs.h
+-
+
+libear/config.h
+

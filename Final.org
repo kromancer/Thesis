@@ -955,6 +955,25 @@ which sharing processor should respond to a request. It is designed to enhance p
 memory organizations.
 
 
+* Or1ksim
+
+Unfortunately the library of the or1ksim is not reentrant and thus does not allow multiple instances of the core
+simulator to be executed in one address space. Historically all data is stored in global variables.
+
+** OpenRISC GNU tool chain
+From http://opencores.org/or1k/OpenRISC_GNU_tool_chain
+
+The toolchain is available in several forms, depending on which C standard library they use:
+
+1. or1k-elf for bare metal use, based on the *newlib* library
+
+2. or1k-linux-uclibc for Linux application use, based on the *uClibc* library.
+
+3. or1k-linux-musl for Linux application use, based on the *musl* library.
+      
+
+
+
 * Computer Science Cheatsheet 					   :noexport:
 _Semantics:_ As a necessary propery of a modeling language whose models are meant to undergo
              synthesis and refinement. In order to have well-defined semantics, we need to
@@ -1044,7 +1063,7 @@ _Stages of RTL design:_
 
 #+BEGIN_SRC vhdl
 library ieee;
-use ieee.std_logic_1164.all, ieee.numeric_std.all;
+use     ieee.std_logic_1164.all, ieee.numeric_std.all;
 
 package dot_product_types is
    subtype sig8 is signed (7 downto 0);
@@ -1091,10 +1110,13 @@ end;
 #+END_SRC
 
 
-* Electronics Cheatsheet 					   :noexport:
+* More SystemC 							   :noexport:
 _UART:_ The idle, no data state is high-voltage, or powered. 
 This is a historic legacy from telegraphy, in which the line is held high to show that the line and transmitter are not damaged
 
+By distinguishing the declaration of an interface from the implementation of its methods, 
+SystemC promotes a coding style in which communication is separated from behaviour, 
+a key feature to promote refinement from one level of abstraction to another.
 
 * C++ 								   :noexport:
 

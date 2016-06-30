@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kisp/Pi_CMake/main.cpp
+mpi.h
+/home/kisp/Pi_CMake/mpi.h
+math.h
+-
+
+/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include/mpi.h
+stdint.h
+-
+stddef.h
+-
+cstdint
+-
+stdint.h
+-
+mpio.h
+/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include/mpio.h
+mpicxx.h
+/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include/mpicxx.h
+
+/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include/mpicxx.h
+stdio.h
+-
+
+/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include/mpio.h
+mpi.h
+/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include/mpi.h
+

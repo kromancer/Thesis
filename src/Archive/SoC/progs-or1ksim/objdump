@@ -1,0 +1,2935 @@
+
+logger:     file format elf32-or1k
+
+
+Disassembly of section .vectors:
+
+00000000 <_or1k_reset-0x100>:
+	...
+
+00000100 <_or1k_reset>:
+     100:	18 00 00 00 	l.movhi r0,0x0
+     104:	18 20 00 00 	l.movhi r1,0x0
+     108:	18 40 00 00 	l.movhi r2,0x0
+     10c:	18 60 00 00 	l.movhi r3,0x0
+     110:	18 80 00 00 	l.movhi r4,0x0
+     114:	18 a0 00 00 	l.movhi r5,0x0
+     118:	18 c0 00 00 	l.movhi r6,0x0
+     11c:	18 e0 00 00 	l.movhi r7,0x0
+     120:	19 00 00 00 	l.movhi r8,0x0
+     124:	19 20 00 00 	l.movhi r9,0x0
+     128:	19 40 00 00 	l.movhi r10,0x0
+     12c:	19 60 00 00 	l.movhi r11,0x0
+     130:	19 80 00 00 	l.movhi r12,0x0
+     134:	19 a0 00 00 	l.movhi r13,0x0
+     138:	19 c0 00 00 	l.movhi r14,0x0
+     13c:	19 e0 00 00 	l.movhi r15,0x0
+     140:	1a 00 00 00 	l.movhi r16,0x0
+     144:	1a 20 00 00 	l.movhi r17,0x0
+     148:	1a 40 00 00 	l.movhi r18,0x0
+     14c:	1a 60 00 00 	l.movhi r19,0x0
+     150:	1a 80 00 00 	l.movhi r20,0x0
+     154:	1a a0 00 00 	l.movhi r21,0x0
+     158:	1a c0 00 00 	l.movhi r22,0x0
+     15c:	1a e0 00 00 	l.movhi r23,0x0
+     160:	1b 00 00 00 	l.movhi r24,0x0
+     164:	1b 20 00 00 	l.movhi r25,0x0
+     168:	1b 40 00 00 	l.movhi r26,0x0
+     16c:	1b 60 00 00 	l.movhi r27,0x0
+     170:	1b 80 00 00 	l.movhi r28,0x0
+     174:	1b a0 00 00 	l.movhi r29,0x0
+     178:	1b c0 00 00 	l.movhi r30,0x0
+     17c:	1b e0 00 00 	l.movhi r31,0x0
+     180:	a8 20 00 01 	l.ori r1,r0,0x1
+     184:	c0 00 08 11 	l.mtspr r0,r1,0x11
+     188:	c1 40 00 00 	l.mtspr r0,r0,0x5000
+     18c:	18 80 00 00 	l.movhi r4,0x0
+     190:	a8 84 20 30 	l.ori r4,r4,0x2030
+     194:	44 00 20 00 	l.jr r4
+     198:	15 00 00 00 	l.nop 0x0
+	...
+     200:	d4 00 08 04 	l.sw 4(r0),r1
+     204:	18 20 00 00 	l.movhi r1,0x0
+     208:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     20c:	84 21 00 00 	l.lwz r1,0(r1)
+     210:	e4 01 00 00 	l.sfeq r1,r0
+     214:	0c 00 00 06 	l.bnf 22c <_or1k_reset+0x12c>
+     218:	15 00 00 00 	l.nop 0x0
+     21c:	18 20 00 00 	l.movhi r1,0x0
+     220:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     224:	00 00 00 04 	l.j 234 <_or1k_reset+0x134>
+     228:	84 21 00 00 	l.lwz r1,0(r1)
+     22c:	84 20 00 04 	l.lwz r1,4(r0)
+     230:	9c 21 ff 80 	l.addi r1,r1,-128
+     234:	9c 21 ff 78 	l.addi r1,r1,-136
+     238:	d4 01 18 0c 	l.sw 12(r1),r3
+     23c:	84 60 00 04 	l.lwz r3,4(r0)
+     240:	d4 01 18 04 	l.sw 4(r1),r3
+     244:	d4 01 20 10 	l.sw 16(r1),r4
+     248:	18 60 00 00 	l.movhi r3,0x0
+     24c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     250:	84 83 00 00 	l.lwz r4,0(r3)
+     254:	9c 84 00 01 	l.addi r4,r4,1
+     258:	d4 03 20 00 	l.sw 0(r3),r4
+     25c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     260:	00 00 0b 98 	l.j 30c0 <_or1k_exception_handler>
+     264:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     300:	d4 00 08 04 	l.sw 4(r0),r1
+     304:	18 20 00 00 	l.movhi r1,0x0
+     308:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     30c:	84 21 00 00 	l.lwz r1,0(r1)
+     310:	e4 01 00 00 	l.sfeq r1,r0
+     314:	0c 00 00 06 	l.bnf 32c <_or1k_reset+0x22c>
+     318:	15 00 00 00 	l.nop 0x0
+     31c:	18 20 00 00 	l.movhi r1,0x0
+     320:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     324:	00 00 00 04 	l.j 334 <_or1k_reset+0x234>
+     328:	84 21 00 00 	l.lwz r1,0(r1)
+     32c:	84 20 00 04 	l.lwz r1,4(r0)
+     330:	9c 21 ff 80 	l.addi r1,r1,-128
+     334:	9c 21 ff 78 	l.addi r1,r1,-136
+     338:	d4 01 18 0c 	l.sw 12(r1),r3
+     33c:	84 60 00 04 	l.lwz r3,4(r0)
+     340:	d4 01 18 04 	l.sw 4(r1),r3
+     344:	d4 01 20 10 	l.sw 16(r1),r4
+     348:	18 60 00 00 	l.movhi r3,0x0
+     34c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     350:	84 83 00 00 	l.lwz r4,0(r3)
+     354:	9c 84 00 01 	l.addi r4,r4,1
+     358:	d4 03 20 00 	l.sw 0(r3),r4
+     35c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     360:	00 00 0b 58 	l.j 30c0 <_or1k_exception_handler>
+     364:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     400:	d4 00 08 04 	l.sw 4(r0),r1
+     404:	18 20 00 00 	l.movhi r1,0x0
+     408:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     40c:	84 21 00 00 	l.lwz r1,0(r1)
+     410:	e4 01 00 00 	l.sfeq r1,r0
+     414:	0c 00 00 06 	l.bnf 42c <_or1k_reset+0x32c>
+     418:	15 00 00 00 	l.nop 0x0
+     41c:	18 20 00 00 	l.movhi r1,0x0
+     420:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     424:	00 00 00 04 	l.j 434 <_or1k_reset+0x334>
+     428:	84 21 00 00 	l.lwz r1,0(r1)
+     42c:	84 20 00 04 	l.lwz r1,4(r0)
+     430:	9c 21 ff 80 	l.addi r1,r1,-128
+     434:	9c 21 ff 78 	l.addi r1,r1,-136
+     438:	d4 01 18 0c 	l.sw 12(r1),r3
+     43c:	84 60 00 04 	l.lwz r3,4(r0)
+     440:	d4 01 18 04 	l.sw 4(r1),r3
+     444:	d4 01 20 10 	l.sw 16(r1),r4
+     448:	18 60 00 00 	l.movhi r3,0x0
+     44c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     450:	84 83 00 00 	l.lwz r4,0(r3)
+     454:	9c 84 00 01 	l.addi r4,r4,1
+     458:	d4 03 20 00 	l.sw 0(r3),r4
+     45c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     460:	00 00 0b 18 	l.j 30c0 <_or1k_exception_handler>
+     464:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     500:	d4 00 08 04 	l.sw 4(r0),r1
+     504:	18 20 00 00 	l.movhi r1,0x0
+     508:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     50c:	84 21 00 00 	l.lwz r1,0(r1)
+     510:	e4 01 00 00 	l.sfeq r1,r0
+     514:	0c 00 00 06 	l.bnf 52c <_or1k_reset+0x42c>
+     518:	15 00 00 00 	l.nop 0x0
+     51c:	18 20 00 00 	l.movhi r1,0x0
+     520:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     524:	00 00 00 04 	l.j 534 <_or1k_reset+0x434>
+     528:	84 21 00 00 	l.lwz r1,0(r1)
+     52c:	84 20 00 04 	l.lwz r1,4(r0)
+     530:	9c 21 ff 80 	l.addi r1,r1,-128
+     534:	9c 21 ff 78 	l.addi r1,r1,-136
+     538:	d4 01 18 0c 	l.sw 12(r1),r3
+     53c:	84 60 00 04 	l.lwz r3,4(r0)
+     540:	d4 01 18 04 	l.sw 4(r1),r3
+     544:	d4 01 20 10 	l.sw 16(r1),r4
+     548:	18 60 00 00 	l.movhi r3,0x0
+     54c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     550:	84 83 00 00 	l.lwz r4,0(r3)
+     554:	9c 84 00 01 	l.addi r4,r4,1
+     558:	d4 03 20 00 	l.sw 0(r3),r4
+     55c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     560:	00 00 0a d8 	l.j 30c0 <_or1k_exception_handler>
+     564:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     600:	d4 00 08 04 	l.sw 4(r0),r1
+     604:	18 20 00 00 	l.movhi r1,0x0
+     608:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     60c:	84 21 00 00 	l.lwz r1,0(r1)
+     610:	e4 01 00 00 	l.sfeq r1,r0
+     614:	0c 00 00 06 	l.bnf 62c <_or1k_reset+0x52c>
+     618:	15 00 00 00 	l.nop 0x0
+     61c:	18 20 00 00 	l.movhi r1,0x0
+     620:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     624:	00 00 00 04 	l.j 634 <_or1k_reset+0x534>
+     628:	84 21 00 00 	l.lwz r1,0(r1)
+     62c:	84 20 00 04 	l.lwz r1,4(r0)
+     630:	9c 21 ff 80 	l.addi r1,r1,-128
+     634:	9c 21 ff 78 	l.addi r1,r1,-136
+     638:	d4 01 18 0c 	l.sw 12(r1),r3
+     63c:	84 60 00 04 	l.lwz r3,4(r0)
+     640:	d4 01 18 04 	l.sw 4(r1),r3
+     644:	d4 01 20 10 	l.sw 16(r1),r4
+     648:	18 60 00 00 	l.movhi r3,0x0
+     64c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     650:	84 83 00 00 	l.lwz r4,0(r3)
+     654:	9c 84 00 01 	l.addi r4,r4,1
+     658:	d4 03 20 00 	l.sw 0(r3),r4
+     65c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     660:	00 00 0a 98 	l.j 30c0 <_or1k_exception_handler>
+     664:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     700:	d4 00 08 04 	l.sw 4(r0),r1
+     704:	18 20 00 00 	l.movhi r1,0x0
+     708:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     70c:	84 21 00 00 	l.lwz r1,0(r1)
+     710:	e4 01 00 00 	l.sfeq r1,r0
+     714:	0c 00 00 06 	l.bnf 72c <_or1k_reset+0x62c>
+     718:	15 00 00 00 	l.nop 0x0
+     71c:	18 20 00 00 	l.movhi r1,0x0
+     720:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     724:	00 00 00 04 	l.j 734 <_or1k_reset+0x634>
+     728:	84 21 00 00 	l.lwz r1,0(r1)
+     72c:	84 20 00 04 	l.lwz r1,4(r0)
+     730:	9c 21 ff 80 	l.addi r1,r1,-128
+     734:	9c 21 ff 78 	l.addi r1,r1,-136
+     738:	d4 01 18 0c 	l.sw 12(r1),r3
+     73c:	84 60 00 04 	l.lwz r3,4(r0)
+     740:	d4 01 18 04 	l.sw 4(r1),r3
+     744:	d4 01 20 10 	l.sw 16(r1),r4
+     748:	18 60 00 00 	l.movhi r3,0x0
+     74c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     750:	84 83 00 00 	l.lwz r4,0(r3)
+     754:	9c 84 00 01 	l.addi r4,r4,1
+     758:	d4 03 20 00 	l.sw 0(r3),r4
+     75c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     760:	00 00 0a 58 	l.j 30c0 <_or1k_exception_handler>
+     764:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     800:	d4 00 08 04 	l.sw 4(r0),r1
+     804:	18 20 00 00 	l.movhi r1,0x0
+     808:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     80c:	84 21 00 00 	l.lwz r1,0(r1)
+     810:	e4 01 00 00 	l.sfeq r1,r0
+     814:	0c 00 00 06 	l.bnf 82c <_or1k_reset+0x72c>
+     818:	15 00 00 00 	l.nop 0x0
+     81c:	18 20 00 00 	l.movhi r1,0x0
+     820:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     824:	00 00 00 04 	l.j 834 <_or1k_reset+0x734>
+     828:	84 21 00 00 	l.lwz r1,0(r1)
+     82c:	84 20 00 04 	l.lwz r1,4(r0)
+     830:	9c 21 ff 80 	l.addi r1,r1,-128
+     834:	9c 21 ff 78 	l.addi r1,r1,-136
+     838:	d4 01 18 0c 	l.sw 12(r1),r3
+     83c:	84 60 00 04 	l.lwz r3,4(r0)
+     840:	d4 01 18 04 	l.sw 4(r1),r3
+     844:	d4 01 20 10 	l.sw 16(r1),r4
+     848:	18 60 00 00 	l.movhi r3,0x0
+     84c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     850:	84 83 00 00 	l.lwz r4,0(r3)
+     854:	9c 84 00 01 	l.addi r4,r4,1
+     858:	d4 03 20 00 	l.sw 0(r3),r4
+     85c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     860:	00 00 0a 18 	l.j 30c0 <_or1k_exception_handler>
+     864:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     900:	d4 00 08 04 	l.sw 4(r0),r1
+     904:	18 20 00 00 	l.movhi r1,0x0
+     908:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     90c:	84 21 00 00 	l.lwz r1,0(r1)
+     910:	e4 01 00 00 	l.sfeq r1,r0
+     914:	0c 00 00 06 	l.bnf 92c <_or1k_reset+0x82c>
+     918:	15 00 00 00 	l.nop 0x0
+     91c:	18 20 00 00 	l.movhi r1,0x0
+     920:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     924:	00 00 00 04 	l.j 934 <_or1k_reset+0x834>
+     928:	84 21 00 00 	l.lwz r1,0(r1)
+     92c:	84 20 00 04 	l.lwz r1,4(r0)
+     930:	9c 21 ff 80 	l.addi r1,r1,-128
+     934:	9c 21 ff 78 	l.addi r1,r1,-136
+     938:	d4 01 18 0c 	l.sw 12(r1),r3
+     93c:	84 60 00 04 	l.lwz r3,4(r0)
+     940:	d4 01 18 04 	l.sw 4(r1),r3
+     944:	d4 01 20 10 	l.sw 16(r1),r4
+     948:	18 60 00 00 	l.movhi r3,0x0
+     94c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     950:	84 83 00 00 	l.lwz r4,0(r3)
+     954:	9c 84 00 01 	l.addi r4,r4,1
+     958:	d4 03 20 00 	l.sw 0(r3),r4
+     95c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     960:	00 00 09 d8 	l.j 30c0 <_or1k_exception_handler>
+     964:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     a00:	d4 00 08 04 	l.sw 4(r0),r1
+     a04:	18 20 00 00 	l.movhi r1,0x0
+     a08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     a0c:	84 21 00 00 	l.lwz r1,0(r1)
+     a10:	e4 01 00 00 	l.sfeq r1,r0
+     a14:	0c 00 00 06 	l.bnf a2c <_or1k_reset+0x92c>
+     a18:	15 00 00 00 	l.nop 0x0
+     a1c:	18 20 00 00 	l.movhi r1,0x0
+     a20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     a24:	00 00 00 04 	l.j a34 <_or1k_reset+0x934>
+     a28:	84 21 00 00 	l.lwz r1,0(r1)
+     a2c:	84 20 00 04 	l.lwz r1,4(r0)
+     a30:	9c 21 ff 80 	l.addi r1,r1,-128
+     a34:	9c 21 ff 78 	l.addi r1,r1,-136
+     a38:	d4 01 18 0c 	l.sw 12(r1),r3
+     a3c:	84 60 00 04 	l.lwz r3,4(r0)
+     a40:	d4 01 18 04 	l.sw 4(r1),r3
+     a44:	d4 01 20 10 	l.sw 16(r1),r4
+     a48:	18 60 00 00 	l.movhi r3,0x0
+     a4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     a50:	84 83 00 00 	l.lwz r4,0(r3)
+     a54:	9c 84 00 01 	l.addi r4,r4,1
+     a58:	d4 03 20 00 	l.sw 0(r3),r4
+     a5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     a60:	00 00 09 98 	l.j 30c0 <_or1k_exception_handler>
+     a64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     b00:	d4 00 08 04 	l.sw 4(r0),r1
+     b04:	18 20 00 00 	l.movhi r1,0x0
+     b08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     b0c:	84 21 00 00 	l.lwz r1,0(r1)
+     b10:	e4 01 00 00 	l.sfeq r1,r0
+     b14:	0c 00 00 06 	l.bnf b2c <_or1k_reset+0xa2c>
+     b18:	15 00 00 00 	l.nop 0x0
+     b1c:	18 20 00 00 	l.movhi r1,0x0
+     b20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     b24:	00 00 00 04 	l.j b34 <_or1k_reset+0xa34>
+     b28:	84 21 00 00 	l.lwz r1,0(r1)
+     b2c:	84 20 00 04 	l.lwz r1,4(r0)
+     b30:	9c 21 ff 80 	l.addi r1,r1,-128
+     b34:	9c 21 ff 78 	l.addi r1,r1,-136
+     b38:	d4 01 18 0c 	l.sw 12(r1),r3
+     b3c:	84 60 00 04 	l.lwz r3,4(r0)
+     b40:	d4 01 18 04 	l.sw 4(r1),r3
+     b44:	d4 01 20 10 	l.sw 16(r1),r4
+     b48:	18 60 00 00 	l.movhi r3,0x0
+     b4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     b50:	84 83 00 00 	l.lwz r4,0(r3)
+     b54:	9c 84 00 01 	l.addi r4,r4,1
+     b58:	d4 03 20 00 	l.sw 0(r3),r4
+     b5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     b60:	00 00 09 58 	l.j 30c0 <_or1k_exception_handler>
+     b64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     c00:	d4 00 08 04 	l.sw 4(r0),r1
+     c04:	18 20 00 00 	l.movhi r1,0x0
+     c08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     c0c:	84 21 00 00 	l.lwz r1,0(r1)
+     c10:	e4 01 00 00 	l.sfeq r1,r0
+     c14:	0c 00 00 06 	l.bnf c2c <_or1k_reset+0xb2c>
+     c18:	15 00 00 00 	l.nop 0x0
+     c1c:	18 20 00 00 	l.movhi r1,0x0
+     c20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     c24:	00 00 00 04 	l.j c34 <_or1k_reset+0xb34>
+     c28:	84 21 00 00 	l.lwz r1,0(r1)
+     c2c:	84 20 00 04 	l.lwz r1,4(r0)
+     c30:	9c 21 ff 80 	l.addi r1,r1,-128
+     c34:	9c 21 ff 78 	l.addi r1,r1,-136
+     c38:	d4 01 18 0c 	l.sw 12(r1),r3
+     c3c:	84 60 00 04 	l.lwz r3,4(r0)
+     c40:	d4 01 18 04 	l.sw 4(r1),r3
+     c44:	d4 01 20 10 	l.sw 16(r1),r4
+     c48:	18 60 00 00 	l.movhi r3,0x0
+     c4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     c50:	84 83 00 00 	l.lwz r4,0(r3)
+     c54:	9c 84 00 01 	l.addi r4,r4,1
+     c58:	d4 03 20 00 	l.sw 0(r3),r4
+     c5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     c60:	00 00 09 18 	l.j 30c0 <_or1k_exception_handler>
+     c64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     d00:	d4 00 08 04 	l.sw 4(r0),r1
+     d04:	18 20 00 00 	l.movhi r1,0x0
+     d08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     d0c:	84 21 00 00 	l.lwz r1,0(r1)
+     d10:	e4 01 00 00 	l.sfeq r1,r0
+     d14:	0c 00 00 06 	l.bnf d2c <_or1k_reset+0xc2c>
+     d18:	15 00 00 00 	l.nop 0x0
+     d1c:	18 20 00 00 	l.movhi r1,0x0
+     d20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     d24:	00 00 00 04 	l.j d34 <_or1k_reset+0xc34>
+     d28:	84 21 00 00 	l.lwz r1,0(r1)
+     d2c:	84 20 00 04 	l.lwz r1,4(r0)
+     d30:	9c 21 ff 80 	l.addi r1,r1,-128
+     d34:	9c 21 ff 78 	l.addi r1,r1,-136
+     d38:	d4 01 18 0c 	l.sw 12(r1),r3
+     d3c:	84 60 00 04 	l.lwz r3,4(r0)
+     d40:	d4 01 18 04 	l.sw 4(r1),r3
+     d44:	d4 01 20 10 	l.sw 16(r1),r4
+     d48:	18 60 00 00 	l.movhi r3,0x0
+     d4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     d50:	84 83 00 00 	l.lwz r4,0(r3)
+     d54:	9c 84 00 01 	l.addi r4,r4,1
+     d58:	d4 03 20 00 	l.sw 0(r3),r4
+     d5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     d60:	00 00 08 d8 	l.j 30c0 <_or1k_exception_handler>
+     d64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     e00:	d4 00 08 04 	l.sw 4(r0),r1
+     e04:	18 20 00 00 	l.movhi r1,0x0
+     e08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     e0c:	84 21 00 00 	l.lwz r1,0(r1)
+     e10:	e4 01 00 00 	l.sfeq r1,r0
+     e14:	0c 00 00 06 	l.bnf e2c <_or1k_reset+0xd2c>
+     e18:	15 00 00 00 	l.nop 0x0
+     e1c:	18 20 00 00 	l.movhi r1,0x0
+     e20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     e24:	00 00 00 04 	l.j e34 <_or1k_reset+0xd34>
+     e28:	84 21 00 00 	l.lwz r1,0(r1)
+     e2c:	84 20 00 04 	l.lwz r1,4(r0)
+     e30:	9c 21 ff 80 	l.addi r1,r1,-128
+     e34:	9c 21 ff 78 	l.addi r1,r1,-136
+     e38:	d4 01 18 0c 	l.sw 12(r1),r3
+     e3c:	84 60 00 04 	l.lwz r3,4(r0)
+     e40:	d4 01 18 04 	l.sw 4(r1),r3
+     e44:	d4 01 20 10 	l.sw 16(r1),r4
+     e48:	18 60 00 00 	l.movhi r3,0x0
+     e4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     e50:	84 83 00 00 	l.lwz r4,0(r3)
+     e54:	9c 84 00 01 	l.addi r4,r4,1
+     e58:	d4 03 20 00 	l.sw 0(r3),r4
+     e5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     e60:	00 00 08 98 	l.j 30c0 <_or1k_exception_handler>
+     e64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+     f00:	d4 00 08 04 	l.sw 4(r0),r1
+     f04:	18 20 00 00 	l.movhi r1,0x0
+     f08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+     f0c:	84 21 00 00 	l.lwz r1,0(r1)
+     f10:	e4 01 00 00 	l.sfeq r1,r0
+     f14:	0c 00 00 06 	l.bnf f2c <_or1k_reset+0xe2c>
+     f18:	15 00 00 00 	l.nop 0x0
+     f1c:	18 20 00 00 	l.movhi r1,0x0
+     f20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+     f24:	00 00 00 04 	l.j f34 <_or1k_reset+0xe34>
+     f28:	84 21 00 00 	l.lwz r1,0(r1)
+     f2c:	84 20 00 04 	l.lwz r1,4(r0)
+     f30:	9c 21 ff 80 	l.addi r1,r1,-128
+     f34:	9c 21 ff 78 	l.addi r1,r1,-136
+     f38:	d4 01 18 0c 	l.sw 12(r1),r3
+     f3c:	84 60 00 04 	l.lwz r3,4(r0)
+     f40:	d4 01 18 04 	l.sw 4(r1),r3
+     f44:	d4 01 20 10 	l.sw 16(r1),r4
+     f48:	18 60 00 00 	l.movhi r3,0x0
+     f4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+     f50:	84 83 00 00 	l.lwz r4,0(r3)
+     f54:	9c 84 00 01 	l.addi r4,r4,1
+     f58:	d4 03 20 00 	l.sw 0(r3),r4
+     f5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+     f60:	00 00 08 58 	l.j 30c0 <_or1k_exception_handler>
+     f64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1000:	d4 00 08 04 	l.sw 4(r0),r1
+    1004:	18 20 00 00 	l.movhi r1,0x0
+    1008:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    100c:	84 21 00 00 	l.lwz r1,0(r1)
+    1010:	e4 01 00 00 	l.sfeq r1,r0
+    1014:	0c 00 00 06 	l.bnf 102c <_or1k_reset+0xf2c>
+    1018:	15 00 00 00 	l.nop 0x0
+    101c:	18 20 00 00 	l.movhi r1,0x0
+    1020:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1024:	00 00 00 04 	l.j 1034 <_or1k_reset+0xf34>
+    1028:	84 21 00 00 	l.lwz r1,0(r1)
+    102c:	84 20 00 04 	l.lwz r1,4(r0)
+    1030:	9c 21 ff 80 	l.addi r1,r1,-128
+    1034:	9c 21 ff 78 	l.addi r1,r1,-136
+    1038:	d4 01 18 0c 	l.sw 12(r1),r3
+    103c:	84 60 00 04 	l.lwz r3,4(r0)
+    1040:	d4 01 18 04 	l.sw 4(r1),r3
+    1044:	d4 01 20 10 	l.sw 16(r1),r4
+    1048:	18 60 00 00 	l.movhi r3,0x0
+    104c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1050:	84 83 00 00 	l.lwz r4,0(r3)
+    1054:	9c 84 00 01 	l.addi r4,r4,1
+    1058:	d4 03 20 00 	l.sw 0(r3),r4
+    105c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1060:	00 00 08 18 	l.j 30c0 <_or1k_exception_handler>
+    1064:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1100:	d4 00 08 04 	l.sw 4(r0),r1
+    1104:	18 20 00 00 	l.movhi r1,0x0
+    1108:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    110c:	84 21 00 00 	l.lwz r1,0(r1)
+    1110:	e4 01 00 00 	l.sfeq r1,r0
+    1114:	0c 00 00 06 	l.bnf 112c <_or1k_reset+0x102c>
+    1118:	15 00 00 00 	l.nop 0x0
+    111c:	18 20 00 00 	l.movhi r1,0x0
+    1120:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1124:	00 00 00 04 	l.j 1134 <_or1k_reset+0x1034>
+    1128:	84 21 00 00 	l.lwz r1,0(r1)
+    112c:	84 20 00 04 	l.lwz r1,4(r0)
+    1130:	9c 21 ff 80 	l.addi r1,r1,-128
+    1134:	9c 21 ff 78 	l.addi r1,r1,-136
+    1138:	d4 01 18 0c 	l.sw 12(r1),r3
+    113c:	84 60 00 04 	l.lwz r3,4(r0)
+    1140:	d4 01 18 04 	l.sw 4(r1),r3
+    1144:	d4 01 20 10 	l.sw 16(r1),r4
+    1148:	18 60 00 00 	l.movhi r3,0x0
+    114c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1150:	84 83 00 00 	l.lwz r4,0(r3)
+    1154:	9c 84 00 01 	l.addi r4,r4,1
+    1158:	d4 03 20 00 	l.sw 0(r3),r4
+    115c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1160:	00 00 07 d8 	l.j 30c0 <_or1k_exception_handler>
+    1164:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1200:	d4 00 08 04 	l.sw 4(r0),r1
+    1204:	18 20 00 00 	l.movhi r1,0x0
+    1208:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    120c:	84 21 00 00 	l.lwz r1,0(r1)
+    1210:	e4 01 00 00 	l.sfeq r1,r0
+    1214:	0c 00 00 06 	l.bnf 122c <_or1k_reset+0x112c>
+    1218:	15 00 00 00 	l.nop 0x0
+    121c:	18 20 00 00 	l.movhi r1,0x0
+    1220:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1224:	00 00 00 04 	l.j 1234 <_or1k_reset+0x1134>
+    1228:	84 21 00 00 	l.lwz r1,0(r1)
+    122c:	84 20 00 04 	l.lwz r1,4(r0)
+    1230:	9c 21 ff 80 	l.addi r1,r1,-128
+    1234:	9c 21 ff 78 	l.addi r1,r1,-136
+    1238:	d4 01 18 0c 	l.sw 12(r1),r3
+    123c:	84 60 00 04 	l.lwz r3,4(r0)
+    1240:	d4 01 18 04 	l.sw 4(r1),r3
+    1244:	d4 01 20 10 	l.sw 16(r1),r4
+    1248:	18 60 00 00 	l.movhi r3,0x0
+    124c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1250:	84 83 00 00 	l.lwz r4,0(r3)
+    1254:	9c 84 00 01 	l.addi r4,r4,1
+    1258:	d4 03 20 00 	l.sw 0(r3),r4
+    125c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1260:	00 00 07 98 	l.j 30c0 <_or1k_exception_handler>
+    1264:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1300:	d4 00 08 04 	l.sw 4(r0),r1
+    1304:	18 20 00 00 	l.movhi r1,0x0
+    1308:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    130c:	84 21 00 00 	l.lwz r1,0(r1)
+    1310:	e4 01 00 00 	l.sfeq r1,r0
+    1314:	0c 00 00 06 	l.bnf 132c <_or1k_reset+0x122c>
+    1318:	15 00 00 00 	l.nop 0x0
+    131c:	18 20 00 00 	l.movhi r1,0x0
+    1320:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1324:	00 00 00 04 	l.j 1334 <_or1k_reset+0x1234>
+    1328:	84 21 00 00 	l.lwz r1,0(r1)
+    132c:	84 20 00 04 	l.lwz r1,4(r0)
+    1330:	9c 21 ff 80 	l.addi r1,r1,-128
+    1334:	9c 21 ff 78 	l.addi r1,r1,-136
+    1338:	d4 01 18 0c 	l.sw 12(r1),r3
+    133c:	84 60 00 04 	l.lwz r3,4(r0)
+    1340:	d4 01 18 04 	l.sw 4(r1),r3
+    1344:	d4 01 20 10 	l.sw 16(r1),r4
+    1348:	18 60 00 00 	l.movhi r3,0x0
+    134c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1350:	84 83 00 00 	l.lwz r4,0(r3)
+    1354:	9c 84 00 01 	l.addi r4,r4,1
+    1358:	d4 03 20 00 	l.sw 0(r3),r4
+    135c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1360:	00 00 07 58 	l.j 30c0 <_or1k_exception_handler>
+    1364:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1400:	d4 00 08 04 	l.sw 4(r0),r1
+    1404:	18 20 00 00 	l.movhi r1,0x0
+    1408:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    140c:	84 21 00 00 	l.lwz r1,0(r1)
+    1410:	e4 01 00 00 	l.sfeq r1,r0
+    1414:	0c 00 00 06 	l.bnf 142c <_or1k_reset+0x132c>
+    1418:	15 00 00 00 	l.nop 0x0
+    141c:	18 20 00 00 	l.movhi r1,0x0
+    1420:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1424:	00 00 00 04 	l.j 1434 <_or1k_reset+0x1334>
+    1428:	84 21 00 00 	l.lwz r1,0(r1)
+    142c:	84 20 00 04 	l.lwz r1,4(r0)
+    1430:	9c 21 ff 80 	l.addi r1,r1,-128
+    1434:	9c 21 ff 78 	l.addi r1,r1,-136
+    1438:	d4 01 18 0c 	l.sw 12(r1),r3
+    143c:	84 60 00 04 	l.lwz r3,4(r0)
+    1440:	d4 01 18 04 	l.sw 4(r1),r3
+    1444:	d4 01 20 10 	l.sw 16(r1),r4
+    1448:	18 60 00 00 	l.movhi r3,0x0
+    144c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1450:	84 83 00 00 	l.lwz r4,0(r3)
+    1454:	9c 84 00 01 	l.addi r4,r4,1
+    1458:	d4 03 20 00 	l.sw 0(r3),r4
+    145c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1460:	00 00 07 18 	l.j 30c0 <_or1k_exception_handler>
+    1464:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1500:	d4 00 08 04 	l.sw 4(r0),r1
+    1504:	18 20 00 00 	l.movhi r1,0x0
+    1508:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    150c:	84 21 00 00 	l.lwz r1,0(r1)
+    1510:	e4 01 00 00 	l.sfeq r1,r0
+    1514:	0c 00 00 06 	l.bnf 152c <_or1k_reset+0x142c>
+    1518:	15 00 00 00 	l.nop 0x0
+    151c:	18 20 00 00 	l.movhi r1,0x0
+    1520:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1524:	00 00 00 04 	l.j 1534 <_or1k_reset+0x1434>
+    1528:	84 21 00 00 	l.lwz r1,0(r1)
+    152c:	84 20 00 04 	l.lwz r1,4(r0)
+    1530:	9c 21 ff 80 	l.addi r1,r1,-128
+    1534:	9c 21 ff 78 	l.addi r1,r1,-136
+    1538:	d4 01 18 0c 	l.sw 12(r1),r3
+    153c:	84 60 00 04 	l.lwz r3,4(r0)
+    1540:	d4 01 18 04 	l.sw 4(r1),r3
+    1544:	d4 01 20 10 	l.sw 16(r1),r4
+    1548:	18 60 00 00 	l.movhi r3,0x0
+    154c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1550:	84 83 00 00 	l.lwz r4,0(r3)
+    1554:	9c 84 00 01 	l.addi r4,r4,1
+    1558:	d4 03 20 00 	l.sw 0(r3),r4
+    155c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1560:	00 00 06 d8 	l.j 30c0 <_or1k_exception_handler>
+    1564:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1600:	d4 00 08 04 	l.sw 4(r0),r1
+    1604:	18 20 00 00 	l.movhi r1,0x0
+    1608:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    160c:	84 21 00 00 	l.lwz r1,0(r1)
+    1610:	e4 01 00 00 	l.sfeq r1,r0
+    1614:	0c 00 00 06 	l.bnf 162c <_or1k_reset+0x152c>
+    1618:	15 00 00 00 	l.nop 0x0
+    161c:	18 20 00 00 	l.movhi r1,0x0
+    1620:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1624:	00 00 00 04 	l.j 1634 <_or1k_reset+0x1534>
+    1628:	84 21 00 00 	l.lwz r1,0(r1)
+    162c:	84 20 00 04 	l.lwz r1,4(r0)
+    1630:	9c 21 ff 80 	l.addi r1,r1,-128
+    1634:	9c 21 ff 78 	l.addi r1,r1,-136
+    1638:	d4 01 18 0c 	l.sw 12(r1),r3
+    163c:	84 60 00 04 	l.lwz r3,4(r0)
+    1640:	d4 01 18 04 	l.sw 4(r1),r3
+    1644:	d4 01 20 10 	l.sw 16(r1),r4
+    1648:	18 60 00 00 	l.movhi r3,0x0
+    164c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1650:	84 83 00 00 	l.lwz r4,0(r3)
+    1654:	9c 84 00 01 	l.addi r4,r4,1
+    1658:	d4 03 20 00 	l.sw 0(r3),r4
+    165c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1660:	00 00 06 98 	l.j 30c0 <_or1k_exception_handler>
+    1664:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1700:	d4 00 08 04 	l.sw 4(r0),r1
+    1704:	18 20 00 00 	l.movhi r1,0x0
+    1708:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    170c:	84 21 00 00 	l.lwz r1,0(r1)
+    1710:	e4 01 00 00 	l.sfeq r1,r0
+    1714:	0c 00 00 06 	l.bnf 172c <_or1k_reset+0x162c>
+    1718:	15 00 00 00 	l.nop 0x0
+    171c:	18 20 00 00 	l.movhi r1,0x0
+    1720:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1724:	00 00 00 04 	l.j 1734 <_or1k_reset+0x1634>
+    1728:	84 21 00 00 	l.lwz r1,0(r1)
+    172c:	84 20 00 04 	l.lwz r1,4(r0)
+    1730:	9c 21 ff 80 	l.addi r1,r1,-128
+    1734:	9c 21 ff 78 	l.addi r1,r1,-136
+    1738:	d4 01 18 0c 	l.sw 12(r1),r3
+    173c:	84 60 00 04 	l.lwz r3,4(r0)
+    1740:	d4 01 18 04 	l.sw 4(r1),r3
+    1744:	d4 01 20 10 	l.sw 16(r1),r4
+    1748:	18 60 00 00 	l.movhi r3,0x0
+    174c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1750:	84 83 00 00 	l.lwz r4,0(r3)
+    1754:	9c 84 00 01 	l.addi r4,r4,1
+    1758:	d4 03 20 00 	l.sw 0(r3),r4
+    175c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1760:	00 00 06 58 	l.j 30c0 <_or1k_exception_handler>
+    1764:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1800:	d4 00 08 04 	l.sw 4(r0),r1
+    1804:	18 20 00 00 	l.movhi r1,0x0
+    1808:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    180c:	84 21 00 00 	l.lwz r1,0(r1)
+    1810:	e4 01 00 00 	l.sfeq r1,r0
+    1814:	0c 00 00 06 	l.bnf 182c <_or1k_reset+0x172c>
+    1818:	15 00 00 00 	l.nop 0x0
+    181c:	18 20 00 00 	l.movhi r1,0x0
+    1820:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1824:	00 00 00 04 	l.j 1834 <_or1k_reset+0x1734>
+    1828:	84 21 00 00 	l.lwz r1,0(r1)
+    182c:	84 20 00 04 	l.lwz r1,4(r0)
+    1830:	9c 21 ff 80 	l.addi r1,r1,-128
+    1834:	9c 21 ff 78 	l.addi r1,r1,-136
+    1838:	d4 01 18 0c 	l.sw 12(r1),r3
+    183c:	84 60 00 04 	l.lwz r3,4(r0)
+    1840:	d4 01 18 04 	l.sw 4(r1),r3
+    1844:	d4 01 20 10 	l.sw 16(r1),r4
+    1848:	18 60 00 00 	l.movhi r3,0x0
+    184c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1850:	84 83 00 00 	l.lwz r4,0(r3)
+    1854:	9c 84 00 01 	l.addi r4,r4,1
+    1858:	d4 03 20 00 	l.sw 0(r3),r4
+    185c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1860:	00 00 06 18 	l.j 30c0 <_or1k_exception_handler>
+    1864:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1900:	d4 00 08 04 	l.sw 4(r0),r1
+    1904:	18 20 00 00 	l.movhi r1,0x0
+    1908:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    190c:	84 21 00 00 	l.lwz r1,0(r1)
+    1910:	e4 01 00 00 	l.sfeq r1,r0
+    1914:	0c 00 00 06 	l.bnf 192c <_or1k_reset+0x182c>
+    1918:	15 00 00 00 	l.nop 0x0
+    191c:	18 20 00 00 	l.movhi r1,0x0
+    1920:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1924:	00 00 00 04 	l.j 1934 <_or1k_reset+0x1834>
+    1928:	84 21 00 00 	l.lwz r1,0(r1)
+    192c:	84 20 00 04 	l.lwz r1,4(r0)
+    1930:	9c 21 ff 80 	l.addi r1,r1,-128
+    1934:	9c 21 ff 78 	l.addi r1,r1,-136
+    1938:	d4 01 18 0c 	l.sw 12(r1),r3
+    193c:	84 60 00 04 	l.lwz r3,4(r0)
+    1940:	d4 01 18 04 	l.sw 4(r1),r3
+    1944:	d4 01 20 10 	l.sw 16(r1),r4
+    1948:	18 60 00 00 	l.movhi r3,0x0
+    194c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1950:	84 83 00 00 	l.lwz r4,0(r3)
+    1954:	9c 84 00 01 	l.addi r4,r4,1
+    1958:	d4 03 20 00 	l.sw 0(r3),r4
+    195c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1960:	00 00 05 d8 	l.j 30c0 <_or1k_exception_handler>
+    1964:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1a00:	d4 00 08 04 	l.sw 4(r0),r1
+    1a04:	18 20 00 00 	l.movhi r1,0x0
+    1a08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    1a0c:	84 21 00 00 	l.lwz r1,0(r1)
+    1a10:	e4 01 00 00 	l.sfeq r1,r0
+    1a14:	0c 00 00 06 	l.bnf 1a2c <_or1k_reset+0x192c>
+    1a18:	15 00 00 00 	l.nop 0x0
+    1a1c:	18 20 00 00 	l.movhi r1,0x0
+    1a20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1a24:	00 00 00 04 	l.j 1a34 <_or1k_reset+0x1934>
+    1a28:	84 21 00 00 	l.lwz r1,0(r1)
+    1a2c:	84 20 00 04 	l.lwz r1,4(r0)
+    1a30:	9c 21 ff 80 	l.addi r1,r1,-128
+    1a34:	9c 21 ff 78 	l.addi r1,r1,-136
+    1a38:	d4 01 18 0c 	l.sw 12(r1),r3
+    1a3c:	84 60 00 04 	l.lwz r3,4(r0)
+    1a40:	d4 01 18 04 	l.sw 4(r1),r3
+    1a44:	d4 01 20 10 	l.sw 16(r1),r4
+    1a48:	18 60 00 00 	l.movhi r3,0x0
+    1a4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1a50:	84 83 00 00 	l.lwz r4,0(r3)
+    1a54:	9c 84 00 01 	l.addi r4,r4,1
+    1a58:	d4 03 20 00 	l.sw 0(r3),r4
+    1a5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1a60:	00 00 05 98 	l.j 30c0 <_or1k_exception_handler>
+    1a64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1b00:	d4 00 08 04 	l.sw 4(r0),r1
+    1b04:	18 20 00 00 	l.movhi r1,0x0
+    1b08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    1b0c:	84 21 00 00 	l.lwz r1,0(r1)
+    1b10:	e4 01 00 00 	l.sfeq r1,r0
+    1b14:	0c 00 00 06 	l.bnf 1b2c <_or1k_reset+0x1a2c>
+    1b18:	15 00 00 00 	l.nop 0x0
+    1b1c:	18 20 00 00 	l.movhi r1,0x0
+    1b20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1b24:	00 00 00 04 	l.j 1b34 <_or1k_reset+0x1a34>
+    1b28:	84 21 00 00 	l.lwz r1,0(r1)
+    1b2c:	84 20 00 04 	l.lwz r1,4(r0)
+    1b30:	9c 21 ff 80 	l.addi r1,r1,-128
+    1b34:	9c 21 ff 78 	l.addi r1,r1,-136
+    1b38:	d4 01 18 0c 	l.sw 12(r1),r3
+    1b3c:	84 60 00 04 	l.lwz r3,4(r0)
+    1b40:	d4 01 18 04 	l.sw 4(r1),r3
+    1b44:	d4 01 20 10 	l.sw 16(r1),r4
+    1b48:	18 60 00 00 	l.movhi r3,0x0
+    1b4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1b50:	84 83 00 00 	l.lwz r4,0(r3)
+    1b54:	9c 84 00 01 	l.addi r4,r4,1
+    1b58:	d4 03 20 00 	l.sw 0(r3),r4
+    1b5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1b60:	00 00 05 58 	l.j 30c0 <_or1k_exception_handler>
+    1b64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1c00:	d4 00 08 04 	l.sw 4(r0),r1
+    1c04:	18 20 00 00 	l.movhi r1,0x0
+    1c08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    1c0c:	84 21 00 00 	l.lwz r1,0(r1)
+    1c10:	e4 01 00 00 	l.sfeq r1,r0
+    1c14:	0c 00 00 06 	l.bnf 1c2c <_or1k_reset+0x1b2c>
+    1c18:	15 00 00 00 	l.nop 0x0
+    1c1c:	18 20 00 00 	l.movhi r1,0x0
+    1c20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1c24:	00 00 00 04 	l.j 1c34 <_or1k_reset+0x1b34>
+    1c28:	84 21 00 00 	l.lwz r1,0(r1)
+    1c2c:	84 20 00 04 	l.lwz r1,4(r0)
+    1c30:	9c 21 ff 80 	l.addi r1,r1,-128
+    1c34:	9c 21 ff 78 	l.addi r1,r1,-136
+    1c38:	d4 01 18 0c 	l.sw 12(r1),r3
+    1c3c:	84 60 00 04 	l.lwz r3,4(r0)
+    1c40:	d4 01 18 04 	l.sw 4(r1),r3
+    1c44:	d4 01 20 10 	l.sw 16(r1),r4
+    1c48:	18 60 00 00 	l.movhi r3,0x0
+    1c4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1c50:	84 83 00 00 	l.lwz r4,0(r3)
+    1c54:	9c 84 00 01 	l.addi r4,r4,1
+    1c58:	d4 03 20 00 	l.sw 0(r3),r4
+    1c5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1c60:	00 00 05 18 	l.j 30c0 <_or1k_exception_handler>
+    1c64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1d00:	d4 00 08 04 	l.sw 4(r0),r1
+    1d04:	18 20 00 00 	l.movhi r1,0x0
+    1d08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    1d0c:	84 21 00 00 	l.lwz r1,0(r1)
+    1d10:	e4 01 00 00 	l.sfeq r1,r0
+    1d14:	0c 00 00 06 	l.bnf 1d2c <_or1k_reset+0x1c2c>
+    1d18:	15 00 00 00 	l.nop 0x0
+    1d1c:	18 20 00 00 	l.movhi r1,0x0
+    1d20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1d24:	00 00 00 04 	l.j 1d34 <_or1k_reset+0x1c34>
+    1d28:	84 21 00 00 	l.lwz r1,0(r1)
+    1d2c:	84 20 00 04 	l.lwz r1,4(r0)
+    1d30:	9c 21 ff 80 	l.addi r1,r1,-128
+    1d34:	9c 21 ff 78 	l.addi r1,r1,-136
+    1d38:	d4 01 18 0c 	l.sw 12(r1),r3
+    1d3c:	84 60 00 04 	l.lwz r3,4(r0)
+    1d40:	d4 01 18 04 	l.sw 4(r1),r3
+    1d44:	d4 01 20 10 	l.sw 16(r1),r4
+    1d48:	18 60 00 00 	l.movhi r3,0x0
+    1d4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1d50:	84 83 00 00 	l.lwz r4,0(r3)
+    1d54:	9c 84 00 01 	l.addi r4,r4,1
+    1d58:	d4 03 20 00 	l.sw 0(r3),r4
+    1d5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1d60:	00 00 04 d8 	l.j 30c0 <_or1k_exception_handler>
+    1d64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1e00:	d4 00 08 04 	l.sw 4(r0),r1
+    1e04:	18 20 00 00 	l.movhi r1,0x0
+    1e08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    1e0c:	84 21 00 00 	l.lwz r1,0(r1)
+    1e10:	e4 01 00 00 	l.sfeq r1,r0
+    1e14:	0c 00 00 06 	l.bnf 1e2c <_or1k_reset+0x1d2c>
+    1e18:	15 00 00 00 	l.nop 0x0
+    1e1c:	18 20 00 00 	l.movhi r1,0x0
+    1e20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1e24:	00 00 00 04 	l.j 1e34 <_or1k_reset+0x1d34>
+    1e28:	84 21 00 00 	l.lwz r1,0(r1)
+    1e2c:	84 20 00 04 	l.lwz r1,4(r0)
+    1e30:	9c 21 ff 80 	l.addi r1,r1,-128
+    1e34:	9c 21 ff 78 	l.addi r1,r1,-136
+    1e38:	d4 01 18 0c 	l.sw 12(r1),r3
+    1e3c:	84 60 00 04 	l.lwz r3,4(r0)
+    1e40:	d4 01 18 04 	l.sw 4(r1),r3
+    1e44:	d4 01 20 10 	l.sw 16(r1),r4
+    1e48:	18 60 00 00 	l.movhi r3,0x0
+    1e4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1e50:	84 83 00 00 	l.lwz r4,0(r3)
+    1e54:	9c 84 00 01 	l.addi r4,r4,1
+    1e58:	d4 03 20 00 	l.sw 0(r3),r4
+    1e5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1e60:	00 00 04 98 	l.j 30c0 <_or1k_exception_handler>
+    1e64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1f00:	d4 00 08 04 	l.sw 4(r0),r1
+    1f04:	18 20 00 00 	l.movhi r1,0x0
+    1f08:	a8 21 4a 4c 	l.ori r1,r1,0x4a4c
+    1f0c:	84 21 00 00 	l.lwz r1,0(r1)
+    1f10:	e4 01 00 00 	l.sfeq r1,r0
+    1f14:	0c 00 00 06 	l.bnf 1f2c <_or1k_reset+0x1e2c>
+    1f18:	15 00 00 00 	l.nop 0x0
+    1f1c:	18 20 00 00 	l.movhi r1,0x0
+    1f20:	a8 21 4a 50 	l.ori r1,r1,0x4a50
+    1f24:	00 00 00 04 	l.j 1f34 <_or1k_reset+0x1e34>
+    1f28:	84 21 00 00 	l.lwz r1,0(r1)
+    1f2c:	84 20 00 04 	l.lwz r1,4(r0)
+    1f30:	9c 21 ff 80 	l.addi r1,r1,-128
+    1f34:	9c 21 ff 78 	l.addi r1,r1,-136
+    1f38:	d4 01 18 0c 	l.sw 12(r1),r3
+    1f3c:	84 60 00 04 	l.lwz r3,4(r0)
+    1f40:	d4 01 18 04 	l.sw 4(r1),r3
+    1f44:	d4 01 20 10 	l.sw 16(r1),r4
+    1f48:	18 60 00 00 	l.movhi r3,0x0
+    1f4c:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    1f50:	84 83 00 00 	l.lwz r4,0(r3)
+    1f54:	9c 84 00 01 	l.addi r4,r4,1
+    1f58:	d4 03 20 00 	l.sw 0(r3),r4
+    1f5c:	b4 60 00 10 	l.mfspr r3,r0,0x10
+    1f60:	00 00 04 58 	l.j 30c0 <_or1k_exception_handler>
+    1f64:	b4 80 00 20 	l.mfspr r4,r0,0x20
+	...
+    1ffc:	15 00 00 00 	l.nop 0x0
+
+Disassembly of section .init:
+
+00002000 <_init-0x4>:
+    2000:	15 00 00 00 	l.nop 0x0
+
+00002004 <_init>:
+    2004:	9c 21 ff fc 	l.addi r1,r1,-4
+    2008:	d4 01 48 00 	l.sw 0(r1),r9
+    200c:	04 00 00 bc 	l.jal 22fc <frame_dummy>
+    2010:	15 00 00 00 	l.nop 0x0
+    2014:	04 00 07 34 	l.jal 3ce4 <__do_global_ctors_aux>
+    2018:	15 00 00 00 	l.nop 0x0
+    201c:	85 21 00 00 	l.lwz r9,0(r1)
+    2020:	44 00 48 00 	l.jr r9
+    2024:	9c 21 00 04 	l.addi r1,r1,4
+
+Disassembly of section .text:
+
+00002028 <_or1k_start-0x8>:
+    2028:	44 00 48 00 	l.jr r9
+    202c:	15 00 00 00 	l.nop 0x0
+
+00002030 <_or1k_start>:
+    2030:	04 00 03 bc 	l.jal 2f20 <_or1k_cache_init>
+    2034:	15 00 00 00 	l.nop 0x0
+    2038:	04 00 06 84 	l.jal 3a48 <_or1k_board_init_early>
+    203c:	15 00 00 00 	l.nop 0x0
+    2040:	18 60 00 00 	l.movhi r3,0x0
+    2044:	a8 63 49 10 	l.ori r3,r3,0x4910
+    2048:	18 80 00 00 	l.movhi r4,0x0
+    204c:	a8 84 4a d8 	l.ori r4,r4,0x4ad8
+    2050:	d4 03 00 00 	l.sw 0(r3),r0
+    2054:	e4 83 20 00 	l.sfltu r3,r4
+    2058:	13 ff ff fe 	l.bf 2050 <_or1k_start+0x20>
+    205c:	9c 63 00 04 	l.addi r3,r3,4
+    2060:	18 20 00 00 	l.movhi r1,0x0
+    2064:	a8 21 3a 24 	l.ori r1,r1,0x3a24
+    2068:	84 21 00 00 	l.lwz r1,0(r1)
+    206c:	18 40 00 00 	l.movhi r2,0x0
+    2070:	a8 42 3a 28 	l.ori r2,r2,0x3a28
+    2074:	84 42 00 00 	l.lwz r2,0(r2)
+    2078:	e0 21 10 00 	l.add r1,r1,r2
+    207c:	18 60 00 00 	l.movhi r3,0x0
+    2080:	a8 63 4a 50 	l.ori r3,r3,0x4a50
+    2084:	d4 03 08 00 	l.sw 0(r3),r1
+    2088:	18 60 00 00 	l.movhi r3,0x0
+    208c:	a8 63 40 b4 	l.ori r3,r3,0x40b4
+    2090:	84 63 00 00 	l.lwz r3,0(r3)
+    2094:	e0 81 18 02 	l.sub r4,r1,r3
+    2098:	18 a0 00 00 	l.movhi r5,0x0
+    209c:	a8 a5 4a 58 	l.ori r5,r5,0x4a58
+    20a0:	d4 05 20 00 	l.sw 0(r5),r4
+    20a4:	e0 20 20 04 	l.or r1,r0,r4
+    20a8:	e0 41 08 04 	l.or r2,r1,r1
+    20ac:	18 60 00 00 	l.movhi r3,0x0
+    20b0:	a8 63 4a 54 	l.ori r3,r3,0x4a54
+    20b4:	d4 03 08 00 	l.sw 0(r3),r1
+    20b8:	18 60 00 00 	l.movhi r3,0x0
+    20bc:	a8 63 40 b0 	l.ori r3,r3,0x40b0
+    20c0:	84 63 00 00 	l.lwz r3,0(r3)
+    20c4:	e0 81 18 02 	l.sub r4,r1,r3
+    20c8:	18 a0 00 00 	l.movhi r5,0x0
+    20cc:	a8 a5 4a 5c 	l.ori r5,r5,0x4a5c
+    20d0:	d4 05 20 00 	l.sw 0(r5),r4
+    20d4:	04 00 05 35 	l.jal 35a8 <_or1k_init>
+    20d8:	15 00 00 00 	l.nop 0x0
+    20dc:	04 00 04 c8 	l.jal 33fc <_or1k_libc_impure_init>
+    20e0:	15 00 00 00 	l.nop 0x0
+    20e4:	07 ff ff c8 	l.jal 2004 <_init>
+    20e8:	15 00 00 00 	l.nop 0x0
+    20ec:	18 60 00 00 	l.movhi r3,0x0
+    20f0:	04 00 01 83 	l.jal 26fc <atexit>
+    20f4:	a8 63 3d 54 	l.ori r3,r3,0x3d54
+    20f8:	18 80 00 00 	l.movhi r4,0x0
+    20fc:	a8 84 3a 30 	l.ori r4,r4,0x3a30
+    2100:	84 84 00 00 	l.lwz r4,0(r4)
+    2104:	e4 24 00 00 	l.sfne r4,r0
+    2108:	0c 00 00 04 	l.bnf 2118 <_or1k_start+0xe8>
+    210c:	e0 60 00 04 	l.or r3,r0,r0
+    2110:	04 00 03 17 	l.jal 2d6c <_or1k_uart_init>
+    2114:	15 00 00 00 	l.nop 0x0
+    2118:	04 00 06 4e 	l.jal 3a50 <_or1k_board_init>
+    211c:	15 00 00 00 	l.nop 0x0
+    2120:	e0 60 00 04 	l.or r3,r0,r0
+    2124:	e0 80 00 04 	l.or r4,r0,r0
+    2128:	04 00 00 f7 	l.jal 2504 <main>
+    212c:	e0 a0 00 04 	l.or r5,r0,r0
+    2130:	04 00 01 7f 	l.jal 272c <exit>
+    2134:	9c 6b 00 00 	l.addi r3,r11,0
+    2138:	00 00 00 00 	l.j 2138 <_or1k_start+0x108>
+    213c:	15 00 00 00 	l.nop 0x0
+
+00002140 <deregister_tm_clones>:
+    2140:	d7 e1 17 f8 	l.sw -8(r1),r2
+    2144:	18 60 00 00 	l.movhi r3,0x0
+    2148:	18 40 00 00 	l.movhi r2,0x0
+    214c:	a8 63 49 13 	l.ori r3,r3,0x4913
+    2150:	a8 42 49 10 	l.ori r2,r2,0x4910
+    2154:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2158:	e0 63 10 02 	l.sub r3,r3,r2
+    215c:	d7 e1 0f f4 	l.sw -12(r1),r1
+    2160:	bc a3 00 06 	l.sfleui r3,6
+    2164:	10 00 00 09 	l.bf 2188 <deregister_tm_clones+0x48>
+    2168:	9c 21 ff f4 	l.addi r1,r1,-12
+    216c:	18 80 00 00 	l.movhi r4,0x0
+    2170:	a8 84 00 00 	l.ori r4,r4,0x0
+    2174:	bc 04 00 00 	l.sfeqi r4,0
+    2178:	10 00 00 04 	l.bf 2188 <deregister_tm_clones+0x48>
+    217c:	15 00 00 00 	l.nop 0x0
+    2180:	48 00 20 00 	l.jalr r4
+    2184:	a8 62 00 00 	l.ori r3,r2,0x0
+    2188:	9c 21 00 0c 	l.addi r1,r1,12
+    218c:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2190:	84 21 ff f4 	l.lwz r1,-12(r1)
+    2194:	44 00 48 00 	l.jr r9
+    2198:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+0000219c <register_tm_clones>:
+    219c:	d7 e1 17 f8 	l.sw -8(r1),r2
+    21a0:	18 60 00 00 	l.movhi r3,0x0
+    21a4:	18 40 00 00 	l.movhi r2,0x0
+    21a8:	a8 63 49 10 	l.ori r3,r3,0x4910
+    21ac:	a8 42 49 10 	l.ori r2,r2,0x4910
+    21b0:	d7 e1 4f fc 	l.sw -4(r1),r9
+    21b4:	e0 63 10 02 	l.sub r3,r3,r2
+    21b8:	d7 e1 0f f4 	l.sw -12(r1),r1
+    21bc:	b8 63 00 82 	l.srai r3,r3,0x2
+    21c0:	b8 83 00 5f 	l.srli r4,r3,0x1f
+    21c4:	e0 84 18 00 	l.add r4,r4,r3
+    21c8:	b8 84 00 81 	l.srai r4,r4,0x1
+    21cc:	bc 04 00 00 	l.sfeqi r4,0
+    21d0:	10 00 00 09 	l.bf 21f4 <register_tm_clones+0x58>
+    21d4:	9c 21 ff f4 	l.addi r1,r1,-12
+    21d8:	18 a0 00 00 	l.movhi r5,0x0
+    21dc:	a8 a5 00 00 	l.ori r5,r5,0x0
+    21e0:	bc 05 00 00 	l.sfeqi r5,0
+    21e4:	10 00 00 04 	l.bf 21f4 <register_tm_clones+0x58>
+    21e8:	15 00 00 00 	l.nop 0x0
+    21ec:	48 00 28 00 	l.jalr r5
+    21f0:	a8 62 00 00 	l.ori r3,r2,0x0
+    21f4:	9c 21 00 0c 	l.addi r1,r1,12
+    21f8:	85 21 ff fc 	l.lwz r9,-4(r1)
+    21fc:	84 21 ff f4 	l.lwz r1,-12(r1)
+    2200:	44 00 48 00 	l.jr r9
+    2204:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+00002208 <__do_global_dtors_aux>:
+    2208:	d7 e1 97 f8 	l.sw -8(r1),r18
+    220c:	1a 40 00 00 	l.movhi r18,0x0
+    2210:	d7 e1 17 f0 	l.sw -16(r1),r2
+    2214:	aa 52 49 10 	l.ori r18,r18,0x4910
+    2218:	d7 e1 4f fc 	l.sw -4(r1),r9
+    221c:	8c 52 00 00 	l.lbz r2,0(r18)
+    2220:	d7 e1 0f ec 	l.sw -20(r1),r1
+    2224:	d7 e1 77 f4 	l.sw -12(r1),r14
+    2228:	bc 22 00 00 	l.sfnei r2,0
+    222c:	10 00 00 26 	l.bf 22c4 <__do_global_dtors_aux+0xbc>
+    2230:	9c 21 ff ec 	l.addi r1,r1,-20
+    2234:	19 c0 00 00 	l.movhi r14,0x0
+    2238:	18 80 00 00 	l.movhi r4,0x0
+    223c:	a9 ce 40 a8 	l.ori r14,r14,0x40a8
+    2240:	a8 84 40 a4 	l.ori r4,r4,0x40a4
+    2244:	18 40 00 00 	l.movhi r2,0x0
+    2248:	e1 ce 20 02 	l.sub r14,r14,r4
+    224c:	a8 42 49 14 	l.ori r2,r2,0x4914
+    2250:	b9 ce 00 82 	l.srai r14,r14,0x2
+    2254:	84 62 00 00 	l.lwz r3,0(r2)
+    2258:	9d ce ff ff 	l.addi r14,r14,-1
+    225c:	e4 83 70 00 	l.sfltu r3,r14
+    2260:	0c 00 00 0e 	l.bnf 2298 <__do_global_dtors_aux+0x90>
+    2264:	9c 63 00 01 	l.addi r3,r3,1
+    2268:	18 a0 00 00 	l.movhi r5,0x0
+    226c:	b8 83 00 02 	l.slli r4,r3,0x2
+    2270:	a8 a5 40 a4 	l.ori r5,r5,0x40a4
+    2274:	d4 02 18 00 	l.sw 0(r2),r3
+    2278:	e0 64 28 00 	l.add r3,r4,r5
+    227c:	84 63 00 00 	l.lwz r3,0(r3)
+    2280:	48 00 18 00 	l.jalr r3
+    2284:	15 00 00 00 	l.nop 0x0
+    2288:	84 62 00 00 	l.lwz r3,0(r2)
+    228c:	e4 83 70 00 	l.sfltu r3,r14
+    2290:	13 ff ff f6 	l.bf 2268 <__do_global_dtors_aux+0x60>
+    2294:	9c 63 00 01 	l.addi r3,r3,1
+    2298:	07 ff ff aa 	l.jal 2140 <deregister_tm_clones>
+    229c:	18 40 00 00 	l.movhi r2,0x0
+    22a0:	a8 42 00 00 	l.ori r2,r2,0x0
+    22a4:	bc 22 00 00 	l.sfnei r2,0
+    22a8:	0c 00 00 06 	l.bnf 22c0 <__do_global_dtors_aux+0xb8>
+    22ac:	9c 40 00 01 	l.addi r2,r0,1
+    22b0:	18 60 00 00 	l.movhi r3,0x0
+    22b4:	07 ff f7 53 	l.jal 0 <_or1k_reset-0x100>
+    22b8:	a8 63 40 00 	l.ori r3,r3,0x4000
+    22bc:	9c 40 00 01 	l.addi r2,r0,1
+    22c0:	d8 12 10 00 	l.sb 0(r18),r2
+    22c4:	9c 21 00 14 	l.addi r1,r1,20
+    22c8:	85 21 ff fc 	l.lwz r9,-4(r1)
+    22cc:	84 21 ff ec 	l.lwz r1,-20(r1)
+    22d0:	84 41 ff f0 	l.lwz r2,-16(r1)
+    22d4:	85 c1 ff f4 	l.lwz r14,-12(r1)
+    22d8:	44 00 48 00 	l.jr r9
+    22dc:	86 41 ff f8 	l.lwz r18,-8(r1)
+
+000022e0 <call___do_global_dtors_aux>:
+    22e0:	d7 e1 4f fc 	l.sw -4(r1),r9
+    22e4:	d7 e1 0f f8 	l.sw -8(r1),r1
+    22e8:	9c 21 ff f8 	l.addi r1,r1,-8
+    22ec:	9c 21 00 08 	l.addi r1,r1,8
+    22f0:	85 21 ff fc 	l.lwz r9,-4(r1)
+    22f4:	44 00 48 00 	l.jr r9
+    22f8:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+000022fc <frame_dummy>:
+    22fc:	18 60 00 00 	l.movhi r3,0x0
+    2300:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2304:	a8 63 00 00 	l.ori r3,r3,0x0
+    2308:	d7 e1 0f f8 	l.sw -8(r1),r1
+    230c:	bc 03 00 00 	l.sfeqi r3,0
+    2310:	10 00 00 07 	l.bf 232c <frame_dummy+0x30>
+    2314:	9c 21 ff f8 	l.addi r1,r1,-8
+    2318:	18 60 00 00 	l.movhi r3,0x0
+    231c:	18 80 00 00 	l.movhi r4,0x0
+    2320:	a8 63 40 00 	l.ori r3,r3,0x4000
+    2324:	07 ff f7 37 	l.jal 0 <_or1k_reset-0x100>
+    2328:	a8 84 49 18 	l.ori r4,r4,0x4918
+    232c:	18 60 00 00 	l.movhi r3,0x0
+    2330:	a8 63 40 ac 	l.ori r3,r3,0x40ac
+    2334:	84 83 00 00 	l.lwz r4,0(r3)
+    2338:	bc 04 00 00 	l.sfeqi r4,0
+    233c:	0c 00 00 08 	l.bnf 235c <frame_dummy+0x60>
+    2340:	18 80 00 00 	l.movhi r4,0x0
+    2344:	07 ff ff 96 	l.jal 219c <register_tm_clones>
+    2348:	15 00 00 00 	l.nop 0x0
+    234c:	9c 21 00 08 	l.addi r1,r1,8
+    2350:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2354:	44 00 48 00 	l.jr r9
+    2358:	84 21 ff f8 	l.lwz r1,-8(r1)
+    235c:	a8 84 00 00 	l.ori r4,r4,0x0
+    2360:	bc 04 00 00 	l.sfeqi r4,0
+    2364:	13 ff ff f8 	l.bf 2344 <frame_dummy+0x48>
+    2368:	15 00 00 00 	l.nop 0x0
+    236c:	48 00 20 00 	l.jalr r4
+    2370:	15 00 00 00 	l.nop 0x0
+    2374:	03 ff ff f4 	l.j 2344 <frame_dummy+0x48>
+    2378:	15 00 00 00 	l.nop 0x0
+
+0000237c <call_frame_dummy>:
+    237c:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2380:	d7 e1 0f f8 	l.sw -8(r1),r1
+    2384:	9c 21 ff f8 	l.addi r1,r1,-8
+    2388:	9c 21 00 08 	l.addi r1,r1,8
+    238c:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2390:	44 00 48 00 	l.jr r9
+    2394:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+00002398 <simexit>:
+    2398:	d7 e1 17 fc 	l.sw -4(r1),r2
+    239c:	9c 41 00 00 	l.addi r2,r1,0
+    23a0:	9c 21 ff f8 	l.addi r1,r1,-8
+    23a4:	d7 e2 1f f8 	l.sw -8(r2),r3
+    23a8:	15 00 00 01 	l.nop 0x1
+    23ac:	a8 22 00 00 	l.ori r1,r2,0x0
+    23b0:	84 41 ff fc 	l.lwz r2,-4(r1)
+    23b4:	44 00 48 00 	l.jr r9
+    23b8:	15 00 00 00 	l.nop 0x0
+
+000023bc <simputc>:
+    23bc:	d7 e1 17 fc 	l.sw -4(r1),r2
+    23c0:	9c 41 00 00 	l.addi r2,r1,0
+    23c4:	9c 21 ff f8 	l.addi r1,r1,-8
+    23c8:	d7 e2 1f f8 	l.sw -8(r2),r3
+    23cc:	15 00 00 04 	l.nop 0x4
+    23d0:	a8 22 00 00 	l.ori r1,r2,0x0
+    23d4:	84 41 ff fc 	l.lwz r2,-4(r1)
+    23d8:	44 00 48 00 	l.jr r9
+    23dc:	15 00 00 00 	l.nop 0x0
+
+000023e0 <simputh>:
+    23e0:	d7 e1 17 f8 	l.sw -8(r1),r2
+    23e4:	9c 41 00 00 	l.addi r2,r1,0
+    23e8:	d7 e1 4f fc 	l.sw -4(r1),r9
+    23ec:	9c 21 ff f0 	l.addi r1,r1,-16
+    23f0:	d7 e2 1f f0 	l.sw -16(r2),r3
+    23f4:	84 62 ff f0 	l.lwz r3,-16(r2)
+    23f8:	b8 63 00 18 	l.slli r3,r3,0x18
+    23fc:	b8 63 00 98 	l.srai r3,r3,0x18
+    2400:	a4 63 00 0f 	l.andi r3,r3,0xf
+    2404:	db e2 1f f7 	l.sb -9(r2),r3
+    2408:	90 62 ff f7 	l.lbs r3,-9(r2)
+    240c:	bd 43 00 09 	l.sfgtsi r3,9
+    2410:	10 00 00 09 	l.bf 2434 <simputh+0x54>
+    2414:	15 00 00 00 	l.nop 0x0
+    2418:	8c 62 ff f7 	l.lbz r3,-9(r2)
+    241c:	9c 63 00 30 	l.addi r3,r3,48
+    2420:	a4 63 00 ff 	l.andi r3,r3,0xff
+    2424:	b8 63 00 18 	l.slli r3,r3,0x18
+    2428:	b8 63 00 98 	l.srai r3,r3,0x18
+    242c:	00 00 00 07 	l.j 2448 <simputh+0x68>
+    2430:	15 00 00 00 	l.nop 0x0
+    2434:	8c 62 ff f7 	l.lbz r3,-9(r2)
+    2438:	9c 63 00 37 	l.addi r3,r3,55
+    243c:	a4 63 00 ff 	l.andi r3,r3,0xff
+    2440:	b8 63 00 18 	l.slli r3,r3,0x18
+    2444:	b8 63 00 98 	l.srai r3,r3,0x18
+    2448:	db e2 1f f6 	l.sb -10(r2),r3
+    244c:	84 62 ff f0 	l.lwz r3,-16(r2)
+    2450:	bc 03 00 00 	l.sfeqi r3,0
+    2454:	10 00 00 06 	l.bf 246c <simputh+0x8c>
+    2458:	15 00 00 00 	l.nop 0x0
+    245c:	84 62 ff f0 	l.lwz r3,-16(r2)
+    2460:	b8 63 00 44 	l.srli r3,r3,0x4
+    2464:	07 ff ff df 	l.jal 23e0 <simputh>
+    2468:	15 00 00 00 	l.nop 0x0
+    246c:	90 62 ff f6 	l.lbs r3,-10(r2)
+    2470:	07 ff ff d3 	l.jal 23bc <simputc>
+    2474:	15 00 00 00 	l.nop 0x0
+    2478:	a8 22 00 00 	l.ori r1,r2,0x0
+    247c:	84 41 ff f8 	l.lwz r2,-8(r1)
+    2480:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2484:	44 00 48 00 	l.jr r9
+    2488:	15 00 00 00 	l.nop 0x0
+
+0000248c <simputs>:
+    248c:	d7 e1 17 f8 	l.sw -8(r1),r2
+    2490:	9c 41 00 00 	l.addi r2,r1,0
+    2494:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2498:	9c 21 ff f0 	l.addi r1,r1,-16
+    249c:	d7 e2 1f f0 	l.sw -16(r2),r3
+    24a0:	9c 60 00 00 	l.addi r3,r0,0
+    24a4:	d7 e2 1f f4 	l.sw -12(r2),r3
+    24a8:	00 00 00 0b 	l.j 24d4 <simputs+0x48>
+    24ac:	15 00 00 00 	l.nop 0x0
+    24b0:	84 62 ff f4 	l.lwz r3,-12(r2)
+    24b4:	84 82 ff f0 	l.lwz r4,-16(r2)
+    24b8:	e0 64 18 00 	l.add r3,r4,r3
+    24bc:	90 63 00 00 	l.lbs r3,0(r3)
+    24c0:	07 ff ff bf 	l.jal 23bc <simputc>
+    24c4:	15 00 00 00 	l.nop 0x0
+    24c8:	84 62 ff f4 	l.lwz r3,-12(r2)
+    24cc:	9c 63 00 01 	l.addi r3,r3,1
+    24d0:	d7 e2 1f f4 	l.sw -12(r2),r3
+    24d4:	84 62 ff f4 	l.lwz r3,-12(r2)
+    24d8:	84 82 ff f0 	l.lwz r4,-16(r2)
+    24dc:	e0 64 18 00 	l.add r3,r4,r3
+    24e0:	90 63 00 00 	l.lbs r3,0(r3)
+    24e4:	bc 23 00 00 	l.sfnei r3,0
+    24e8:	13 ff ff f2 	l.bf 24b0 <simputs+0x24>
+    24ec:	15 00 00 00 	l.nop 0x0
+    24f0:	a8 22 00 00 	l.ori r1,r2,0x0
+    24f4:	84 41 ff f8 	l.lwz r2,-8(r1)
+    24f8:	85 21 ff fc 	l.lwz r9,-4(r1)
+    24fc:	44 00 48 00 	l.jr r9
+    2500:	15 00 00 00 	l.nop 0x0
+
+00002504 <main>:
+    2504:	d7 e1 17 f8 	l.sw -8(r1),r2
+    2508:	9c 41 00 00 	l.addi r2,r1,0
+    250c:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2510:	9c 21 ff ec 	l.addi r1,r1,-20
+    2514:	18 60 90 00 	l.movhi r3,0x9000
+    2518:	d7 e2 1f f4 	l.sw -12(r2),r3
+    251c:	18 60 00 00 	l.movhi r3,0x0
+    2520:	a8 63 3d 70 	l.ori r3,r3,0x3d70
+    2524:	07 ff ff da 	l.jal 248c <simputs>
+    2528:	15 00 00 00 	l.nop 0x0
+    252c:	84 62 ff f4 	l.lwz r3,-12(r2)
+    2530:	07 ff ff ac 	l.jal 23e0 <simputh>
+    2534:	15 00 00 00 	l.nop 0x0
+    2538:	18 60 00 00 	l.movhi r3,0x0
+    253c:	a8 63 3d 90 	l.ori r3,r3,0x3d90
+    2540:	07 ff ff d3 	l.jal 248c <simputs>
+    2544:	15 00 00 00 	l.nop 0x0
+    2548:	84 62 ff f4 	l.lwz r3,-12(r2)
+    254c:	9c 80 ff a5 	l.addi r4,r0,-91
+    2550:	d8 03 20 00 	l.sb 0(r3),r4
+    2554:	18 60 00 00 	l.movhi r3,0x0
+    2558:	a8 63 3d 92 	l.ori r3,r3,0x3d92
+    255c:	07 ff ff cc 	l.jal 248c <simputs>
+    2560:	15 00 00 00 	l.nop 0x0
+    2564:	84 62 ff f4 	l.lwz r3,-12(r2)
+    2568:	9c 63 00 02 	l.addi r3,r3,2
+    256c:	07 ff ff 9d 	l.jal 23e0 <simputh>
+    2570:	15 00 00 00 	l.nop 0x0
+    2574:	18 60 00 00 	l.movhi r3,0x0
+    2578:	a8 63 3d 90 	l.ori r3,r3,0x3d90
+    257c:	07 ff ff c4 	l.jal 248c <simputs>
+    2580:	15 00 00 00 	l.nop 0x0
+    2584:	84 62 ff f4 	l.lwz r3,-12(r2)
+    2588:	9c 80 be ef 	l.addi r4,r0,-16657
+    258c:	dc 03 20 02 	l.sh 2(r3),r4
+    2590:	18 60 00 00 	l.movhi r3,0x0
+    2594:	a8 63 3d b9 	l.ori r3,r3,0x3db9
+    2598:	07 ff ff bd 	l.jal 248c <simputs>
+    259c:	15 00 00 00 	l.nop 0x0
+    25a0:	84 62 ff f4 	l.lwz r3,-12(r2)
+    25a4:	9c 63 00 04 	l.addi r3,r3,4
+    25a8:	07 ff ff 8e 	l.jal 23e0 <simputh>
+    25ac:	15 00 00 00 	l.nop 0x0
+    25b0:	18 60 00 00 	l.movhi r3,0x0
+    25b4:	a8 63 3d 90 	l.ori r3,r3,0x3d90
+    25b8:	07 ff ff b5 	l.jal 248c <simputs>
+    25bc:	15 00 00 00 	l.nop 0x0
+    25c0:	84 62 ff f4 	l.lwz r3,-12(r2)
+    25c4:	18 80 de ad 	l.movhi r4,0xdead
+    25c8:	a8 84 be ef 	l.ori r4,r4,0xbeef
+    25cc:	d4 03 20 04 	l.sw 4(r3),r4
+    25d0:	84 62 ff f4 	l.lwz r3,-12(r2)
+    25d4:	8c 63 00 00 	l.lbz r3,0(r3)
+    25d8:	db e2 1f f3 	l.sb -13(r2),r3
+    25dc:	18 60 00 00 	l.movhi r3,0x0
+    25e0:	a8 63 3d e4 	l.ori r3,r3,0x3de4
+    25e4:	07 ff ff aa 	l.jal 248c <simputs>
+    25e8:	15 00 00 00 	l.nop 0x0
+    25ec:	8c 62 ff f3 	l.lbz r3,-13(r2)
+    25f0:	07 ff ff 7c 	l.jal 23e0 <simputh>
+    25f4:	15 00 00 00 	l.nop 0x0
+    25f8:	18 60 00 00 	l.movhi r3,0x0
+    25fc:	a8 63 3d f1 	l.ori r3,r3,0x3df1
+    2600:	07 ff ff a3 	l.jal 248c <simputs>
+    2604:	15 00 00 00 	l.nop 0x0
+    2608:	84 62 ff f4 	l.lwz r3,-12(r2)
+    260c:	07 ff ff 75 	l.jal 23e0 <simputh>
+    2610:	15 00 00 00 	l.nop 0x0
+    2614:	18 60 00 00 	l.movhi r3,0x0
+    2618:	a8 63 3d 90 	l.ori r3,r3,0x3d90
+    261c:	07 ff ff 9c 	l.jal 248c <simputs>
+    2620:	15 00 00 00 	l.nop 0x0
+    2624:	84 62 ff f4 	l.lwz r3,-12(r2)
+    2628:	94 63 00 02 	l.lhz r3,2(r3)
+    262c:	df e2 1f f0 	l.sh -16(r2),r3
+    2630:	18 60 00 00 	l.movhi r3,0x0
+    2634:	a8 63 3e 02 	l.ori r3,r3,0x3e02
+    2638:	07 ff ff 95 	l.jal 248c <simputs>
+    263c:	15 00 00 00 	l.nop 0x0
+    2640:	94 62 ff f0 	l.lhz r3,-16(r2)
+    2644:	07 ff ff 67 	l.jal 23e0 <simputh>
+    2648:	15 00 00 00 	l.nop 0x0
+    264c:	18 60 00 00 	l.movhi r3,0x0
+    2650:	a8 63 3d f1 	l.ori r3,r3,0x3df1
+    2654:	07 ff ff 8e 	l.jal 248c <simputs>
+    2658:	15 00 00 00 	l.nop 0x0
+    265c:	84 62 ff f4 	l.lwz r3,-12(r2)
+    2660:	9c 63 00 02 	l.addi r3,r3,2
+    2664:	07 ff ff 5f 	l.jal 23e0 <simputh>
+    2668:	15 00 00 00 	l.nop 0x0
+    266c:	18 60 00 00 	l.movhi r3,0x0
+    2670:	a8 63 3d 90 	l.ori r3,r3,0x3d90
+    2674:	07 ff ff 86 	l.jal 248c <simputs>
+    2678:	15 00 00 00 	l.nop 0x0
+    267c:	84 62 ff f4 	l.lwz r3,-12(r2)
+    2680:	84 63 00 04 	l.lwz r3,4(r3)
+    2684:	d7 e2 1f ec 	l.sw -20(r2),r3
+    2688:	18 60 00 00 	l.movhi r3,0x0
+    268c:	a8 63 3e 14 	l.ori r3,r3,0x3e14
+    2690:	07 ff ff 7f 	l.jal 248c <simputs>
+    2694:	15 00 00 00 	l.nop 0x0
+    2698:	84 62 ff ec 	l.lwz r3,-20(r2)
+    269c:	07 ff ff 51 	l.jal 23e0 <simputh>
+    26a0:	15 00 00 00 	l.nop 0x0
+    26a4:	18 60 00 00 	l.movhi r3,0x0
+    26a8:	a8 63 3d f1 	l.ori r3,r3,0x3df1
+    26ac:	07 ff ff 78 	l.jal 248c <simputs>
+    26b0:	15 00 00 00 	l.nop 0x0
+    26b4:	84 62 ff f4 	l.lwz r3,-12(r2)
+    26b8:	9c 63 00 04 	l.addi r3,r3,4
+    26bc:	07 ff ff 49 	l.jal 23e0 <simputh>
+    26c0:	15 00 00 00 	l.nop 0x0
+    26c4:	18 60 00 00 	l.movhi r3,0x0
+    26c8:	a8 63 3d 90 	l.ori r3,r3,0x3d90
+    26cc:	07 ff ff 70 	l.jal 248c <simputs>
+    26d0:	15 00 00 00 	l.nop 0x0
+    26d4:	9c 60 00 00 	l.addi r3,r0,0
+    26d8:	07 ff ff 30 	l.jal 2398 <simexit>
+    26dc:	15 00 00 00 	l.nop 0x0
+    26e0:	9c 60 00 00 	l.addi r3,r0,0
+    26e4:	a9 63 00 00 	l.ori r11,r3,0x0
+    26e8:	a8 22 00 00 	l.ori r1,r2,0x0
+    26ec:	84 41 ff f8 	l.lwz r2,-8(r1)
+    26f0:	85 21 ff fc 	l.lwz r9,-4(r1)
+    26f4:	44 00 48 00 	l.jr r9
+    26f8:	15 00 00 00 	l.nop 0x0
+
+000026fc <atexit>:
+    26fc:	a8 83 00 00 	l.ori r4,r3,0x0
+    2700:	9c 60 00 00 	l.addi r3,r0,0
+    2704:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2708:	d7 e1 0f f8 	l.sw -8(r1),r1
+    270c:	a8 a3 00 00 	l.ori r5,r3,0x0
+    2710:	9c 21 ff f8 	l.addi r1,r1,-8
+    2714:	04 00 00 18 	l.jal 2774 <__register_exitproc>
+    2718:	a8 c3 00 00 	l.ori r6,r3,0x0
+    271c:	9c 21 00 08 	l.addi r1,r1,8
+    2720:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2724:	44 00 48 00 	l.jr r9
+    2728:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+0000272c <exit>:
+    272c:	d7 e1 17 f8 	l.sw -8(r1),r2
+    2730:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2734:	d7 e1 0f f4 	l.sw -12(r1),r1
+    2738:	9c 80 00 00 	l.addi r4,r0,0
+    273c:	9c 21 ff f4 	l.addi r1,r1,-12
+    2740:	04 00 00 5d 	l.jal 28b4 <__call_exitprocs>
+    2744:	a8 43 00 00 	l.ori r2,r3,0x0
+    2748:	18 60 00 00 	l.movhi r3,0x0
+    274c:	a8 63 3e 28 	l.ori r3,r3,0x3e28
+    2750:	84 63 00 00 	l.lwz r3,0(r3)
+    2754:	84 83 00 3c 	l.lwz r4,60(r3)
+    2758:	bc 04 00 00 	l.sfeqi r4,0
+    275c:	10 00 00 04 	l.bf 276c <exit+0x40>
+    2760:	15 00 00 00 	l.nop 0x0
+    2764:	48 00 20 00 	l.jalr r4
+    2768:	15 00 00 00 	l.nop 0x0
+    276c:	04 00 00 f2 	l.jal 2b34 <_exit>
+    2770:	a8 62 00 00 	l.ori r3,r2,0x0
+
+00002774 <__register_exitproc>:
+    2774:	d7 e1 17 e8 	l.sw -24(r1),r2
+    2778:	18 40 00 00 	l.movhi r2,0x0
+    277c:	d7 e1 77 ec 	l.sw -20(r1),r14
+    2780:	a8 42 3e 28 	l.ori r2,r2,0x3e28
+    2784:	d7 e1 97 f0 	l.sw -16(r1),r18
+    2788:	85 c2 00 00 	l.lwz r14,0(r2)
+    278c:	d7 e1 a7 f4 	l.sw -12(r1),r20
+    2790:	85 0e 01 48 	l.lwz r8,328(r14)
+    2794:	d7 e1 b7 f8 	l.sw -8(r1),r22
+    2798:	d7 e1 4f fc 	l.sw -4(r1),r9
+    279c:	d7 e1 0f e4 	l.sw -28(r1),r1
+    27a0:	bc 28 00 00 	l.sfnei r8,0
+    27a4:	9c 21 ff e4 	l.addi r1,r1,-28
+    27a8:	aa c3 00 00 	l.ori r22,r3,0x0
+    27ac:	a8 44 00 00 	l.ori r2,r4,0x0
+    27b0:	aa 85 00 00 	l.ori r20,r5,0x0
+    27b4:	0c 00 00 3b 	l.bnf 28a0 <__register_exitproc+0x12c>
+    27b8:	aa 46 00 00 	l.ori r18,r6,0x0
+    27bc:	84 e8 00 04 	l.lwz r7,4(r8)
+    27c0:	bd 47 00 1f 	l.sfgtsi r7,31
+    27c4:	10 00 00 14 	l.bf 2814 <__register_exitproc+0xa0>
+    27c8:	18 60 00 00 	l.movhi r3,0x0
+    27cc:	bc 36 00 00 	l.sfnei r22,0
+    27d0:	10 00 00 25 	l.bf 2864 <__register_exitproc+0xf0>
+    27d4:	9c a7 00 01 	l.addi r5,r7,1
+    27d8:	9c e7 00 02 	l.addi r7,r7,2
+    27dc:	d4 08 28 04 	l.sw 4(r8),r5
+    27e0:	b8 e7 00 02 	l.slli r7,r7,0x2
+    27e4:	9d 60 00 00 	l.addi r11,r0,0
+    27e8:	e0 e8 38 00 	l.add r7,r8,r7
+    27ec:	d4 07 10 00 	l.sw 0(r7),r2
+    27f0:	9c 21 00 1c 	l.addi r1,r1,28
+    27f4:	85 21 ff fc 	l.lwz r9,-4(r1)
+    27f8:	84 21 ff e4 	l.lwz r1,-28(r1)
+    27fc:	84 41 ff e8 	l.lwz r2,-24(r1)
+    2800:	85 c1 ff ec 	l.lwz r14,-20(r1)
+    2804:	86 41 ff f0 	l.lwz r18,-16(r1)
+    2808:	86 81 ff f4 	l.lwz r20,-12(r1)
+    280c:	44 00 48 00 	l.jr r9
+    2810:	86 c1 ff f8 	l.lwz r22,-8(r1)
+    2814:	a8 63 00 00 	l.ori r3,r3,0x0
+    2818:	bc 23 00 00 	l.sfnei r3,0
+    281c:	0f ff ff f5 	l.bnf 27f0 <__register_exitproc+0x7c>
+    2820:	9d 60 ff ff 	l.addi r11,r0,-1
+    2824:	07 ff f5 f7 	l.jal 0 <_or1k_reset-0x100>
+    2828:	9c 60 01 90 	l.addi r3,r0,400
+    282c:	bc 0b 00 00 	l.sfeqi r11,0
+    2830:	10 00 00 1f 	l.bf 28ac <__register_exitproc+0x138>
+    2834:	a9 0b 00 00 	l.ori r8,r11,0x0
+    2838:	84 6e 01 48 	l.lwz r3,328(r14)
+    283c:	9c 80 00 00 	l.addi r4,r0,0
+    2840:	d4 0b 18 00 	l.sw 0(r11),r3
+    2844:	d4 0b 20 04 	l.sw 4(r11),r4
+    2848:	d4 0e 59 48 	l.sw 328(r14),r11
+    284c:	d4 0b 21 88 	l.sw 392(r11),r4
+    2850:	d4 0b 21 8c 	l.sw 396(r11),r4
+    2854:	bc 36 00 00 	l.sfnei r22,0
+    2858:	9c a0 00 01 	l.addi r5,r0,1
+    285c:	0f ff ff df 	l.bnf 27d8 <__register_exitproc+0x64>
+    2860:	a8 e4 00 00 	l.ori r7,r4,0x0
+    2864:	b9 67 00 02 	l.slli r11,r7,0x2
+    2868:	9c 80 00 01 	l.addi r4,r0,1
+    286c:	bc 36 00 02 	l.sfnei r22,2
+    2870:	e0 68 58 00 	l.add r3,r8,r11
+    2874:	e0 84 38 08 	l.sll r4,r4,r7
+    2878:	d4 03 a0 88 	l.sw 136(r3),r20
+    287c:	84 c8 01 88 	l.lwz r6,392(r8)
+    2880:	e0 c6 20 04 	l.or r6,r6,r4
+    2884:	d4 08 31 88 	l.sw 392(r8),r6
+    2888:	13 ff ff d4 	l.bf 27d8 <__register_exitproc+0x64>
+    288c:	d4 03 91 08 	l.sw 264(r3),r18
+    2890:	84 68 01 8c 	l.lwz r3,396(r8)
+    2894:	e0 83 20 04 	l.or r4,r3,r4
+    2898:	03 ff ff d0 	l.j 27d8 <__register_exitproc+0x64>
+    289c:	d4 08 21 8c 	l.sw 396(r8),r4
+    28a0:	9d 0e 01 4c 	l.addi r8,r14,332
+    28a4:	03 ff ff c6 	l.j 27bc <__register_exitproc+0x48>
+    28a8:	d4 0e 41 48 	l.sw 328(r14),r8
+    28ac:	03 ff ff d1 	l.j 27f0 <__register_exitproc+0x7c>
+    28b0:	9d 60 ff ff 	l.addi r11,r0,-1
+
+000028b4 <__call_exitprocs>:
+    28b4:	d7 e1 17 d8 	l.sw -40(r1),r2
+    28b8:	18 40 00 00 	l.movhi r2,0x0
+    28bc:	d7 e1 f7 f8 	l.sw -8(r1),r30
+    28c0:	a8 42 3e 28 	l.ori r2,r2,0x3e28
+    28c4:	d7 e1 97 e0 	l.sw -32(r1),r18
+    28c8:	87 c2 00 00 	l.lwz r30,0(r2)
+    28cc:	d7 e1 d7 f0 	l.sw -16(r1),r26
+    28d0:	d7 e1 e7 f4 	l.sw -12(r1),r28
+    28d4:	d7 e1 4f fc 	l.sw -4(r1),r9
+    28d8:	d7 e1 0f d4 	l.sw -44(r1),r1
+    28dc:	d7 e1 77 dc 	l.sw -36(r1),r14
+    28e0:	d7 e1 a7 e4 	l.sw -28(r1),r20
+    28e4:	d7 e1 b7 e8 	l.sw -24(r1),r22
+    28e8:	d7 e1 c7 ec 	l.sw -20(r1),r24
+    28ec:	9c 5e 01 48 	l.addi r2,r30,328
+    28f0:	9c 21 ff d0 	l.addi r1,r1,-48
+    28f4:	1b 80 00 00 	l.movhi r28,0x0
+    28f8:	ab 43 00 00 	l.ori r26,r3,0x0
+    28fc:	aa 44 00 00 	l.ori r18,r4,0x0
+    2900:	d4 01 10 00 	l.sw 0(r1),r2
+    2904:	ab 9c 00 00 	l.ori r28,r28,0x0
+    2908:	86 9e 01 48 	l.lwz r20,328(r30)
+    290c:	bc 34 00 00 	l.sfnei r20,0
+    2910:	0c 00 00 43 	l.bnf 2a1c <__call_exitprocs+0x168>
+    2914:	86 c1 00 00 	l.lwz r22,0(r1)
+    2918:	84 54 00 04 	l.lwz r2,4(r20)
+    291c:	9d c2 ff ff 	l.addi r14,r2,-1
+    2920:	bd 6e 00 00 	l.sfgesi r14,0
+    2924:	0c 00 00 2f 	l.bnf 29e0 <__call_exitprocs+0x12c>
+    2928:	bc 1c 00 00 	l.sfeqi r28,0
+    292c:	9c 42 00 01 	l.addi r2,r2,1
+    2930:	b8 42 00 02 	l.slli r2,r2,0x2
+    2934:	00 00 00 0a 	l.j 295c <__call_exitprocs+0xa8>
+    2938:	e0 54 10 00 	l.add r2,r20,r2
+    293c:	84 62 01 00 	l.lwz r3,256(r2)
+    2940:	e4 03 90 00 	l.sfeq r3,r18
+    2944:	10 00 00 09 	l.bf 2968 <__call_exitprocs+0xb4>
+    2948:	15 00 00 00 	l.nop 0x0
+    294c:	9d ce ff ff 	l.addi r14,r14,-1
+    2950:	bc 2e ff ff 	l.sfnei r14,-1
+    2954:	0c 00 00 22 	l.bnf 29dc <__call_exitprocs+0x128>
+    2958:	9c 42 ff fc 	l.addi r2,r2,-4
+    295c:	bc 12 00 00 	l.sfeqi r18,0
+    2960:	0f ff ff f7 	l.bnf 293c <__call_exitprocs+0x88>
+    2964:	15 00 00 00 	l.nop 0x0
+    2968:	84 74 00 04 	l.lwz r3,4(r20)
+    296c:	9c 63 ff ff 	l.addi r3,r3,-1
+    2970:	e4 23 70 00 	l.sfne r3,r14
+    2974:	0c 00 00 41 	l.bnf 2a78 <__call_exitprocs+0x1c4>
+    2978:	84 a2 00 00 	l.lwz r5,0(r2)
+    297c:	9c 60 00 00 	l.addi r3,r0,0
+    2980:	d4 02 18 00 	l.sw 0(r2),r3
+    2984:	bc 05 00 00 	l.sfeqi r5,0
+    2988:	13 ff ff f1 	l.bf 294c <__call_exitprocs+0x98>
+    298c:	9c 60 00 01 	l.addi r3,r0,1
+    2990:	e0 83 70 08 	l.sll r4,r3,r14
+    2994:	84 74 01 88 	l.lwz r3,392(r20)
+    2998:	e0 64 18 03 	l.and r3,r4,r3
+    299c:	bc 03 00 00 	l.sfeqi r3,0
+    29a0:	0c 00 00 2c 	l.bnf 2a50 <__call_exitprocs+0x19c>
+    29a4:	87 14 00 04 	l.lwz r24,4(r20)
+    29a8:	48 00 28 00 	l.jalr r5
+    29ac:	15 00 00 00 	l.nop 0x0
+    29b0:	84 74 00 04 	l.lwz r3,4(r20)
+    29b4:	e4 23 c0 00 	l.sfne r3,r24
+    29b8:	13 ff ff d4 	l.bf 2908 <__call_exitprocs+0x54>
+    29bc:	15 00 00 00 	l.nop 0x0
+    29c0:	84 76 00 00 	l.lwz r3,0(r22)
+    29c4:	e4 23 a0 00 	l.sfne r3,r20
+    29c8:	13 ff ff d0 	l.bf 2908 <__call_exitprocs+0x54>
+    29cc:	9d ce ff ff 	l.addi r14,r14,-1
+    29d0:	bc 2e ff ff 	l.sfnei r14,-1
+    29d4:	13 ff ff e2 	l.bf 295c <__call_exitprocs+0xa8>
+    29d8:	9c 42 ff fc 	l.addi r2,r2,-4
+    29dc:	bc 1c 00 00 	l.sfeqi r28,0
+    29e0:	10 00 00 0f 	l.bf 2a1c <__call_exitprocs+0x168>
+    29e4:	15 00 00 00 	l.nop 0x0
+    29e8:	84 54 00 04 	l.lwz r2,4(r20)
+    29ec:	bc 22 00 00 	l.sfnei r2,0
+    29f0:	10 00 00 28 	l.bf 2a90 <__call_exitprocs+0x1dc>
+    29f4:	84 54 00 00 	l.lwz r2,0(r20)
+    29f8:	bc 02 00 00 	l.sfeqi r2,0
+    29fc:	10 00 00 25 	l.bf 2a90 <__call_exitprocs+0x1dc>
+    2a00:	a8 74 00 00 	l.ori r3,r20,0x0
+    2a04:	07 ff f5 7f 	l.jal 0 <_or1k_reset-0x100>
+    2a08:	d4 16 10 00 	l.sw 0(r22),r2
+    2a0c:	86 96 00 00 	l.lwz r20,0(r22)
+    2a10:	bc 34 00 00 	l.sfnei r20,0
+    2a14:	13 ff ff c1 	l.bf 2918 <__call_exitprocs+0x64>
+    2a18:	15 00 00 00 	l.nop 0x0
+    2a1c:	9c 21 00 30 	l.addi r1,r1,48
+    2a20:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2a24:	84 21 ff d4 	l.lwz r1,-44(r1)
+    2a28:	84 41 ff d8 	l.lwz r2,-40(r1)
+    2a2c:	85 c1 ff dc 	l.lwz r14,-36(r1)
+    2a30:	86 41 ff e0 	l.lwz r18,-32(r1)
+    2a34:	86 81 ff e4 	l.lwz r20,-28(r1)
+    2a38:	86 c1 ff e8 	l.lwz r22,-24(r1)
+    2a3c:	87 01 ff ec 	l.lwz r24,-20(r1)
+    2a40:	87 41 ff f0 	l.lwz r26,-16(r1)
+    2a44:	87 81 ff f4 	l.lwz r28,-12(r1)
+    2a48:	44 00 48 00 	l.jr r9
+    2a4c:	87 c1 ff f8 	l.lwz r30,-8(r1)
+    2a50:	84 74 01 8c 	l.lwz r3,396(r20)
+    2a54:	e0 64 18 03 	l.and r3,r4,r3
+    2a58:	bc 23 00 00 	l.sfnei r3,0
+    2a5c:	10 00 00 09 	l.bf 2a80 <__call_exitprocs+0x1cc>
+    2a60:	15 00 00 00 	l.nop 0x0
+    2a64:	a8 7a 00 00 	l.ori r3,r26,0x0
+    2a68:	48 00 28 00 	l.jalr r5
+    2a6c:	84 82 00 80 	l.lwz r4,128(r2)
+    2a70:	03 ff ff d1 	l.j 29b4 <__call_exitprocs+0x100>
+    2a74:	84 74 00 04 	l.lwz r3,4(r20)
+    2a78:	03 ff ff c3 	l.j 2984 <__call_exitprocs+0xd0>
+    2a7c:	d4 14 70 04 	l.sw 4(r20),r14
+    2a80:	48 00 28 00 	l.jalr r5
+    2a84:	84 62 00 80 	l.lwz r3,128(r2)
+    2a88:	03 ff ff cb 	l.j 29b4 <__call_exitprocs+0x100>
+    2a8c:	84 74 00 04 	l.lwz r3,4(r20)
+    2a90:	aa d4 00 00 	l.ori r22,r20,0x0
+    2a94:	03 ff ff df 	l.j 2a10 <__call_exitprocs+0x15c>
+    2a98:	aa 82 00 00 	l.ori r20,r2,0x0
+
+00002a9c <_write_r>:
+    2a9c:	d7 e1 17 f0 	l.sw -16(r1),r2
+    2aa0:	d7 e1 77 f4 	l.sw -12(r1),r14
+    2aa4:	d7 e1 97 f8 	l.sw -8(r1),r18
+    2aa8:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2aac:	d7 e1 0f ec 	l.sw -20(r1),r1
+    2ab0:	bc 26 00 00 	l.sfnei r6,0
+    2ab4:	9c 21 ff ec 	l.addi r1,r1,-20
+    2ab8:	aa 46 00 00 	l.ori r18,r6,0x0
+    2abc:	a8 45 00 00 	l.ori r2,r5,0x0
+    2ac0:	10 00 00 09 	l.bf 2ae4 <_write_r+0x48>
+    2ac4:	e1 c5 30 00 	l.add r14,r5,r6
+    2ac8:	00 00 00 14 	l.j 2b18 <_write_r+0x7c>
+    2acc:	9c 21 00 14 	l.addi r1,r1,20
+    2ad0:	04 00 01 0a 	l.jal 2ef8 <_or1k_outbyte>
+    2ad4:	9c 42 00 01 	l.addi r2,r2,1
+    2ad8:	e4 22 70 00 	l.sfne r2,r14
+    2adc:	0c 00 00 0e 	l.bnf 2b14 <_write_r+0x78>
+    2ae0:	15 00 00 00 	l.nop 0x0
+    2ae4:	90 62 00 00 	l.lbs r3,0(r2)
+    2ae8:	bc 23 00 0a 	l.sfnei r3,10
+    2aec:	13 ff ff f9 	l.bf 2ad0 <_write_r+0x34>
+    2af0:	15 00 00 00 	l.nop 0x0
+    2af4:	9c 60 00 0d 	l.addi r3,r0,13
+    2af8:	04 00 01 00 	l.jal 2ef8 <_or1k_outbyte>
+    2afc:	9c 42 00 01 	l.addi r2,r2,1
+    2b00:	04 00 00 fe 	l.jal 2ef8 <_or1k_outbyte>
+    2b04:	90 62 ff ff 	l.lbs r3,-1(r2)
+    2b08:	e4 22 70 00 	l.sfne r2,r14
+    2b0c:	13 ff ff f6 	l.bf 2ae4 <_write_r+0x48>
+    2b10:	15 00 00 00 	l.nop 0x0
+    2b14:	9c 21 00 14 	l.addi r1,r1,20
+    2b18:	a9 72 00 00 	l.ori r11,r18,0x0
+    2b1c:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2b20:	84 21 ff ec 	l.lwz r1,-20(r1)
+    2b24:	84 41 ff f0 	l.lwz r2,-16(r1)
+    2b28:	85 c1 ff f4 	l.lwz r14,-12(r1)
+    2b2c:	44 00 48 00 	l.jr r9
+    2b30:	86 41 ff f8 	l.lwz r18,-8(r1)
+
+00002b34 <_exit>:
+    2b34:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2b38:	d7 e1 0f f8 	l.sw -8(r1),r1
+    2b3c:	04 00 03 c0 	l.jal 3a3c <_or1k_board_exit>
+    2b40:	9c 21 ff f8 	l.addi r1,r1,-8
+    2b44:	00 00 00 00 	l.j 2b44 <_exit+0x10>
+    2b48:	15 00 00 00 	l.nop 0x0
+
+00002b4c <_close_r>:
+    2b4c:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2b50:	9c 21 ff fc 	l.addi r1,r1,-4
+    2b54:	9c 80 00 58 	l.addi r4,r0,88
+    2b58:	9c 21 00 04 	l.addi r1,r1,4
+    2b5c:	9d 60 ff ff 	l.addi r11,r0,-1
+    2b60:	d4 03 20 00 	l.sw 0(r3),r4
+    2b64:	44 00 48 00 	l.jr r9
+    2b68:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002b6c <_execve_r>:
+    2b6c:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2b70:	9c 21 ff fc 	l.addi r1,r1,-4
+    2b74:	9c 80 00 58 	l.addi r4,r0,88
+    2b78:	9c 21 00 04 	l.addi r1,r1,4
+    2b7c:	9d 60 ff ff 	l.addi r11,r0,-1
+    2b80:	d4 03 20 00 	l.sw 0(r3),r4
+    2b84:	44 00 48 00 	l.jr r9
+    2b88:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002b8c <_fork_r>:
+    2b8c:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2b90:	d7 e1 0f f8 	l.sw -8(r1),r1
+    2b94:	04 00 03 b1 	l.jal 3a58 <__errno>
+    2b98:	9c 21 ff f8 	l.addi r1,r1,-8
+    2b9c:	9c 60 00 58 	l.addi r3,r0,88
+    2ba0:	d4 0b 18 00 	l.sw 0(r11),r3
+    2ba4:	9c 21 00 08 	l.addi r1,r1,8
+    2ba8:	9d 60 ff ff 	l.addi r11,r0,-1
+    2bac:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2bb0:	44 00 48 00 	l.jr r9
+    2bb4:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+00002bb8 <_fstat_r>:
+    2bb8:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2bbc:	9c 21 ff fc 	l.addi r1,r1,-4
+    2bc0:	9c 80 00 58 	l.addi r4,r0,88
+    2bc4:	9c 21 00 04 	l.addi r1,r1,4
+    2bc8:	9d 60 ff ff 	l.addi r11,r0,-1
+    2bcc:	d4 03 20 00 	l.sw 0(r3),r4
+    2bd0:	44 00 48 00 	l.jr r9
+    2bd4:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002bd8 <_getpid_r>:
+    2bd8:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2bdc:	9c 21 ff fc 	l.addi r1,r1,-4
+    2be0:	9c 80 00 58 	l.addi r4,r0,88
+    2be4:	9c 21 00 04 	l.addi r1,r1,4
+    2be8:	9d 60 ff ff 	l.addi r11,r0,-1
+    2bec:	d4 03 20 00 	l.sw 0(r3),r4
+    2bf0:	44 00 48 00 	l.jr r9
+    2bf4:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002bf8 <_gettimeofday>:
+    2bf8:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2bfc:	9c 21 ff fc 	l.addi r1,r1,-4
+    2c00:	9c 80 00 58 	l.addi r4,r0,88
+    2c04:	9c 21 00 04 	l.addi r1,r1,4
+    2c08:	9d 60 ff ff 	l.addi r11,r0,-1
+    2c0c:	d4 03 20 00 	l.sw 0(r3),r4
+    2c10:	44 00 48 00 	l.jr r9
+    2c14:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002c18 <_isatty_r>:
+    2c18:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2c1c:	9c 21 ff fc 	l.addi r1,r1,-4
+    2c20:	9c 80 00 58 	l.addi r4,r0,88
+    2c24:	9c 21 00 04 	l.addi r1,r1,4
+    2c28:	9d 60 00 00 	l.addi r11,r0,0
+    2c2c:	d4 03 20 00 	l.sw 0(r3),r4
+    2c30:	44 00 48 00 	l.jr r9
+    2c34:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002c38 <_kill_r>:
+    2c38:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2c3c:	9c 21 ff fc 	l.addi r1,r1,-4
+    2c40:	9c 80 00 58 	l.addi r4,r0,88
+    2c44:	9c 21 00 04 	l.addi r1,r1,4
+    2c48:	9d 60 ff ff 	l.addi r11,r0,-1
+    2c4c:	d4 03 20 00 	l.sw 0(r3),r4
+    2c50:	44 00 48 00 	l.jr r9
+    2c54:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002c58 <_link_r>:
+    2c58:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2c5c:	9c 21 ff fc 	l.addi r1,r1,-4
+    2c60:	9c 80 00 58 	l.addi r4,r0,88
+    2c64:	9c 21 00 04 	l.addi r1,r1,4
+    2c68:	9d 60 ff ff 	l.addi r11,r0,-1
+    2c6c:	d4 03 20 00 	l.sw 0(r3),r4
+    2c70:	44 00 48 00 	l.jr r9
+    2c74:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002c78 <_lseek_r>:
+    2c78:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2c7c:	d7 e1 0f f8 	l.sw -8(r1),r1
+    2c80:	04 00 03 76 	l.jal 3a58 <__errno>
+    2c84:	9c 21 ff f8 	l.addi r1,r1,-8
+    2c88:	9c 60 00 58 	l.addi r3,r0,88
+    2c8c:	d4 0b 18 00 	l.sw 0(r11),r3
+    2c90:	9c 21 00 08 	l.addi r1,r1,8
+    2c94:	9d 60 ff ff 	l.addi r11,r0,-1
+    2c98:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2c9c:	44 00 48 00 	l.jr r9
+    2ca0:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+00002ca4 <_open>:
+    2ca4:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2ca8:	9c 21 ff fc 	l.addi r1,r1,-4
+    2cac:	9c 80 00 58 	l.addi r4,r0,88
+    2cb0:	9c 21 00 04 	l.addi r1,r1,4
+    2cb4:	9d 60 ff ff 	l.addi r11,r0,-1
+    2cb8:	d4 03 20 00 	l.sw 0(r3),r4
+    2cbc:	44 00 48 00 	l.jr r9
+    2cc0:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002cc4 <_read_r>:
+    2cc4:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2cc8:	9c 21 ff fc 	l.addi r1,r1,-4
+    2ccc:	9c 80 00 58 	l.addi r4,r0,88
+    2cd0:	9c 21 00 04 	l.addi r1,r1,4
+    2cd4:	9d 60 ff ff 	l.addi r11,r0,-1
+    2cd8:	d4 03 20 00 	l.sw 0(r3),r4
+    2cdc:	44 00 48 00 	l.jr r9
+    2ce0:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002ce4 <_readlink_r>:
+    2ce4:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2ce8:	9c 21 ff fc 	l.addi r1,r1,-4
+    2cec:	9c 80 00 58 	l.addi r4,r0,88
+    2cf0:	9c 21 00 04 	l.addi r1,r1,4
+    2cf4:	9d 60 ff ff 	l.addi r11,r0,-1
+    2cf8:	d4 03 20 00 	l.sw 0(r3),r4
+    2cfc:	44 00 48 00 	l.jr r9
+    2d00:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002d04 <_stat_r>:
+    2d04:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2d08:	9c 21 ff fc 	l.addi r1,r1,-4
+    2d0c:	9c 80 00 05 	l.addi r4,r0,5
+    2d10:	9c 21 00 04 	l.addi r1,r1,4
+    2d14:	9d 60 ff ff 	l.addi r11,r0,-1
+    2d18:	d4 03 20 00 	l.sw 0(r3),r4
+    2d1c:	44 00 48 00 	l.jr r9
+    2d20:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002d24 <_unlink_r>:
+    2d24:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2d28:	9c 21 ff fc 	l.addi r1,r1,-4
+    2d2c:	9c 80 00 05 	l.addi r4,r0,5
+    2d30:	9c 21 00 04 	l.addi r1,r1,4
+    2d34:	9d 60 ff ff 	l.addi r11,r0,-1
+    2d38:	d4 03 20 00 	l.sw 0(r3),r4
+    2d3c:	44 00 48 00 	l.jr r9
+    2d40:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002d44 <_or1k_uart_interrupt_handler>:
+    2d44:	18 60 00 00 	l.movhi r3,0x0
+    2d48:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2d4c:	a8 63 3a 30 	l.ori r3,r3,0x3a30
+    2d50:	9c 21 ff fc 	l.addi r1,r1,-4
+    2d54:	84 63 00 00 	l.lwz r3,0(r3)
+    2d58:	9c 63 00 02 	l.addi r3,r3,2
+    2d5c:	8c 63 00 00 	l.lbz r3,0(r3)
+    2d60:	9c 21 00 04 	l.addi r1,r1,4
+    2d64:	44 00 48 00 	l.jr r9
+    2d68:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002d6c <_or1k_uart_init>:
+    2d6c:	d7 e1 17 f4 	l.sw -12(r1),r2
+    2d70:	18 40 00 00 	l.movhi r2,0x0
+    2d74:	d7 e1 77 f8 	l.sw -8(r1),r14
+    2d78:	a8 42 3a 30 	l.ori r2,r2,0x3a30
+    2d7c:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2d80:	85 c2 00 00 	l.lwz r14,0(r2)
+    2d84:	d7 e1 0f f0 	l.sw -16(r1),r1
+    2d88:	bc 0e 00 00 	l.sfeqi r14,0
+    2d8c:	10 00 00 2c 	l.bf 2e3c <_or1k_uart_init+0xd0>
+    2d90:	9c 21 ff f0 	l.addi r1,r1,-16
+    2d94:	18 60 00 00 	l.movhi r3,0x0
+    2d98:	18 a0 00 00 	l.movhi r5,0x0
+    2d9c:	a8 63 3a 34 	l.ori r3,r3,0x3a34
+    2da0:	9c c0 00 00 	l.addi r6,r0,0
+    2da4:	84 83 00 00 	l.lwz r4,0(r3)
+    2da8:	18 60 00 00 	l.movhi r3,0x0
+    2dac:	a8 a5 49 34 	l.ori r5,r5,0x4934
+    2db0:	a8 63 3a 2c 	l.ori r3,r3,0x3a2c
+    2db4:	b8 84 00 04 	l.slli r4,r4,0x4
+    2db8:	84 63 00 00 	l.lwz r3,0(r3)
+    2dbc:	d4 05 30 00 	l.sw 0(r5),r6
+    2dc0:	04 00 03 8a 	l.jal 3be8 <__udivsi3>
+    2dc4:	9d ce 00 03 	l.addi r14,r14,3
+    2dc8:	9c 60 ff 80 	l.addi r3,r0,-128
+    2dcc:	a4 8b 00 ff 	l.andi r4,r11,0xff
+    2dd0:	d8 0e 18 00 	l.sb 0(r14),r3
+    2dd4:	a5 6b ff ff 	l.andi r11,r11,0xffff
+    2dd8:	84 62 00 00 	l.lwz r3,0(r2)
+    2ddc:	9c c0 ff c3 	l.addi r6,r0,-61
+    2de0:	d8 03 20 00 	l.sb 0(r3),r4
+    2de4:	b8 6b 00 48 	l.srli r3,r11,0x8
+    2de8:	84 82 00 00 	l.lwz r4,0(r2)
+    2dec:	9d 60 00 00 	l.addi r11,r0,0
+    2df0:	9c 84 00 01 	l.addi r4,r4,1
+    2df4:	d8 04 18 00 	l.sb 0(r4),r3
+    2df8:	9c 80 00 03 	l.addi r4,r0,3
+    2dfc:	84 62 00 00 	l.lwz r3,0(r2)
+    2e00:	9c 63 00 03 	l.addi r3,r3,3
+    2e04:	d8 03 20 00 	l.sb 0(r3),r4
+    2e08:	84 62 00 00 	l.lwz r3,0(r2)
+    2e0c:	9c 63 00 02 	l.addi r3,r3,2
+    2e10:	d8 03 30 00 	l.sb 0(r3),r6
+    2e14:	9c 60 00 00 	l.addi r3,r0,0
+    2e18:	84 42 00 00 	l.lwz r2,0(r2)
+    2e1c:	9c 42 00 01 	l.addi r2,r2,1
+    2e20:	d8 02 18 00 	l.sb 0(r2),r3
+    2e24:	9c 21 00 10 	l.addi r1,r1,16
+    2e28:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2e2c:	84 21 ff f0 	l.lwz r1,-16(r1)
+    2e30:	84 41 ff f4 	l.lwz r2,-12(r1)
+    2e34:	44 00 48 00 	l.jr r9
+    2e38:	85 c1 ff f8 	l.lwz r14,-8(r1)
+    2e3c:	03 ff ff fa 	l.j 2e24 <_or1k_uart_init+0xb8>
+    2e40:	9d 60 ff ff 	l.addi r11,r0,-1
+
+00002e44 <_or1k_uart_write>:
+    2e44:	18 80 00 00 	l.movhi r4,0x0
+    2e48:	b8 63 00 18 	l.slli r3,r3,0x18
+    2e4c:	a8 84 3a 30 	l.ori r4,r4,0x3a30
+    2e50:	d7 e1 0f fc 	l.sw -4(r1),r1
+    2e54:	84 c4 00 00 	l.lwz r6,0(r4)
+    2e58:	b8 63 00 98 	l.srai r3,r3,0x18
+    2e5c:	9c 21 ff fc 	l.addi r1,r1,-4
+    2e60:	9c a6 00 05 	l.addi r5,r6,5
+    2e64:	8c 85 00 00 	l.lbz r4,0(r5)
+    2e68:	a4 84 00 20 	l.andi r4,r4,0x20
+    2e6c:	bc 04 00 00 	l.sfeqi r4,0
+    2e70:	13 ff ff fd 	l.bf 2e64 <_or1k_uart_write+0x20>
+    2e74:	15 00 00 00 	l.nop 0x0
+    2e78:	a4 63 00 ff 	l.andi r3,r3,0xff
+    2e7c:	d8 06 18 00 	l.sb 0(r6),r3
+    2e80:	9c 21 00 04 	l.addi r1,r1,4
+    2e84:	44 00 48 00 	l.jr r9
+    2e88:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00002e8c <or1k_uart_set_read_cb>:
+    2e8c:	d7 e1 17 f8 	l.sw -8(r1),r2
+    2e90:	18 40 00 00 	l.movhi r2,0x0
+    2e94:	d7 e1 4f fc 	l.sw -4(r1),r9
+    2e98:	a8 42 3a 30 	l.ori r2,r2,0x3a30
+    2e9c:	d7 e1 0f f4 	l.sw -12(r1),r1
+    2ea0:	84 82 00 00 	l.lwz r4,0(r2)
+    2ea4:	18 40 00 00 	l.movhi r2,0x0
+    2ea8:	9c 84 00 01 	l.addi r4,r4,1
+    2eac:	a8 42 49 34 	l.ori r2,r2,0x4934
+    2eb0:	9c 21 ff f4 	l.addi r1,r1,-12
+    2eb4:	d4 02 18 00 	l.sw 0(r2),r3
+    2eb8:	9c 40 00 01 	l.addi r2,r0,1
+    2ebc:	9c a0 00 00 	l.addi r5,r0,0
+    2ec0:	d8 04 10 00 	l.sb 0(r4),r2
+    2ec4:	18 40 00 00 	l.movhi r2,0x0
+    2ec8:	18 80 00 00 	l.movhi r4,0x0
+    2ecc:	a8 42 3a 38 	l.ori r2,r2,0x3a38
+    2ed0:	a8 84 2d 44 	l.ori r4,r4,0x2d44
+    2ed4:	04 00 00 df 	l.jal 3250 <or1k_interrupt_handler_add>
+    2ed8:	84 62 00 00 	l.lwz r3,0(r2)
+    2edc:	04 00 01 33 	l.jal 33a8 <or1k_interrupt_enable>
+    2ee0:	84 62 00 00 	l.lwz r3,0(r2)
+    2ee4:	9c 21 00 0c 	l.addi r1,r1,12
+    2ee8:	85 21 ff fc 	l.lwz r9,-4(r1)
+    2eec:	84 21 ff f4 	l.lwz r1,-12(r1)
+    2ef0:	44 00 48 00 	l.jr r9
+    2ef4:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+00002ef8 <_or1k_outbyte>:
+    2ef8:	18 80 00 00 	l.movhi r4,0x0
+    2efc:	a8 84 3a 30 	l.ori r4,r4,0x3a30
+    2f00:	84 84 00 00 	l.lwz r4,0(r4)
+    2f04:	e4 04 00 00 	l.sfeq r4,r0
+    2f08:	10 00 00 04 	l.bf 2f18 <_or1k_outbyte+0x20>
+    2f0c:	15 00 00 00 	l.nop 0x0
+    2f10:	03 ff ff cd 	l.j 2e44 <_or1k_uart_write>
+    2f14:	15 00 00 00 	l.nop 0x0
+    2f18:	44 00 48 00 	l.jr r9
+    2f1c:	15 00 00 04 	l.nop 0x4
+
+00002f20 <_or1k_cache_init>:
+    2f20:	b4 60 00 01 	l.mfspr r3,r0,0x1
+    2f24:	a4 83 00 04 	l.andi r4,r3,0x4
+    2f28:	e4 04 00 00 	l.sfeq r4,r0
+    2f2c:	10 00 00 21 	l.bf 2fb0 <_or1k_cache_init+0x90>
+    2f30:	15 00 00 00 	l.nop 0x0
+    2f34:	b4 c0 00 11 	l.mfspr r6,r0,0x11
+    2f38:	9c a0 ff ff 	l.addi r5,r0,-1
+    2f3c:	ac a5 00 10 	l.xori r5,r5,16
+    2f40:	e0 a6 28 03 	l.and r5,r6,r5
+    2f44:	c0 00 28 11 	l.mtspr r0,r5,0x11
+    2f48:	b4 60 00 06 	l.mfspr r3,r0,0x6
+    2f4c:	a4 83 00 80 	l.andi r4,r3,0x80
+    2f50:	b8 e4 00 47 	l.srli r7,r4,0x7
+    2f54:	a9 00 00 10 	l.ori r8,r0,0x10
+    2f58:	e1 c8 38 08 	l.sll r14,r8,r7
+    2f5c:	a4 83 00 78 	l.andi r4,r3,0x78
+    2f60:	b8 e4 00 43 	l.srli r7,r4,0x3
+    2f64:	a9 00 00 01 	l.ori r8,r0,0x1
+    2f68:	e1 a8 38 08 	l.sll r13,r8,r7
+    2f6c:	9c c0 00 00 	l.addi r6,r0,0
+    2f70:	e0 ae 38 08 	l.sll r5,r14,r7
+    2f74:	c0 80 30 02 	l.mtspr r0,r6,0x2002
+    2f78:	e4 26 28 00 	l.sfne r6,r5
+    2f7c:	13 ff ff fe 	l.bf 2f74 <_or1k_cache_init+0x54>
+    2f80:	e0 c6 70 00 	l.add r6,r6,r14
+    2f84:	b4 c0 00 11 	l.mfspr r6,r0,0x11
+    2f88:	a8 c6 00 10 	l.ori r6,r6,0x10
+    2f8c:	c0 00 30 11 	l.mtspr r0,r6,0x11
+    2f90:	15 00 00 00 	l.nop 0x0
+    2f94:	15 00 00 00 	l.nop 0x0
+    2f98:	15 00 00 00 	l.nop 0x0
+    2f9c:	15 00 00 00 	l.nop 0x0
+    2fa0:	15 00 00 00 	l.nop 0x0
+    2fa4:	15 00 00 00 	l.nop 0x0
+    2fa8:	15 00 00 00 	l.nop 0x0
+    2fac:	15 00 00 00 	l.nop 0x0
+    2fb0:	b4 60 00 01 	l.mfspr r3,r0,0x1
+    2fb4:	a4 83 00 02 	l.andi r4,r3,0x2
+    2fb8:	e4 04 00 00 	l.sfeq r4,r0
+    2fbc:	10 00 00 19 	l.bf 3020 <_or1k_cache_init+0x100>
+    2fc0:	15 00 00 00 	l.nop 0x0
+    2fc4:	b4 c0 00 11 	l.mfspr r6,r0,0x11
+    2fc8:	9c a0 ff ff 	l.addi r5,r0,-1
+    2fcc:	ac a5 00 08 	l.xori r5,r5,8
+    2fd0:	e0 a6 28 03 	l.and r5,r6,r5
+    2fd4:	c0 00 28 11 	l.mtspr r0,r5,0x11
+    2fd8:	b4 60 00 05 	l.mfspr r3,r0,0x5
+    2fdc:	a4 83 00 80 	l.andi r4,r3,0x80
+    2fe0:	b8 e4 00 47 	l.srli r7,r4,0x7
+    2fe4:	a9 00 00 10 	l.ori r8,r0,0x10
+    2fe8:	e1 c8 38 08 	l.sll r14,r8,r7
+    2fec:	a4 83 00 78 	l.andi r4,r3,0x78
+    2ff0:	b8 e4 00 43 	l.srli r7,r4,0x3
+    2ff4:	a9 00 00 01 	l.ori r8,r0,0x1
+    2ff8:	e1 a8 38 08 	l.sll r13,r8,r7
+    2ffc:	9c c0 00 00 	l.addi r6,r0,0
+    3000:	e0 ae 38 08 	l.sll r5,r14,r7
+    3004:	c0 60 30 03 	l.mtspr r0,r6,0x1803
+    3008:	e4 26 28 00 	l.sfne r6,r5
+    300c:	13 ff ff fe 	l.bf 3004 <_or1k_cache_init+0xe4>
+    3010:	e0 c6 70 00 	l.add r6,r6,r14
+    3014:	b4 c0 00 11 	l.mfspr r6,r0,0x11
+    3018:	a8 c6 00 08 	l.ori r6,r6,0x8
+    301c:	c0 00 30 11 	l.mtspr r0,r6,0x11
+    3020:	44 00 48 00 	l.jr r9
+    3024:	15 00 00 00 	l.nop 0x0
+
+00003028 <or1k_icache_enable>:
+    3028:	b5 a0 00 11 	l.mfspr r13,r0,0x11
+    302c:	a9 ad 00 10 	l.ori r13,r13,0x10
+    3030:	c0 00 68 11 	l.mtspr r0,r13,0x11
+    3034:	15 00 00 00 	l.nop 0x0
+    3038:	15 00 00 00 	l.nop 0x0
+    303c:	15 00 00 00 	l.nop 0x0
+    3040:	15 00 00 00 	l.nop 0x0
+    3044:	15 00 00 00 	l.nop 0x0
+    3048:	44 00 48 00 	l.jr r9
+    304c:	15 00 00 00 	l.nop 0x0
+
+00003050 <or1k_icache_disable>:
+    3050:	b5 a0 00 11 	l.mfspr r13,r0,0x11
+    3054:	9d 80 ff ff 	l.addi r12,r0,-1
+    3058:	ad 8c 00 10 	l.xori r12,r12,16
+    305c:	e1 8d 60 03 	l.and r12,r13,r12
+    3060:	c0 00 60 11 	l.mtspr r0,r12,0x11
+    3064:	44 00 48 00 	l.jr r9
+    3068:	15 00 00 00 	l.nop 0x0
+
+0000306c <or1k_icache_flush>:
+    306c:	44 00 48 00 	l.jr r9
+    3070:	c0 80 18 02 	l.mtspr r0,r3,0x2002
+
+00003074 <or1k_dcache_enable>:
+    3074:	b5 a0 00 11 	l.mfspr r13,r0,0x11
+    3078:	a9 ad 00 08 	l.ori r13,r13,0x8
+    307c:	c0 00 68 11 	l.mtspr r0,r13,0x11
+    3080:	15 00 00 00 	l.nop 0x0
+    3084:	15 00 00 00 	l.nop 0x0
+    3088:	15 00 00 00 	l.nop 0x0
+    308c:	15 00 00 00 	l.nop 0x0
+    3090:	15 00 00 00 	l.nop 0x0
+    3094:	44 00 48 00 	l.jr r9
+    3098:	15 00 00 00 	l.nop 0x0
+
+0000309c <or1k_dcache_disable>:
+    309c:	b5 a0 00 11 	l.mfspr r13,r0,0x11
+    30a0:	9d 80 ff ff 	l.addi r12,r0,-1
+    30a4:	ad 8c 00 08 	l.xori r12,r12,8
+    30a8:	e1 8d 60 03 	l.and r12,r13,r12
+    30ac:	c0 00 60 11 	l.mtspr r0,r12,0x11
+    30b0:	44 00 48 00 	l.jr r9
+    30b4:	15 00 00 00 	l.nop 0x0
+
+000030b8 <or1k_dcache_flush>:
+    30b8:	44 00 48 00 	l.jr r9
+    30bc:	c0 60 18 03 	l.mtspr r0,r3,0x1803
+
+000030c0 <_or1k_exception_handler>:
+    30c0:	d4 01 10 08 	l.sw 8(r1),r2
+    30c4:	d4 01 28 14 	l.sw 20(r1),r5
+    30c8:	d4 01 30 18 	l.sw 24(r1),r6
+    30cc:	d4 01 38 1c 	l.sw 28(r1),r7
+    30d0:	d4 01 40 20 	l.sw 32(r1),r8
+    30d4:	d4 01 48 24 	l.sw 36(r1),r9
+    30d8:	d4 01 50 28 	l.sw 40(r1),r10
+    30dc:	d4 01 58 2c 	l.sw 44(r1),r11
+    30e0:	d4 01 60 30 	l.sw 48(r1),r12
+    30e4:	d4 01 68 34 	l.sw 52(r1),r13
+    30e8:	d4 01 70 38 	l.sw 56(r1),r14
+    30ec:	d4 01 78 3c 	l.sw 60(r1),r15
+    30f0:	d4 01 80 40 	l.sw 64(r1),r16
+    30f4:	d4 01 88 44 	l.sw 68(r1),r17
+    30f8:	d4 01 90 48 	l.sw 72(r1),r18
+    30fc:	d4 01 98 4c 	l.sw 76(r1),r19
+    3100:	d4 01 a0 50 	l.sw 80(r1),r20
+    3104:	d4 01 a8 54 	l.sw 84(r1),r21
+    3108:	d4 01 b0 58 	l.sw 88(r1),r22
+    310c:	d4 01 b8 5c 	l.sw 92(r1),r23
+    3110:	d4 01 c0 60 	l.sw 96(r1),r24
+    3114:	d4 01 c8 64 	l.sw 100(r1),r25
+    3118:	d4 01 d0 68 	l.sw 104(r1),r26
+    311c:	d4 01 d8 6c 	l.sw 108(r1),r27
+    3120:	d4 01 e0 70 	l.sw 112(r1),r28
+    3124:	d4 01 e8 74 	l.sw 116(r1),r29
+    3128:	d4 01 f0 78 	l.sw 120(r1),r30
+    312c:	d4 01 f8 7c 	l.sw 124(r1),r31
+    3130:	b5 c0 00 20 	l.mfspr r14,r0,0x20
+    3134:	d4 01 70 80 	l.sw 128(r1),r14
+    3138:	b5 c0 00 40 	l.mfspr r14,r0,0x40
+    313c:	d4 01 70 84 	l.sw 132(r1),r14
+    3140:	1a 80 00 00 	l.movhi r20,0x0
+    3144:	aa 94 44 e8 	l.ori r20,r20,0x44e8
+    3148:	86 94 00 00 	l.lwz r20,0(r20)
+    314c:	1a a0 00 00 	l.movhi r21,0x0
+    3150:	aa b5 4a 44 	l.ori r21,r21,0x4a44
+    3154:	d4 15 a0 00 	l.sw 0(r21),r20
+    3158:	a5 a3 ff 00 	l.andi r13,r3,0xff00
+    315c:	b9 ad 00 46 	l.srli r13,r13,0x6
+    3160:	9d ad ff f8 	l.addi r13,r13,-8
+    3164:	19 c0 00 00 	l.movhi r14,0x0
+    3168:	a9 ce 4a 60 	l.ori r14,r14,0x4a60
+    316c:	e1 ce 68 00 	l.add r14,r14,r13
+    3170:	85 ae 00 00 	l.lwz r13,0(r14)
+    3174:	e4 2d 00 00 	l.sfne r13,r0
+    3178:	0c 00 00 34 	l.bnf 3248 <exception_exit>
+    317c:	15 00 00 00 	l.nop 0x0
+    3180:	48 00 68 00 	l.jalr r13
+    3184:	e0 64 20 04 	l.or r3,r4,r4
+    3188:	1a 80 00 00 	l.movhi r20,0x0
+    318c:	aa 94 4a 48 	l.ori r20,r20,0x4a48
+    3190:	86 94 00 00 	l.lwz r20,0(r20)
+    3194:	1a a0 00 00 	l.movhi r21,0x0
+    3198:	aa b5 4a 44 	l.ori r21,r21,0x4a44
+    319c:	d4 15 a0 00 	l.sw 0(r21),r20
+    31a0:	18 40 00 00 	l.movhi r2,0x0
+    31a4:	a8 42 4a 4c 	l.ori r2,r2,0x4a4c
+    31a8:	84 62 00 00 	l.lwz r3,0(r2)
+    31ac:	9c 63 ff ff 	l.addi r3,r3,-1
+    31b0:	d4 02 18 00 	l.sw 0(r2),r3
+    31b4:	84 41 00 80 	l.lwz r2,128(r1)
+    31b8:	c0 00 10 20 	l.mtspr r0,r2,0x20
+    31bc:	84 41 00 84 	l.lwz r2,132(r1)
+    31c0:	c0 00 10 40 	l.mtspr r0,r2,0x40
+    31c4:	84 41 00 08 	l.lwz r2,8(r1)
+    31c8:	84 61 00 0c 	l.lwz r3,12(r1)
+    31cc:	84 81 00 10 	l.lwz r4,16(r1)
+    31d0:	84 a1 00 14 	l.lwz r5,20(r1)
+    31d4:	84 c1 00 18 	l.lwz r6,24(r1)
+    31d8:	84 e1 00 1c 	l.lwz r7,28(r1)
+    31dc:	85 01 00 20 	l.lwz r8,32(r1)
+    31e0:	85 21 00 24 	l.lwz r9,36(r1)
+    31e4:	85 41 00 28 	l.lwz r10,40(r1)
+    31e8:	85 61 00 2c 	l.lwz r11,44(r1)
+    31ec:	85 81 00 30 	l.lwz r12,48(r1)
+    31f0:	85 a1 00 34 	l.lwz r13,52(r1)
+    31f4:	85 c1 00 38 	l.lwz r14,56(r1)
+    31f8:	85 e1 00 3c 	l.lwz r15,60(r1)
+    31fc:	86 01 00 40 	l.lwz r16,64(r1)
+    3200:	86 21 00 44 	l.lwz r17,68(r1)
+    3204:	86 41 00 48 	l.lwz r18,72(r1)
+    3208:	86 61 00 4c 	l.lwz r19,76(r1)
+    320c:	86 81 00 50 	l.lwz r20,80(r1)
+    3210:	86 a1 00 54 	l.lwz r21,84(r1)
+    3214:	86 c1 00 58 	l.lwz r22,88(r1)
+    3218:	86 e1 00 5c 	l.lwz r23,92(r1)
+    321c:	87 01 00 60 	l.lwz r24,96(r1)
+    3220:	87 21 00 64 	l.lwz r25,100(r1)
+    3224:	87 41 00 68 	l.lwz r26,104(r1)
+    3228:	87 61 00 6c 	l.lwz r27,108(r1)
+    322c:	87 81 00 70 	l.lwz r28,112(r1)
+    3230:	87 a1 00 74 	l.lwz r29,116(r1)
+    3234:	87 c1 00 78 	l.lwz r30,120(r1)
+    3238:	87 e1 00 7c 	l.lwz r31,124(r1)
+    323c:	84 21 00 04 	l.lwz r1,4(r1)
+    3240:	24 00 00 00 	l.rfe
+    3244:	15 00 00 00 	l.nop 0x0
+
+00003248 <exception_exit>:
+    3248:	07 ff fd 39 	l.jal 272c <exit>
+    324c:	e0 64 20 04 	l.or r3,r4,r4
+
+00003250 <or1k_interrupt_handler_add>:
+    3250:	d7 e1 17 fc 	l.sw -4(r1),r2
+    3254:	18 40 00 00 	l.movhi r2,0x0
+    3258:	b8 63 00 02 	l.slli r3,r3,0x2
+    325c:	a8 42 49 38 	l.ori r2,r2,0x4938
+    3260:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3264:	e0 c3 10 00 	l.add r6,r3,r2
+    3268:	18 40 00 00 	l.movhi r2,0x0
+    326c:	9c 21 ff f8 	l.addi r1,r1,-8
+    3270:	a8 42 49 b8 	l.ori r2,r2,0x49b8
+    3274:	d4 06 20 00 	l.sw 0(r6),r4
+    3278:	e0 63 10 00 	l.add r3,r3,r2
+    327c:	d4 03 28 00 	l.sw 0(r3),r5
+    3280:	9c 21 00 08 	l.addi r1,r1,8
+    3284:	84 21 ff f8 	l.lwz r1,-8(r1)
+    3288:	44 00 48 00 	l.jr r9
+    328c:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+00003290 <or1k_interrupts_enable>:
+    3290:	d7 e1 0f fc 	l.sw -4(r1),r1
+    3294:	9c 80 00 11 	l.addi r4,r0,17
+    3298:	9c 21 ff fc 	l.addi r1,r1,-4
+    329c:	b4 64 00 00 	l.mfspr r3,r4,0x0
+    32a0:	a8 63 00 04 	l.ori r3,r3,0x4
+    32a4:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    32a8:	9c 21 00 04 	l.addi r1,r1,4
+    32ac:	44 00 48 00 	l.jr r9
+    32b0:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+000032b4 <or1k_interrupts_disable>:
+    32b4:	d7 e1 0f f8 	l.sw -8(r1),r1
+    32b8:	d7 e1 17 fc 	l.sw -4(r1),r2
+    32bc:	9c 60 00 11 	l.addi r3,r0,17
+    32c0:	9c 21 ff f8 	l.addi r1,r1,-8
+    32c4:	b5 63 00 00 	l.mfspr r11,r3,0x0
+    32c8:	9c 40 ff fb 	l.addi r2,r0,-5
+    32cc:	e0 8b 10 03 	l.and r4,r11,r2
+    32d0:	c0 03 20 00 	l.mtspr r3,r4,0x0
+    32d4:	9c 21 00 08 	l.addi r1,r1,8
+    32d8:	b9 6b 00 42 	l.srli r11,r11,0x2
+    32dc:	84 21 ff f8 	l.lwz r1,-8(r1)
+    32e0:	a5 6b 00 01 	l.andi r11,r11,0x1
+    32e4:	44 00 48 00 	l.jr r9
+    32e8:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+000032ec <or1k_interrupts_restore>:
+    32ec:	d7 e1 0f f8 	l.sw -8(r1),r1
+    32f0:	d7 e1 17 fc 	l.sw -4(r1),r2
+    32f4:	9c 80 00 11 	l.addi r4,r0,17
+    32f8:	9c 21 ff f8 	l.addi r1,r1,-8
+    32fc:	b4 84 00 00 	l.mfspr r4,r4,0x0
+    3300:	9c 40 ff fb 	l.addi r2,r0,-5
+    3304:	bc 23 00 00 	l.sfnei r3,0
+    3308:	e0 84 10 03 	l.and r4,r4,r2
+    330c:	10 00 00 03 	l.bf 3318 <or1k_interrupts_restore+0x2c>
+    3310:	9c a0 00 04 	l.addi r5,r0,4
+    3314:	a8 a3 00 00 	l.ori r5,r3,0x0
+    3318:	e0 65 20 04 	l.or r3,r5,r4
+    331c:	9c 80 00 11 	l.addi r4,r0,17
+    3320:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    3324:	9c 21 00 08 	l.addi r1,r1,8
+    3328:	84 21 ff f8 	l.lwz r1,-8(r1)
+    332c:	44 00 48 00 	l.jr r9
+    3330:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+00003334 <_or1k_interrupt_handler>:
+    3334:	9c 21 ff fc 	l.addi r1,r1,-4
+    3338:	d4 01 48 00 	l.sw 0(r1),r9
+    333c:	b6 80 48 02 	l.mfspr r20,r0,0x4802
+    3340:	1a 00 00 00 	l.movhi r16,0x0
+    3344:	aa 10 49 38 	l.ori r16,r16,0x4938
+    3348:	1a 40 00 00 	l.movhi r18,0x0
+    334c:	aa 52 49 b8 	l.ori r18,r18,0x49b8
+    3350:	e0 94 00 0f 	l.ff1 r4,r20
+    3354:	e4 24 00 00 	l.sfne r4,r0
+    3358:	0c 00 00 10 	l.bnf 3398 <_or1k_interrupt_handler+0x64>
+    335c:	15 00 00 00 	l.nop 0x0
+    3360:	9e c4 ff ff 	l.addi r22,r4,-1
+    3364:	b8 d6 00 02 	l.slli r6,r22,0x2
+    3368:	e1 c6 80 00 	l.add r14,r6,r16
+    336c:	e1 a6 90 00 	l.add r13,r6,r18
+    3370:	85 ce 00 00 	l.lwz r14,0(r14)
+    3374:	e4 2e 00 00 	l.sfne r14,r0
+    3378:	0c 00 00 04 	l.bnf 3388 <_or1k_interrupt_handler+0x54>
+    337c:	15 00 00 00 	l.nop 0x0
+    3380:	48 00 70 00 	l.jalr r14
+    3384:	84 6d 00 00 	l.lwz r3,0(r13)
+    3388:	a8 c0 00 01 	l.ori r6,r0,0x1
+    338c:	e0 c6 b0 08 	l.sll r6,r6,r22
+    3390:	03 ff ff f0 	l.j 3350 <_or1k_interrupt_handler+0x1c>
+    3394:	e2 94 30 05 	l.xor r20,r20,r6
+    3398:	85 21 00 00 	l.lwz r9,0(r1)
+    339c:	c1 20 a0 02 	l.mtspr r0,r20,0x4802
+    33a0:	44 00 48 00 	l.jr r9
+    33a4:	9c 21 00 04 	l.addi r1,r1,4
+
+000033a8 <or1k_interrupt_enable>:
+    33a8:	9c 21 ff fc 	l.addi r1,r1,-4
+    33ac:	d4 01 20 00 	l.sw 0(r1),r4
+    33b0:	a8 80 00 01 	l.ori r4,r0,0x1
+    33b4:	e0 84 18 08 	l.sll r4,r4,r3
+    33b8:	b4 60 48 00 	l.mfspr r3,r0,0x4800
+    33bc:	e0 63 20 04 	l.or r3,r3,r4
+    33c0:	c1 20 18 00 	l.mtspr r0,r3,0x4800
+    33c4:	84 81 00 00 	l.lwz r4,0(r1)
+    33c8:	44 00 48 00 	l.jr r9
+    33cc:	9c 21 00 04 	l.addi r1,r1,4
+
+000033d0 <or1k_interrupt_disable>:
+    33d0:	9c 21 ff fc 	l.addi r1,r1,-4
+    33d4:	d4 01 20 00 	l.sw 0(r1),r4
+    33d8:	a8 80 00 01 	l.ori r4,r0,0x1
+    33dc:	e0 84 18 08 	l.sll r4,r4,r3
+    33e0:	ac 84 ff ff 	l.xori r4,r4,-1
+    33e4:	b4 60 48 00 	l.mfspr r3,r0,0x4800
+    33e8:	e0 63 20 03 	l.and r3,r3,r4
+    33ec:	c1 20 18 00 	l.mtspr r0,r3,0x4800
+    33f0:	84 81 00 00 	l.lwz r4,0(r1)
+    33f4:	44 00 48 00 	l.jr r9
+    33f8:	9c 21 00 04 	l.addi r1,r1,4
+
+000033fc <_or1k_libc_impure_init>:
+    33fc:	d7 e1 17 d8 	l.sw -40(r1),r2
+    3400:	18 40 00 00 	l.movhi r2,0x0
+    3404:	d7 e1 f7 f8 	l.sw -8(r1),r30
+    3408:	a8 42 40 bc 	l.ori r2,r2,0x40bc
+    340c:	9f c0 04 24 	l.addi r30,r0,1060
+    3410:	d7 e1 4f fc 	l.sw -4(r1),r9
+    3414:	d7 e1 77 dc 	l.sw -36(r1),r14
+    3418:	d7 e1 97 e0 	l.sw -32(r1),r18
+    341c:	d7 e1 a7 e4 	l.sw -28(r1),r20
+    3420:	d7 e1 b7 e8 	l.sw -24(r1),r22
+    3424:	d7 e1 c7 ec 	l.sw -20(r1),r24
+    3428:	d7 e1 d7 f0 	l.sw -16(r1),r26
+    342c:	d7 e1 e7 f4 	l.sw -12(r1),r28
+    3430:	84 62 00 00 	l.lwz r3,0(r2)
+    3434:	a8 be 00 00 	l.ori r5,r30,0x0
+    3438:	d7 e1 0f d4 	l.sw -44(r1),r1
+    343c:	9c 80 00 00 	l.addi r4,r0,0
+    3440:	9c 21 ff d4 	l.addi r1,r1,-44
+    3444:	04 00 01 8f 	l.jal 3a80 <memset>
+    3448:	1b 40 00 00 	l.movhi r26,0x0
+    344c:	84 c2 00 00 	l.lwz r6,0(r2)
+    3450:	1b 80 00 00 	l.movhi r28,0x0
+    3454:	9c 86 03 54 	l.addi r4,r6,852
+    3458:	9c 66 03 bc 	l.addi r3,r6,956
+    345c:	9c a6 02 ec 	l.addi r5,r6,748
+    3460:	ab 5a 3e 2c 	l.ori r26,r26,0x3e2c
+    3464:	9f 00 33 0e 	l.addi r24,r0,13070
+    3468:	9e c0 ab cd 	l.addi r22,r0,-21555
+    346c:	9e 80 12 34 	l.addi r20,r0,4660
+    3470:	9e 40 e6 6d 	l.addi r18,r0,-6547
+    3474:	9d c0 de ec 	l.addi r14,r0,-8468
+    3478:	ab 9c 44 e8 	l.ori r28,r28,0x44e8
+    347c:	d4 06 20 08 	l.sw 8(r6),r4
+    3480:	d4 06 18 0c 	l.sw 12(r6),r3
+    3484:	9c 80 00 0b 	l.addi r4,r0,11
+    3488:	9c 60 00 05 	l.addi r3,r0,5
+    348c:	d4 06 28 04 	l.sw 4(r6),r5
+    3490:	d4 06 d0 34 	l.sw 52(r6),r26
+    3494:	dc 06 c0 ac 	l.sh 172(r6),r24
+    3498:	dc 06 b0 ae 	l.sh 174(r6),r22
+    349c:	dc 06 a0 b0 	l.sh 176(r6),r20
+    34a0:	dc 06 90 b2 	l.sh 178(r6),r18
+    34a4:	dc 06 70 b4 	l.sh 180(r6),r14
+    34a8:	dc 06 18 b6 	l.sh 182(r6),r3
+    34ac:	dc 06 20 b8 	l.sh 184(r6),r4
+    34b0:	84 7c 00 00 	l.lwz r3,0(r28)
+    34b4:	a8 be 00 00 	l.ori r5,r30,0x0
+    34b8:	9c e0 00 00 	l.addi r7,r0,0
+    34bc:	9d 00 00 01 	l.addi r8,r0,1
+    34c0:	d4 06 38 a4 	l.sw 164(r6),r7
+    34c4:	d4 06 40 a8 	l.sw 168(r6),r8
+    34c8:	04 00 01 6e 	l.jal 3a80 <memset>
+    34cc:	9c 80 00 00 	l.addi r4,r0,0
+    34d0:	84 7c 00 00 	l.lwz r3,0(r28)
+    34d4:	84 42 00 00 	l.lwz r2,0(r2)
+    34d8:	9c 83 03 bc 	l.addi r4,r3,956
+    34dc:	9d 00 00 05 	l.addi r8,r0,5
+    34e0:	d4 03 20 0c 	l.sw 12(r3),r4
+    34e4:	9c 80 00 0b 	l.addi r4,r0,11
+    34e8:	dc 03 40 b6 	l.sh 182(r3),r8
+    34ec:	dc 03 20 b8 	l.sh 184(r3),r4
+    34f0:	18 80 00 00 	l.movhi r4,0x0
+    34f4:	9c c3 02 ec 	l.addi r6,r3,748
+    34f8:	a8 84 4a 48 	l.ori r4,r4,0x4a48
+    34fc:	9c a3 03 54 	l.addi r5,r3,852
+    3500:	d4 04 10 00 	l.sw 0(r4),r2
+    3504:	18 80 00 00 	l.movhi r4,0x0
+    3508:	9c e0 00 00 	l.addi r7,r0,0
+    350c:	a8 84 4a 44 	l.ori r4,r4,0x4a44
+    3510:	9d 00 00 01 	l.addi r8,r0,1
+    3514:	dc 03 c0 ac 	l.sh 172(r3),r24
+    3518:	dc 03 b0 ae 	l.sh 174(r3),r22
+    351c:	dc 03 a0 b0 	l.sh 176(r3),r20
+    3520:	dc 03 90 b2 	l.sh 178(r3),r18
+    3524:	dc 03 70 b4 	l.sh 180(r3),r14
+    3528:	d4 03 38 a4 	l.sw 164(r3),r7
+    352c:	d4 03 40 a8 	l.sw 168(r3),r8
+    3530:	d4 03 d0 34 	l.sw 52(r3),r26
+    3534:	d4 04 10 00 	l.sw 0(r4),r2
+    3538:	d4 03 30 04 	l.sw 4(r3),r6
+    353c:	d4 03 28 08 	l.sw 8(r3),r5
+    3540:	9c 21 00 2c 	l.addi r1,r1,44
+    3544:	85 21 ff fc 	l.lwz r9,-4(r1)
+    3548:	84 21 ff d4 	l.lwz r1,-44(r1)
+    354c:	84 41 ff d8 	l.lwz r2,-40(r1)
+    3550:	85 c1 ff dc 	l.lwz r14,-36(r1)
+    3554:	86 41 ff e0 	l.lwz r18,-32(r1)
+    3558:	86 81 ff e4 	l.lwz r20,-28(r1)
+    355c:	86 c1 ff e8 	l.lwz r22,-24(r1)
+    3560:	87 01 ff ec 	l.lwz r24,-20(r1)
+    3564:	87 41 ff f0 	l.lwz r26,-16(r1)
+    3568:	87 81 ff f4 	l.lwz r28,-12(r1)
+    356c:	44 00 48 00 	l.jr r9
+    3570:	87 c1 ff f8 	l.lwz r30,-8(r1)
+
+00003574 <_or1k_libc_getreent>:
+    3574:	18 60 00 00 	l.movhi r3,0x0
+    3578:	d7 e1 0f fc 	l.sw -4(r1),r1
+    357c:	a8 63 4a 44 	l.ori r3,r3,0x4a44
+    3580:	9c 21 ff fc 	l.addi r1,r1,-4
+    3584:	85 63 00 00 	l.lwz r11,0(r3)
+    3588:	9c 21 00 04 	l.addi r1,r1,4
+    358c:	44 00 48 00 	l.jr r9
+    3590:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+00003594 <_or1k_reent_init>:
+    3594:	d7 e1 0f fc 	l.sw -4(r1),r1
+    3598:	9c 21 ff fc 	l.addi r1,r1,-4
+    359c:	9c 21 00 04 	l.addi r1,r1,4
+    35a0:	44 00 48 00 	l.jr r9
+    35a4:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+000035a8 <_or1k_init>:
+    35a8:	d7 e1 4f fc 	l.sw -4(r1),r9
+    35ac:	d7 e1 17 f8 	l.sw -8(r1),r2
+    35b0:	d7 e1 0f f4 	l.sw -12(r1),r1
+    35b4:	9c 21 ff f4 	l.addi r1,r1,-12
+    35b8:	07 ff ff f7 	l.jal 3594 <_or1k_reent_init>
+    35bc:	9c 40 00 00 	l.addi r2,r0,0
+    35c0:	18 80 00 00 	l.movhi r4,0x0
+    35c4:	18 60 00 00 	l.movhi r3,0x0
+    35c8:	a8 84 33 34 	l.ori r4,r4,0x3334
+    35cc:	a8 63 4a 60 	l.ori r3,r3,0x4a60
+    35d0:	d4 03 20 18 	l.sw 24(r3),r4
+    35d4:	18 60 00 00 	l.movhi r3,0x0
+    35d8:	a8 63 4a 4c 	l.ori r3,r3,0x4a4c
+    35dc:	d4 03 10 00 	l.sw 0(r3),r2
+    35e0:	9c 21 00 0c 	l.addi r1,r1,12
+    35e4:	85 21 ff fc 	l.lwz r9,-4(r1)
+    35e8:	84 21 ff f4 	l.lwz r1,-12(r1)
+    35ec:	44 00 48 00 	l.jr r9
+    35f0:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+000035f4 <or1k_critical_begin>:
+    35f4:	d7 e1 4f fc 	l.sw -4(r1),r9
+    35f8:	d7 e1 17 f8 	l.sw -8(r1),r2
+    35fc:	d7 e1 0f f4 	l.sw -12(r1),r1
+    3600:	07 ff ff 2d 	l.jal 32b4 <or1k_interrupts_disable>
+    3604:	9c 21 ff f4 	l.addi r1,r1,-12
+    3608:	04 00 00 b7 	l.jal 38e4 <or1k_timer_disable>
+    360c:	a8 4b 00 00 	l.ori r2,r11,0x0
+    3610:	9c 21 00 0c 	l.addi r1,r1,12
+    3614:	e0 42 10 00 	l.add r2,r2,r2
+    3618:	85 21 ff fc 	l.lwz r9,-4(r1)
+    361c:	84 21 ff f4 	l.lwz r1,-12(r1)
+    3620:	e1 62 58 04 	l.or r11,r2,r11
+    3624:	44 00 48 00 	l.jr r9
+    3628:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+0000362c <or1k_critical_end>:
+    362c:	d7 e1 4f fc 	l.sw -4(r1),r9
+    3630:	d7 e1 17 f8 	l.sw -8(r1),r2
+    3634:	d7 e1 0f f4 	l.sw -12(r1),r1
+    3638:	a8 43 00 00 	l.ori r2,r3,0x0
+    363c:	9c 21 ff f4 	l.addi r1,r1,-12
+    3640:	04 00 00 b7 	l.jal 391c <or1k_timer_restore>
+    3644:	a4 63 00 01 	l.andi r3,r3,0x1
+    3648:	b8 62 00 41 	l.srli r3,r2,0x1
+    364c:	07 ff ff 28 	l.jal 32ec <or1k_interrupts_restore>
+    3650:	a4 63 00 01 	l.andi r3,r3,0x1
+    3654:	9c 21 00 0c 	l.addi r1,r1,12
+    3658:	85 21 ff fc 	l.lwz r9,-4(r1)
+    365c:	84 21 ff f4 	l.lwz r1,-12(r1)
+    3660:	44 00 48 00 	l.jr r9
+    3664:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+00003668 <or1k_exception_handler_add>:
+    3668:	9c 63 ff fe 	l.addi r3,r3,-2
+    366c:	d7 e1 17 fc 	l.sw -4(r1),r2
+    3670:	18 40 00 00 	l.movhi r2,0x0
+    3674:	b8 63 00 02 	l.slli r3,r3,0x2
+    3678:	a8 42 4a 60 	l.ori r2,r2,0x4a60
+    367c:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3680:	e0 63 10 00 	l.add r3,r3,r2
+    3684:	9c 21 ff f8 	l.addi r1,r1,-8
+    3688:	d4 03 20 00 	l.sw 0(r3),r4
+    368c:	9c 21 00 08 	l.addi r1,r1,8
+    3690:	84 21 ff f8 	l.lwz r1,-8(r1)
+    3694:	44 00 48 00 	l.jr r9
+    3698:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+0000369c <_or1k_timer_interrupt_handler>:
+    369c:	18 a0 00 00 	l.movhi r5,0x0
+    36a0:	d7 e1 0f f8 	l.sw -8(r1),r1
+    36a4:	a8 a5 4a 38 	l.ori r5,r5,0x4a38
+    36a8:	d7 e1 17 fc 	l.sw -4(r1),r2
+    36ac:	84 65 00 00 	l.lwz r3,0(r5)
+    36b0:	9c 21 ff f8 	l.addi r1,r1,-8
+    36b4:	9c 63 00 01 	l.addi r3,r3,1
+    36b8:	9c 80 50 00 	l.addi r4,r0,20480
+    36bc:	d4 05 18 00 	l.sw 0(r5),r3
+    36c0:	b4 64 00 00 	l.mfspr r3,r4,0x0
+    36c4:	18 40 2f ff 	l.movhi r2,0x2fff
+    36c8:	a8 42 ff ff 	l.ori r2,r2,0xffff
+    36cc:	e0 63 10 03 	l.and r3,r3,r2
+    36d0:	18 40 60 00 	l.movhi r2,0x6000
+    36d4:	e0 63 10 04 	l.or r3,r3,r2
+    36d8:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    36dc:	9c 21 00 08 	l.addi r1,r1,8
+    36e0:	84 21 ff f8 	l.lwz r1,-8(r1)
+    36e4:	44 00 48 00 	l.jr r9
+    36e8:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+000036ec <or1k_timer_init>:
+    36ec:	d7 e1 97 f8 	l.sw -8(r1),r18
+    36f0:	d7 e1 4f fc 	l.sw -4(r1),r9
+    36f4:	d7 e1 0f ec 	l.sw -20(r1),r1
+    36f8:	d7 e1 17 f0 	l.sw -16(r1),r2
+    36fc:	d7 e1 77 f4 	l.sw -12(r1),r14
+    3700:	9e 40 00 01 	l.addi r18,r0,1
+    3704:	9c 21 ff ec 	l.addi r1,r1,-20
+    3708:	b4 b2 00 00 	l.mfspr r5,r18,0x0
+    370c:	b8 a5 00 4a 	l.srli r5,r5,0xa
+    3710:	e0 a5 90 03 	l.and r5,r5,r18
+    3714:	bc 05 00 00 	l.sfeqi r5,0
+    3718:	10 00 00 20 	l.bf 3798 <or1k_timer_init+0xac>
+    371c:	18 40 00 00 	l.movhi r2,0x0
+    3720:	a8 83 00 00 	l.ori r4,r3,0x0
+    3724:	a8 42 3a 2c 	l.ori r2,r2,0x3a2c
+    3728:	19 c0 00 00 	l.movhi r14,0x0
+    372c:	84 62 00 00 	l.lwz r3,0(r2)
+    3730:	04 00 01 2e 	l.jal 3be8 <__udivsi3>
+    3734:	18 40 0f ff 	l.movhi r2,0xfff
+    3738:	a8 42 ff ff 	l.ori r2,r2,0xffff
+    373c:	a9 ce 4a 38 	l.ori r14,r14,0x4a38
+    3740:	e1 6b 10 03 	l.and r11,r11,r2
+    3744:	9c 40 50 00 	l.addi r2,r0,20480
+    3748:	d4 0e 58 04 	l.sw 4(r14),r11
+    374c:	c0 02 58 00 	l.mtspr r2,r11,0x0
+    3750:	18 80 00 00 	l.movhi r4,0x0
+    3754:	9c 40 00 00 	l.addi r2,r0,0
+    3758:	9c 60 00 05 	l.addi r3,r0,5
+    375c:	a8 84 36 9c 	l.ori r4,r4,0x369c
+    3760:	d4 0e 10 00 	l.sw 0(r14),r2
+    3764:	07 ff ff c1 	l.jal 3668 <or1k_exception_handler_add>
+    3768:	15 00 00 00 	l.nop 0x0
+    376c:	9c 60 50 01 	l.addi r3,r0,20481
+    3770:	d4 0e 90 08 	l.sw 8(r14),r18
+    3774:	c0 03 10 00 	l.mtspr r3,r2,0x0
+    3778:	a9 62 00 00 	l.ori r11,r2,0x0
+    377c:	9c 21 00 14 	l.addi r1,r1,20
+    3780:	85 21 ff fc 	l.lwz r9,-4(r1)
+    3784:	84 21 ff ec 	l.lwz r1,-20(r1)
+    3788:	84 41 ff f0 	l.lwz r2,-16(r1)
+    378c:	85 c1 ff f4 	l.lwz r14,-12(r1)
+    3790:	44 00 48 00 	l.jr r9
+    3794:	86 41 ff f8 	l.lwz r18,-8(r1)
+    3798:	03 ff ff f9 	l.j 377c <or1k_timer_init+0x90>
+    379c:	9d 60 ff ff 	l.addi r11,r0,-1
+
+000037a0 <or1k_timer_set_period>:
+    37a0:	a8 83 00 00 	l.ori r4,r3,0x0
+    37a4:	18 60 00 00 	l.movhi r3,0x0
+    37a8:	d7 e1 17 f8 	l.sw -8(r1),r2
+    37ac:	a8 63 3a 2c 	l.ori r3,r3,0x3a2c
+    37b0:	18 40 0f ff 	l.movhi r2,0xfff
+    37b4:	d7 e1 4f fc 	l.sw -4(r1),r9
+    37b8:	d7 e1 0f f4 	l.sw -12(r1),r1
+    37bc:	84 63 00 00 	l.lwz r3,0(r3)
+    37c0:	9c 21 ff f4 	l.addi r1,r1,-12
+    37c4:	04 00 01 09 	l.jal 3be8 <__udivsi3>
+    37c8:	a8 42 ff ff 	l.ori r2,r2,0xffff
+    37cc:	9c 80 50 00 	l.addi r4,r0,20480
+    37d0:	e1 6b 10 03 	l.and r11,r11,r2
+    37d4:	b4 64 00 00 	l.mfspr r3,r4,0x0
+    37d8:	18 40 f0 00 	l.movhi r2,0xf000
+    37dc:	e0 63 10 03 	l.and r3,r3,r2
+    37e0:	e0 63 58 04 	l.or r3,r3,r11
+    37e4:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    37e8:	18 60 00 00 	l.movhi r3,0x0
+    37ec:	a8 63 4a 38 	l.ori r3,r3,0x4a38
+    37f0:	d4 03 58 04 	l.sw 4(r3),r11
+    37f4:	9c 21 00 0c 	l.addi r1,r1,12
+    37f8:	85 21 ff fc 	l.lwz r9,-4(r1)
+    37fc:	84 21 ff f4 	l.lwz r1,-12(r1)
+    3800:	44 00 48 00 	l.jr r9
+    3804:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+00003808 <or1k_timer_set_handler>:
+    3808:	d7 e1 4f fc 	l.sw -4(r1),r9
+    380c:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3810:	a8 83 00 00 	l.ori r4,r3,0x0
+    3814:	9c 21 ff f8 	l.addi r1,r1,-8
+    3818:	07 ff ff 94 	l.jal 3668 <or1k_exception_handler_add>
+    381c:	9c 60 00 05 	l.addi r3,r0,5
+    3820:	9c 21 00 08 	l.addi r1,r1,8
+    3824:	85 21 ff fc 	l.lwz r9,-4(r1)
+    3828:	44 00 48 00 	l.jr r9
+    382c:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+00003830 <or1k_timer_set_mode>:
+    3830:	18 80 00 00 	l.movhi r4,0x0
+    3834:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3838:	a8 84 4a 38 	l.ori r4,r4,0x4a38
+    383c:	d7 e1 17 fc 	l.sw -4(r1),r2
+    3840:	9c a0 50 00 	l.addi r5,r0,20480
+    3844:	9c 21 ff f8 	l.addi r1,r1,-8
+    3848:	d4 04 18 08 	l.sw 8(r4),r3
+    384c:	b4 85 00 00 	l.mfspr r4,r5,0x0
+    3850:	b8 c4 00 5e 	l.srli r6,r4,0x1e
+    3854:	bc 06 00 00 	l.sfeqi r6,0
+    3858:	10 00 00 07 	l.bf 3874 <or1k_timer_set_mode+0x44>
+    385c:	b8 63 00 1e 	l.slli r3,r3,0x1e
+    3860:	18 40 3f ff 	l.movhi r2,0x3fff
+    3864:	a8 42 ff ff 	l.ori r2,r2,0xffff
+    3868:	e0 84 10 03 	l.and r4,r4,r2
+    386c:	e0 64 18 04 	l.or r3,r4,r3
+    3870:	c0 05 18 00 	l.mtspr r5,r3,0x0
+    3874:	9c 21 00 08 	l.addi r1,r1,8
+    3878:	84 21 ff f8 	l.lwz r1,-8(r1)
+    387c:	44 00 48 00 	l.jr r9
+    3880:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+00003884 <or1k_timer_enable>:
+    3884:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3888:	d7 e1 17 fc 	l.sw -4(r1),r2
+    388c:	9c a0 50 00 	l.addi r5,r0,20480
+    3890:	9c 21 ff f8 	l.addi r1,r1,-8
+    3894:	b4 65 00 00 	l.mfspr r3,r5,0x0
+    3898:	18 40 3f ff 	l.movhi r2,0x3fff
+    389c:	a8 42 ff ff 	l.ori r2,r2,0xffff
+    38a0:	e0 83 10 03 	l.and r4,r3,r2
+    38a4:	18 60 00 00 	l.movhi r3,0x0
+    38a8:	18 40 20 00 	l.movhi r2,0x2000
+    38ac:	a8 63 4a 38 	l.ori r3,r3,0x4a38
+    38b0:	84 63 00 08 	l.lwz r3,8(r3)
+    38b4:	b8 63 00 1e 	l.slli r3,r3,0x1e
+    38b8:	e0 63 10 04 	l.or r3,r3,r2
+    38bc:	e0 63 20 04 	l.or r3,r3,r4
+    38c0:	c0 05 18 00 	l.mtspr r5,r3,0x0
+    38c4:	9c 80 00 11 	l.addi r4,r0,17
+    38c8:	b4 64 00 00 	l.mfspr r3,r4,0x0
+    38cc:	a8 63 00 02 	l.ori r3,r3,0x2
+    38d0:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    38d4:	9c 21 00 08 	l.addi r1,r1,8
+    38d8:	84 21 ff f8 	l.lwz r1,-8(r1)
+    38dc:	44 00 48 00 	l.jr r9
+    38e0:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+000038e4 <or1k_timer_disable>:
+    38e4:	d7 e1 0f f8 	l.sw -8(r1),r1
+    38e8:	d7 e1 17 fc 	l.sw -4(r1),r2
+    38ec:	9c 60 00 11 	l.addi r3,r0,17
+    38f0:	9c 21 ff f8 	l.addi r1,r1,-8
+    38f4:	b5 63 00 00 	l.mfspr r11,r3,0x0
+    38f8:	9c 40 ff fd 	l.addi r2,r0,-3
+    38fc:	e0 8b 10 03 	l.and r4,r11,r2
+    3900:	c0 03 20 00 	l.mtspr r3,r4,0x0
+    3904:	9c 21 00 08 	l.addi r1,r1,8
+    3908:	b9 6b 00 41 	l.srli r11,r11,0x1
+    390c:	84 21 ff f8 	l.lwz r1,-8(r1)
+    3910:	a5 6b 00 01 	l.andi r11,r11,0x1
+    3914:	44 00 48 00 	l.jr r9
+    3918:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+0000391c <or1k_timer_restore>:
+    391c:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3920:	d7 e1 17 fc 	l.sw -4(r1),r2
+    3924:	9c 80 00 11 	l.addi r4,r0,17
+    3928:	9c 21 ff f8 	l.addi r1,r1,-8
+    392c:	b4 84 00 00 	l.mfspr r4,r4,0x0
+    3930:	9c 40 ff fd 	l.addi r2,r0,-3
+    3934:	bc 23 00 00 	l.sfnei r3,0
+    3938:	e0 84 10 03 	l.and r4,r4,r2
+    393c:	10 00 00 03 	l.bf 3948 <or1k_timer_restore+0x2c>
+    3940:	9c a0 00 02 	l.addi r5,r0,2
+    3944:	a8 a3 00 00 	l.ori r5,r3,0x0
+    3948:	e0 65 20 04 	l.or r3,r5,r4
+    394c:	9c 80 00 11 	l.addi r4,r0,17
+    3950:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    3954:	9c 21 00 08 	l.addi r1,r1,8
+    3958:	84 21 ff f8 	l.lwz r1,-8(r1)
+    395c:	44 00 48 00 	l.jr r9
+    3960:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+00003964 <or1k_timer_pause>:
+    3964:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3968:	d7 e1 17 fc 	l.sw -4(r1),r2
+    396c:	9c 80 50 00 	l.addi r4,r0,20480
+    3970:	9c 21 ff f8 	l.addi r1,r1,-8
+    3974:	b4 64 00 00 	l.mfspr r3,r4,0x0
+    3978:	18 40 3f ff 	l.movhi r2,0x3fff
+    397c:	a8 42 ff ff 	l.ori r2,r2,0xffff
+    3980:	e0 63 10 03 	l.and r3,r3,r2
+    3984:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    3988:	9c 21 00 08 	l.addi r1,r1,8
+    398c:	84 21 ff f8 	l.lwz r1,-8(r1)
+    3990:	44 00 48 00 	l.jr r9
+    3994:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+00003998 <or1k_timer_reset>:
+    3998:	d7 e1 0f f8 	l.sw -8(r1),r1
+    399c:	d7 e1 17 fc 	l.sw -4(r1),r2
+    39a0:	9c 80 50 00 	l.addi r4,r0,20480
+    39a4:	9c 21 ff f8 	l.addi r1,r1,-8
+    39a8:	b4 64 00 00 	l.mfspr r3,r4,0x0
+    39ac:	18 40 ef ff 	l.movhi r2,0xefff
+    39b0:	a8 42 ff ff 	l.ori r2,r2,0xffff
+    39b4:	e0 63 10 03 	l.and r3,r3,r2
+    39b8:	c0 04 18 00 	l.mtspr r4,r3,0x0
+    39bc:	9c 80 00 00 	l.addi r4,r0,0
+    39c0:	9c 60 50 01 	l.addi r3,r0,20481
+    39c4:	c0 03 20 00 	l.mtspr r3,r4,0x0
+    39c8:	9c 21 00 08 	l.addi r1,r1,8
+    39cc:	84 21 ff f8 	l.lwz r1,-8(r1)
+    39d0:	44 00 48 00 	l.jr r9
+    39d4:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+000039d8 <or1k_timer_get_ticks>:
+    39d8:	18 60 00 00 	l.movhi r3,0x0
+    39dc:	d7 e1 0f fc 	l.sw -4(r1),r1
+    39e0:	a8 63 4a 38 	l.ori r3,r3,0x4a38
+    39e4:	9c 21 ff fc 	l.addi r1,r1,-4
+    39e8:	85 63 00 00 	l.lwz r11,0(r3)
+    39ec:	9c 21 00 04 	l.addi r1,r1,4
+    39f0:	44 00 48 00 	l.jr r9
+    39f4:	84 21 ff fc 	l.lwz r1,-4(r1)
+
+000039f8 <or1k_timer_reset_ticks>:
+    39f8:	18 60 00 00 	l.movhi r3,0x0
+    39fc:	d7 e1 17 fc 	l.sw -4(r1),r2
+    3a00:	a8 63 4a 38 	l.ori r3,r3,0x4a38
+    3a04:	9c 40 00 00 	l.addi r2,r0,0
+    3a08:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3a0c:	9c 21 ff f8 	l.addi r1,r1,-8
+    3a10:	d4 03 10 00 	l.sw 0(r3),r2
+    3a14:	9c 21 00 08 	l.addi r1,r1,8
+    3a18:	84 21 ff f8 	l.lwz r1,-8(r1)
+    3a1c:	44 00 48 00 	l.jr r9
+    3a20:	84 41 ff fc 	l.lwz r2,-4(r1)
+
+00003a24 <_or1k_board_mem_base>:
+    3a24:	00 00 00 00 	l.j 3a24 <_or1k_board_mem_base>
+
+00003a28 <_or1k_board_mem_size>:
+    3a28:	00 80 00 00 	l.j 2003a28 <_end+0x1ffef50>
+
+00003a2c <_or1k_board_clk_freq>:
+    3a2c:	05 f5 e1 00 	l.jal 7d7be2c <_end+0x7d77354>
+
+00003a30 <_or1k_board_uart_base>:
+    3a30:	00 00 00 00 	l.j 3a30 <_or1k_board_uart_base>
+
+00003a34 <_or1k_board_uart_baud>:
+    3a34:	00 01 c2 00 	l.j 74234 <_end+0x6f75c>
+
+00003a38 <_or1k_board_uart_IRQ>:
+    3a38:	00 00 00 0d 	l.j 3a6c <__errno+0x14>
+
+00003a3c <_or1k_board_exit>:
+    3a3c:	15 00 00 0c 	l.nop 0xc
+    3a40:	00 00 00 00 	l.j 3a40 <_or1k_board_exit+0x4>
+    3a44:	15 00 00 00 	l.nop 0x0
+
+00003a48 <_or1k_board_init_early>:
+    3a48:	44 00 48 00 	l.jr r9
+    3a4c:	15 00 00 00 	l.nop 0x0
+
+00003a50 <_or1k_board_init>:
+    3a50:	44 00 48 00 	l.jr r9
+    3a54:	15 00 00 00 	l.nop 0x0
+
+00003a58 <__errno>:
+    3a58:	d7 e1 4f fc 	l.sw -4(r1),r9
+    3a5c:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3a60:	04 00 00 06 	l.jal 3a78 <__getreent>
+    3a64:	9c 21 ff f8 	l.addi r1,r1,-8
+    3a68:	9c 21 00 08 	l.addi r1,r1,8
+    3a6c:	85 21 ff fc 	l.lwz r9,-4(r1)
+    3a70:	44 00 48 00 	l.jr r9
+    3a74:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+00003a78 <__getreent>:
+    3a78:	03 ff fe bf 	l.j 3574 <_or1k_libc_getreent>
+    3a7c:	15 00 00 00 	l.nop 0x0
+
+00003a80 <memset>:
+    3a80:	a4 c3 00 03 	l.andi r6,r3,0x3
+    3a84:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3a88:	d7 e1 17 fc 	l.sw -4(r1),r2
+    3a8c:	bc 06 00 00 	l.sfeqi r6,0
+    3a90:	10 00 00 54 	l.bf 3be0 <memset+0x160>
+    3a94:	9c 21 ff f8 	l.addi r1,r1,-8
+    3a98:	bc 25 00 00 	l.sfnei r5,0
+    3a9c:	0c 00 00 4c 	l.bnf 3bcc <memset+0x14c>
+    3aa0:	9c a5 ff ff 	l.addi r5,r5,-1
+    3aa4:	b9 a4 00 18 	l.slli r13,r4,0x18
+    3aa8:	a8 e3 00 00 	l.ori r7,r3,0x0
+    3aac:	a8 c3 00 00 	l.ori r6,r3,0x0
+    3ab0:	00 00 00 05 	l.j 3ac4 <memset+0x44>
+    3ab4:	b9 ad 00 98 	l.srai r13,r13,0x18
+    3ab8:	bc 05 00 00 	l.sfeqi r5,0
+    3abc:	10 00 00 44 	l.bf 3bcc <memset+0x14c>
+    3ac0:	a8 ac 00 00 	l.ori r5,r12,0x0
+    3ac4:	9c c6 00 01 	l.addi r6,r6,1
+    3ac8:	d8 07 68 00 	l.sb 0(r7),r13
+    3acc:	a5 06 00 03 	l.andi r8,r6,0x3
+    3ad0:	9d 85 ff ff 	l.addi r12,r5,-1
+    3ad4:	bc 28 00 00 	l.sfnei r8,0
+    3ad8:	13 ff ff f8 	l.bf 3ab8 <memset+0x38>
+    3adc:	9c e7 00 01 	l.addi r7,r7,1
+    3ae0:	bc a5 00 03 	l.sfleui r5,3
+    3ae4:	10 00 00 30 	l.bf 3ba4 <memset+0x124>
+    3ae8:	bc 05 00 00 	l.sfeqi r5,0
+    3aec:	a4 e4 00 ff 	l.andi r7,r4,0xff
+    3af0:	bc a5 00 0f 	l.sfleui r5,15
+    3af4:	b9 07 00 08 	l.slli r8,r7,0x8
+    3af8:	e0 e8 38 04 	l.or r7,r8,r7
+    3afc:	b9 07 00 10 	l.slli r8,r7,0x10
+    3b00:	10 00 00 1b 	l.bf 3b6c <memset+0xec>
+    3b04:	e0 e8 38 04 	l.or r7,r8,r7
+    3b08:	9e 25 ff f0 	l.addi r17,r5,-16
+    3b0c:	9d 06 00 04 	l.addi r8,r6,4
+    3b10:	ba 31 00 44 	l.srli r17,r17,0x4
+    3b14:	9d e6 00 08 	l.addi r15,r6,8
+    3b18:	9d a6 00 0c 	l.addi r13,r6,12
+    3b1c:	b9 71 00 04 	l.slli r11,r17,0x4
+    3b20:	a9 86 00 00 	l.ori r12,r6,0x0
+    3b24:	9d 6b 00 14 	l.addi r11,r11,20
+    3b28:	e1 66 58 00 	l.add r11,r6,r11
+    3b2c:	d4 0c 38 00 	l.sw 0(r12),r7
+    3b30:	d4 08 38 00 	l.sw 0(r8),r7
+    3b34:	9d 08 00 10 	l.addi r8,r8,16
+    3b38:	d4 0f 38 00 	l.sw 0(r15),r7
+    3b3c:	d4 0d 38 00 	l.sw 0(r13),r7
+    3b40:	e4 28 58 00 	l.sfne r8,r11
+    3b44:	9d 8c 00 10 	l.addi r12,r12,16
+    3b48:	9d ef 00 10 	l.addi r15,r15,16
+    3b4c:	13 ff ff f8 	l.bf 3b2c <memset+0xac>
+    3b50:	9d ad 00 10 	l.addi r13,r13,16
+    3b54:	9e 31 00 01 	l.addi r17,r17,1
+    3b58:	a4 a5 00 0f 	l.andi r5,r5,0xf
+    3b5c:	ba 31 00 04 	l.slli r17,r17,0x4
+    3b60:	bc a5 00 03 	l.sfleui r5,3
+    3b64:	10 00 00 0f 	l.bf 3ba0 <memset+0x120>
+    3b68:	e0 c6 88 00 	l.add r6,r6,r17
+    3b6c:	a9 86 00 00 	l.ori r12,r6,0x0
+    3b70:	a9 05 00 00 	l.ori r8,r5,0x0
+    3b74:	9d 08 ff fc 	l.addi r8,r8,-4
+    3b78:	d4 0c 38 00 	l.sw 0(r12),r7
+    3b7c:	bc 48 00 03 	l.sfgtui r8,3
+    3b80:	13 ff ff fd 	l.bf 3b74 <memset+0xf4>
+    3b84:	9d 8c 00 04 	l.addi r12,r12,4
+    3b88:	9c e5 ff fc 	l.addi r7,r5,-4
+    3b8c:	9c 40 ff fc 	l.addi r2,r0,-4
+    3b90:	a4 a5 00 03 	l.andi r5,r5,0x3
+    3b94:	e0 e7 10 03 	l.and r7,r7,r2
+    3b98:	9c e7 00 04 	l.addi r7,r7,4
+    3b9c:	e0 c6 38 00 	l.add r6,r6,r7
+    3ba0:	bc 05 00 00 	l.sfeqi r5,0
+    3ba4:	10 00 00 0a 	l.bf 3bcc <memset+0x14c>
+    3ba8:	15 00 00 00 	l.nop 0x0
+    3bac:	b8 84 00 18 	l.slli r4,r4,0x18
+    3bb0:	e0 a6 28 00 	l.add r5,r6,r5
+    3bb4:	b8 84 00 98 	l.srai r4,r4,0x18
+    3bb8:	d8 06 20 00 	l.sb 0(r6),r4
+    3bbc:	9c c6 00 01 	l.addi r6,r6,1
+    3bc0:	e4 26 28 00 	l.sfne r6,r5
+    3bc4:	13 ff ff fd 	l.bf 3bb8 <memset+0x138>
+    3bc8:	15 00 00 00 	l.nop 0x0
+    3bcc:	9c 21 00 08 	l.addi r1,r1,8
+    3bd0:	a9 63 00 00 	l.ori r11,r3,0x0
+    3bd4:	84 21 ff f8 	l.lwz r1,-8(r1)
+    3bd8:	44 00 48 00 	l.jr r9
+    3bdc:	84 41 ff fc 	l.lwz r2,-4(r1)
+    3be0:	03 ff ff c0 	l.j 3ae0 <memset+0x60>
+    3be4:	a8 c3 00 00 	l.ori r6,r3,0x0
+
+00003be8 <__udivsi3>:
+    3be8:	9c 21 ff fc 	l.addi r1,r1,-4
+    3bec:	d4 01 48 00 	l.sw 0(r1),r9
+    3bf0:	9d 60 00 00 	l.addi r11,r0,0
+    3bf4:	9d 04 00 00 	l.addi r8,r4,0
+    3bf8:	9c a3 00 00 	l.addi r5,r3,0
+    3bfc:	e4 28 58 00 	l.sfne r8,r11
+    3c00:	0c 00 00 36 	l.bnf 3cd8 <__udivsi3+0xf0>
+    3c04:	9c e0 00 00 	l.addi r7,r0,0
+    3c08:	e4 48 28 00 	l.sfgtu r8,r5
+    3c0c:	10 00 00 32 	l.bf 3cd4 <__udivsi3+0xec>
+    3c10:	e4 08 28 00 	l.sfeq r8,r5
+    3c14:	10 00 00 2e 	l.bf 3ccc <__udivsi3+0xe4>
+    3c18:	e4 8b 40 00 	l.sfltu r11,r8
+    3c1c:	0c 00 00 0d 	l.bnf 3c50 <__udivsi3+0x68>
+    3c20:	9d a0 00 20 	l.addi r13,r0,32
+    3c24:	19 20 80 00 	l.movhi r9,0x8000
+    3c28:	9c c0 ff ff 	l.addi r6,r0,-1
+    3c2c:	e0 65 48 03 	l.and r3,r5,r9
+    3c30:	b8 87 00 01 	l.slli r4,r7,0x1
+    3c34:	9d e5 00 00 	l.addi r15,r5,0
+    3c38:	b8 63 00 5f 	l.srli r3,r3,0x1f
+    3c3c:	e1 ad 30 00 	l.add r13,r13,r6
+    3c40:	e0 e4 18 04 	l.or r7,r4,r3
+    3c44:	e4 87 40 00 	l.sfltu r7,r8
+    3c48:	13 ff ff f9 	l.bf 3c2c <__udivsi3+0x44>
+    3c4c:	b8 a5 00 01 	l.slli r5,r5,0x1
+    3c50:	b8 e7 00 41 	l.srli r7,r7,0x1
+    3c54:	9d ad 00 01 	l.addi r13,r13,1
+    3c58:	9d 20 00 00 	l.addi r9,r0,0
+    3c5c:	e4 89 68 00 	l.sfltu r9,r13
+    3c60:	0c 00 00 1e 	l.bnf 3cd8 <__udivsi3+0xf0>
+    3c64:	9c af 00 00 	l.addi r5,r15,0
+    3c68:	19 e0 80 00 	l.movhi r15,0x8000
+    3c6c:	9e 20 00 00 	l.addi r17,r0,0
+    3c70:	e0 65 78 03 	l.and r3,r5,r15
+    3c74:	b8 87 00 01 	l.slli r4,r7,0x1
+    3c78:	b8 63 00 5f 	l.srli r3,r3,0x1f
+    3c7c:	e0 e4 18 04 	l.or r7,r4,r3
+    3c80:	e0 c7 40 02 	l.sub r6,r7,r8
+    3c84:	e0 66 78 03 	l.and r3,r6,r15
+    3c88:	b8 63 00 5f 	l.srli r3,r3,0x1f
+    3c8c:	9c 80 00 00 	l.addi r4,r0,0
+    3c90:	e4 23 20 00 	l.sfne r3,r4
+    3c94:	10 00 00 03 	l.bf 3ca0 <__udivsi3+0xb8>
+    3c98:	b8 6b 00 01 	l.slli r3,r11,0x1
+    3c9c:	9c 80 00 01 	l.addi r4,r0,1
+    3ca0:	b8 a5 00 01 	l.slli r5,r5,0x1
+    3ca4:	e4 24 88 00 	l.sfne r4,r17
+    3ca8:	0c 00 00 03 	l.bnf 3cb4 <__udivsi3+0xcc>
+    3cac:	e1 63 20 04 	l.or r11,r3,r4
+    3cb0:	9c e6 00 00 	l.addi r7,r6,0
+    3cb4:	9d 29 00 01 	l.addi r9,r9,1
+    3cb8:	e4 89 68 00 	l.sfltu r9,r13
+    3cbc:	13 ff ff ed 	l.bf 3c70 <__udivsi3+0x88>
+    3cc0:	15 00 00 00 	l.nop 0x0
+    3cc4:	00 00 00 05 	l.j 3cd8 <__udivsi3+0xf0>
+    3cc8:	15 00 00 00 	l.nop 0x0
+    3ccc:	00 00 00 03 	l.j 3cd8 <__udivsi3+0xf0>
+    3cd0:	9d 60 00 01 	l.addi r11,r0,1
+    3cd4:	9c e5 00 00 	l.addi r7,r5,0
+    3cd8:	85 21 00 00 	l.lwz r9,0(r1)
+    3cdc:	44 00 48 00 	l.jr r9
+    3ce0:	9c 21 00 04 	l.addi r1,r1,4
+
+00003ce4 <__do_global_ctors_aux>:
+    3ce4:	d7 e1 17 f8 	l.sw -8(r1),r2
+    3ce8:	18 40 00 00 	l.movhi r2,0x0
+    3cec:	d7 e1 4f fc 	l.sw -4(r1),r9
+    3cf0:	a8 42 40 a0 	l.ori r2,r2,0x40a0
+    3cf4:	d7 e1 0f f4 	l.sw -12(r1),r1
+    3cf8:	84 62 ff fc 	l.lwz r3,-4(r2)
+    3cfc:	9c 21 ff f4 	l.addi r1,r1,-12
+    3d00:	bc 23 ff ff 	l.sfnei r3,-1
+    3d04:	0c 00 00 08 	l.bnf 3d24 <__do_global_ctors_aux+0x40>
+    3d08:	9c 42 ff fc 	l.addi r2,r2,-4
+    3d0c:	48 00 18 00 	l.jalr r3
+    3d10:	9c 42 ff fc 	l.addi r2,r2,-4
+    3d14:	84 62 00 00 	l.lwz r3,0(r2)
+    3d18:	bc 23 ff ff 	l.sfnei r3,-1
+    3d1c:	13 ff ff fc 	l.bf 3d0c <__do_global_ctors_aux+0x28>
+    3d20:	15 00 00 00 	l.nop 0x0
+    3d24:	9c 21 00 0c 	l.addi r1,r1,12
+    3d28:	85 21 ff fc 	l.lwz r9,-4(r1)
+    3d2c:	84 21 ff f4 	l.lwz r1,-12(r1)
+    3d30:	44 00 48 00 	l.jr r9
+    3d34:	84 41 ff f8 	l.lwz r2,-8(r1)
+
+00003d38 <call___do_global_ctors_aux>:
+    3d38:	d7 e1 4f fc 	l.sw -4(r1),r9
+    3d3c:	d7 e1 0f f8 	l.sw -8(r1),r1
+    3d40:	9c 21 ff f8 	l.addi r1,r1,-8
+    3d44:	9c 21 00 08 	l.addi r1,r1,8
+    3d48:	85 21 ff fc 	l.lwz r9,-4(r1)
+    3d4c:	44 00 48 00 	l.jr r9
+    3d50:	84 21 ff f8 	l.lwz r1,-8(r1)
+
+Disassembly of section .fini:
+
+00003d54 <_fini>:
+    3d54:	9c 21 ff fc 	l.addi r1,r1,-4
+    3d58:	d4 01 48 00 	l.sw 0(r1),r9
+    3d5c:	07 ff f9 2b 	l.jal 2208 <__do_global_dtors_aux>
+    3d60:	15 00 00 00 	l.nop 0x0
+    3d64:	85 21 00 00 	l.lwz r9,0(r1)
+    3d68:	44 00 48 00 	l.jr r9
+    3d6c:	9c 21 00 04 	l.addi r1,r1,4

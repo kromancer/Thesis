@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kisp/Bear_src/test/exec_anatomy/main.c
+config.h
+/home/kisp/Bear_src/test/exec_anatomy/config.h
+sys/wait.h
+-
+unistd.h
+-
+stdio.h
+-
+stdlib.h
+-
+paths.h
+-
+spawn.h
+-
+crt_externs.h
+-
+
+test/exec_anatomy/../../libear/config.h
+

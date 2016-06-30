@@ -1,0 +1,7 @@
+[
+    {
+        "command": "cc -c /home/kisp/Bear_src/test/bug74/foo.c", 
+        "directory": "/home/kisp/Bear/test/bug74", 
+        "file": "/home/kisp/Bear_src/test/bug74/foo.c"
+    }
+]

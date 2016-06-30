@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/kisp/Pi_CMake/objdir",
+  "command": "/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/bin/mpicxx    -I/opt/intel/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include    -o CMakeFiles/calculatePI.dir/main.cpp.o -c /home/kisp/Pi_CMake/main.cpp",
+  "file": "/home/kisp/Pi_CMake/main.cpp"
+}
+]

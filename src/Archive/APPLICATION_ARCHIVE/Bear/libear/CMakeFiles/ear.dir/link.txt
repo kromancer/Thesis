@@ -1,0 +1,1 @@
+/usr/bin/cc  -fPIC  -std=c99 -O3 -DNDEBUG  -shared -Wl,-soname,libear.so -o libear.so CMakeFiles/ear.dir/ear.c.o -ldl -lpthread -Wl,-rpath,:::::::::::::::: 

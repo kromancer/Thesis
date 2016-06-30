@@ -1,0 +1,4 @@
+/home/kisp/Bear/test/end-to-end/CMakeFiles/run_shell_test.dir
+/home/kisp/Bear/test/CMakeFiles/check.dir
+/home/kisp/Bear/libear/CMakeFiles/ear.dir
+/home/kisp/Bear/test/exec_anatomy/CMakeFiles/exec_anatomy.dir

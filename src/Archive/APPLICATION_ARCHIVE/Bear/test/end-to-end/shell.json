@@ -1,0 +1,22 @@
+[
+    {
+        "command": "c++ -c -fPIC -I/home/kisp/Bear_src/test/end-to-end/lib -o /dev/null /home/kisp/Bear_src/test/end-to-end/lib/foo.cpp", 
+        "directory": "/home/kisp/Bear/test/end-to-end", 
+        "file": "/home/kisp/Bear_src/test/end-to-end/lib/foo.cpp"
+    }, 
+    {
+        "command": "c++ -c -fPIC -I/home/kisp/Bear_src/test/end-to-end/lib -o /dev/null /home/kisp/Bear_src/test/end-to-end/lib/bar.cc", 
+        "directory": "/home/kisp/Bear/test/end-to-end", 
+        "file": "/home/kisp/Bear_src/test/end-to-end/lib/bar.cc"
+    }, 
+    {
+        "command": "c++ -c -I/home/kisp/Bear_src/test/end-to-end/lib -I/home/kisp/Bear_src/test/end-to-end/bin -o /dev/null /home/kisp/Bear_src/test/end-to-end/bin/boo.c++", 
+        "directory": "/home/kisp/Bear/test/end-to-end", 
+        "file": "/home/kisp/Bear_src/test/end-to-end/bin/boo.c++"
+    }, 
+    {
+        "command": "c++ -c -I/home/kisp/Bear_src/test/end-to-end/lib -I/home/kisp/Bear_src/test/end-to-end/bin -o /dev/null /home/kisp/Bear_src/test/end-to-end/bin/far.cxx", 
+        "directory": "/home/kisp/Bear/test/end-to-end", 
+        "file": "/home/kisp/Bear_src/test/end-to-end/bin/far.cxx"
+    }
+]

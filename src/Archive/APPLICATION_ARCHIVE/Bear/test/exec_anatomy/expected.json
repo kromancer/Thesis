@@ -1,0 +1,55 @@
+[
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/execv.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/execv.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/execve.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/execve.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/execvp.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/execvp.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/execvpe.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/execvpe.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/execl.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/execl.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/execlp.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/execlp.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/execle.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/execle.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/posix_spawn.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/posix_spawn.c"
+}
+,
+{
+  "directory": "/home/kisp/Bear/test/exec_anatomy",
+  "command": "cc -c /home/kisp/Bear/test/exec_anatomy/posix_spawnp.c",
+  "file": "/home/kisp/Bear/test/exec_anatomy/posix_spawnp.c"
+}
+]

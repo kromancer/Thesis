@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/kisp/HelloWorld_SystemC/objdir",
+  "command": "/opt/intel/compilers_and_libraries_2016.2.181/linux/bin/intel64/icpc    -I/opt/systemc-2.3.1/include    -o CMakeFiles/helloWorld.dir/main.cpp.o -c /home/kisp/HelloWorld_SystemC/main.cpp",
+  "file": "/home/kisp/HelloWorld_SystemC/main.cpp"
+}
+]

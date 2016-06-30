@@ -1,0 +1,9 @@
+run_shell_test 1 0.388794
+run_exec_anatomy 1 0.260644
+result_code_check 1 0.108988
+run_bug74 1 0.0984871
+run_bug80 1 0.182584
+run_bug81 1 0.0873652
+run_bug88 1 0.135531
+run_bug94 1 0.129231
+---

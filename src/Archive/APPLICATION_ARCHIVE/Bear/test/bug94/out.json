@@ -1,0 +1,12 @@
+[
+    {
+        "command": "cc -c /home/kisp/Bear_src/test/bug94/foo.c", 
+        "directory": "/home/kisp/Bear/test/bug94", 
+        "file": "/home/kisp/Bear_src/test/bug94/foo.c"
+    }, 
+    {
+        "command": "cc -c /home/kisp/Bear_src/test/bug94/bar.c", 
+        "directory": "/home/kisp/Bear/test/bug94", 
+        "file": "/home/kisp/Bear_src/test/bug94/bar.c"
+    }
+]

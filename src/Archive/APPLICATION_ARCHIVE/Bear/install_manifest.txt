@@ -1,0 +1,6 @@
+/usr/local/share/doc/bear/COPYING
+/usr/local/share/doc/bear/README.md
+/usr/local/share/doc/bear/ChangeLog.md
+/usr/local/lib/libear.so
+/usr/local/bin/bear
+/usr/local/share/man/man1/bear.1

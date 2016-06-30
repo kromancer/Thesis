@@ -5,3 +5,4 @@
 -I/opt/intel/compilers_and_libraries_2016.2.181/linux/mkl/include
 -I/usr/include/SDL2
 -I/opt/systemc-2.3.1/include
+-I/opt/or1ksim_reentrant/include

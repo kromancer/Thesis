@@ -1,0 +1,7 @@
+[
+    {
+        "command": "c++ -c \"-DEXPORT=extern \\\"C\\\"\" -o hello /home/kisp/Bear_src/test/bug81/hello.cxx", 
+        "directory": "/home/kisp/Bear_src/test/bug81", 
+        "file": "/home/kisp/Bear_src/test/bug81/hello.cxx"
+    }
+]

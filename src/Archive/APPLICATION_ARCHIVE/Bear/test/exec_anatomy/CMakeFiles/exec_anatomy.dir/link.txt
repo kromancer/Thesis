@@ -1,0 +1,1 @@
+/usr/bin/cc   -std=c99 -O3 -DNDEBUG   CMakeFiles/exec_anatomy.dir/main.c.o  -o exec_anatomy -rdynamic 
