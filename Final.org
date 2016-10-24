@@ -5,7 +5,25 @@
 
 
 * Abstract
-Keywords: parallel discrete event simulation, conservative synchronization algorithms, transaction level models, SystemC TLM 2.0
+The vision of a connected and automated society, the Internet of Things era has promised,
+is depending on the industry's ability to design novel and complex electronic systems,
+while maintaining a short time to market.
+One of the first steps in the design of such systems is the in tandem simulation of hardware and software.
+Transaction Level Models, expressed in the SystemC modeling language, can facilitate this co-simulation.
+However, the sequential nature of the SystemC's Discrete Event simulation kernel is a limiting factor.
+Poor simulation performance often constraints the scope and depth of the design decisions that can be evaluated.
+
+The increase in computing power, modern processing units deliver, is only available for applications that can expose parallel operations.
+The major obstacle one faces, when trying to parallelize a simulation, is the preservation of causality; simulation events need to be processed in a chronological order.
+
+It is the main objective of this thesis' project to demonstrate the feasibility of parallelizing the simulation of Transaction Level Models, outside SystemC's reference simulation environment.
+The difficult task of achieving causal, yet parallel, processing of simulation events, is accomplished by using proper process synchronization mechanisms.
+Our proposed implementation does not depend on the presence of a centralized simulation moderator. 
+It is implemented using the Message Passing Interface 3.0 framework.
+To demonstrate our approach and evaluate different process synchronization algorithms,
+we use the model of a cache-coherent, symmetric multiprocessor based on the OpenRisc 1000 Instruction Set Simulator. Our results indicate a significant speedup against the reference SystemC simulation.
+
+*Keywords:* parallel discrete event simulation, conservative synchronization algorithms, transaction level models, SystemC TLM 2.0
 
 
 * Maguire's Notes for Writing an Abstract 			   :noexport:
@@ -59,6 +77,7 @@ Our results indicate a significant speedup against the reference SystemC simulat
 | *HDL*    | Hardware Description Language           |
 | *HPC*:   | High Performance Computing              |
 | *IC*     | Integrated Circuit                      |
+| *IP*     | Intellectual Property                   |
 | *MoC*:   | Model of Computation                    |
 | *MPI*    | Message Passing Interface               |
 | *MPSoC*: | Multicore System on Chips               |
@@ -92,15 +111,15 @@ but will conform to the general context dictated by the documents already signed
 
 
 * Introduction
-Arxi sofias twn onomatwn h episkepsis Antisthenes
-
-The aim of this chapter is to present the general context of the problem statement.
+The aim of this chapter is to present the general context of the problem statement;
 that is the engineering discipline of *Electronic System-Level Design (ESLD)*.
 
 In unit [[The Design Process]] we provide a definition for the fundamental concepts of design, system, model and simulation.
 In units [[Electronic Systems Design]] to [[Transaction-Level Model]], using Gajski and Kuhn's Y-Chart, we determine the concept of a Transaction-Level Model, as an instance in the engineering practice of Electronic System-Level Design (ESLD).
 In unit [[SystemC and TLM]] we have a rudimentary look on SystemC's role in ESLD.
+Unit [[Motivation]] gives the raison d'\'etre of this project.
 The structure of this document is given in unit [[Document Overview]].
+
 
 ** The Design Process
 We define the process of *designing* as the engineering art of incarnating a desired functionality into a perceivable, thus concrete, artifact.
@@ -184,35 +203,34 @@ The final step towards *system-level synthesis*, that is the transition from a b
 the partitioning of the application to the elements of the platform.
 
 
+
 ** Transaction-Level Model
 A *Transaction-Level Model* (TLM) can now be defined as the point in the Y-Chart where the structural axis meets the system abstraction level.
-As mentioned in the previous unit, a TLM can be thought of as a platform model, or *virtual platform*, where an application can/is mapped \cite{Rigo2011}.
-It is the model that facilitates co-simulation of hardware and software.
-The notion of the transaction as an abstraction of communication will be clarified in [[SystemC & TLM 2.0]].
+As mentioned in the previous unit, a TLM can be thought of as a *virtual platform*, where an application can be mapped \cite{Rigo2011}.
+It is a fully functional software model of a complete system that facilitates *co-simulation of hardware and software*.
 
-What are the pragmatic reasons that make the development of a virtual platform imperative?
-To begin with, an increasing amount of an ES's functionality is becoming software based. 
-Moreover, ES related companies are facing the economical pressure of reducing new products' time to market.
-Thus, software engineers must be equipped with a virtual platform they can use for software development, early on in the design flow, without needing to wait for the actual silicon to arrive.
+There are three pragmatic reasons that stimulate the development of a transaction level model.
+At first, a TLM serves as a testbed for *architectural exploration* in order to tune the overall system architecture prior to detailed design.
+Secondly, software engineers must be equipped with a virtual platform they can use for *software development*, early on in the design flow, without needing to wait for the actual silicon to arrive.
+The need for performing software and hardware development in parallel, is due to the facts that an increasing amount of an ES's functionality is becoming software based and ES related companies are facing the economical pressure of reducing new products' time to market.
+Finally, a TLM can be a reference model for hardware *functional verification*, that is, a golden model to which an RTL implementation can be compared.
 
 
 ** SystemC and TLM
 One fundamental question, for completing the presentation of ESLD, remains; How can executable models be expressed on the system level?
-While maintaining the expressiveness of a Hardware Description Language (HDL), *SystemC* is meant to act as an *Electronic System Level Design Language* (ESLDL);
-a language with which system-level models can be expressed.
-It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than EDA synthesizable models.
+While maintaining the expressiveness of a Hardware Description Language (HDL), *SystemC* is meant to act as an *Electronic System Level Design Language* (ESLDL); a language where both RTL and system-level models can be expressed.
+It is implemented as a C++ class library, thus its main concern is to provide the designer with executable rather than synthesizable models.
 The language is maintained and promoted by Accellera (former Open SystemC Initiative OSCI) and has been standardized (IEEE 1666-2011 \cite{OpenSystemCInitiative2012}).
 
-Why is SystemC regarded as Specific Domain Language (SDL)?
-In what way does SystemC provide support for Transaction Level Modeling? Through the TLM 1.0 and 2.0 API.
+A major part of SystemC is the TLM 2.0 library, which is exactly meant for expressing TLMs.
+Despite introducing different language constructs, TLM 2.0 is still a part of SystemC because it depends on the same simulation engine.
+TLM 2.0 has been standardized seperately in \cite{OpenSystemCInitiative2009}.
+Compared to a RTL simulation, where communication is realized through a number of pin level events trigerring context switches inside the simulator, TLM 2.0 uses a single function call, thus speeding up simulation by orders of magnitude, at the expense of accuracy.
 
 
 
-
-
-
-
-
+** TODO Motivation
+Faster simulation
 
 
 
@@ -417,9 +435,9 @@ In unit [[Existing PDES]] we give an overview of prior art in the field of PDES 
 
 
 ** The Chandy/Misra/Bryant synchronization algorithm
-The first conservative synchronization algorithm that will be examined originate from the work of *Chandy/Misra/Bryant (CMB)* \cite{Bryant} \cite{Chandy1979}.
+The first conservative synchronization algorithm that will be examined originates from the work of *Chandy/Misra/Bryant (CMB)* \cite{Bryant} \cite{Chandy1979}.
 Listing \ref{alg:kernel} demonstrates how the algorithm deals with the fundamental dilemma presented in section [[Problem statement]], figure [[fig:causality_safe_events]].
-Events arriving on each incoming link can be stored in a first-in-first-out (FIFO) queue.
+Events arriving on each incoming link can are stored in a first-in-first-out (FIFO) queue.
 
 #+BEGIN_LATEX
 \begin{algorithm}
@@ -441,6 +459,34 @@ Events arriving on each incoming link can be stored in a first-in-first-out (FIF
 This naive realization of the individual process' event loop, however, leads to deadlock situations like the one depicted in figure [[fig:deadlock]].
 The queues placed along the red loop are empty, thus simulation has halted, even though there are pending events (across the blue loop).
 
+#+BEGIN_SRC ditaa  :file Figures/deadlock.png :cmdline -S --font "Times New Roman"
++--------------+
+|Process 1     |
+|              |----------------------+
+|              |                      |
+|             9|<------------------+  |
+|   ?          |                   |  |
++--------------+                   |  |
+    ^  |                           |  |
+    |  |                           |  |
+    |  |                           |  |
+    |  |                           |  |
+    |  |                           |  |
+    |  |                           |  |
+    |  |                           |  :
+    :  v                           |  v
++--------------+              +--------------+
+|     |15|     |              |---+   5      |
+|     |--|     |------------->|9|8|          |
+|     |10|     |              |---+          |
+|     +--+    ?|<=------------|              |
+|Process 2     |              |Process 3     |
++--------------+              +--------------+
+#+END_SRC
+
+#+RESULTS:
+[[file:Figures/deadlock.png]]
+
 #+CAPTION: adopted from \cite{Fujimoto1999}
 #+NAME: fig:deadlock
 [[file:Figures/Deadlock.png]]
@@ -459,7 +505,7 @@ Thus, the modified, for deadlock avoidance, algorithm is described in listing \r
 The important points one must notice with this deadlock avoidance mechanism are that:
 - Null events are created when a process updates its clock, that is upon processing an event.
 - Each process propagates null events on all of its outgoing links.
-- The efficiency of this mechanism is highly dependent on the designer's ability to determine sufficiently large lookaheads. The lookahead is not necessary a fixed value. It can be a function of the process' state and/or the simulation time.
+- The efficiency of this mechanism is highly dependent on the designer's ability to determine sufficiently large lookaheads. The lookahead is not necessary a fixed value. It can be a function of the process's state and/or the simulation time.
 
 #+BEGIN_LATEX
 \begin{algorithm}
@@ -611,6 +657,20 @@ Listing \ref{alg:CMB_mpi} is a pseudo code, sketching out the CMB process event 
 \end{algorithm}
 #+END_LATEX
 
+Applications have specific communication patterns
+
+Also provides information about the application's communication behavior to the MPI implementation.
+
+*Topology mapping*
+_One of the major features of MPI's topology interface is that it can easily be used to adapt the MPI proces layout to the underlying network and system topology._
+
+non cartesian topologies
+
+What is the implementation type of the event?
+Let us custom pack them in one 64 bit integer.
+Extract them by mapping.
+
+Since you always send an event to your neighbors, either a meaningfull one or a null, why not broadcast?
 
 ** Evaluation Metrics
 The first evaluation metric of the proposed PDES implementation will be its performance against the reference SystemC kernel.
@@ -643,25 +703,133 @@ Did you try at least one of these tools?
 
 
 * SystemC TLM 2.0
-It is beyond the scope of this project to provide a comprehensive guide to system-level modeling in SystemC TLM 2.0.
-However, at the time of writing and to the best of our knowledge, we can not verify the existence of a comprehensive guide about system-level modeling with SystemC TLM 2.0.
+At the time of writing and to the best of our knowledge, we can not verify the existence of a comprehensive guide about system-level modeling with SystemC TLM 2.0.
+Common practice among engineers that want to learn system-level modeling with SystemC TLM 2.0 is to attend courses offered by training companies.
 Hence, we fill obliged to provide a quick introduction into the SystemC TLM 2.0 Loosely-Timed (LT) coding style, by means of a simple example.
-The chapter assumes a basic understanding of C++ and SystemC.
+The chapter assumes familiarity with C++ and SystemC.
 
 In unit [[Overview of SystemC TLM 2.0 API]] we enumerate the features of the SystemC TLM 2.0 API.
+In unit nomenclature
 In units [[Transactions, Sockets, Initiators and Targets]] and [[Generic Payload]] we have a look at the fundamental notions of transaction, initiator and target components, socket and generic payload.
 In unit [[Coding Styles]] we present the two coding styles (Loosely Timed and Approximately Timed) and give their typical use cases.
 In unit [[An Example]] we provide the implementation of a simple initiator, interconnect and target model.
 In unit [[Criticism]] we present the dominant source of criticism for TLM 2.0.
 Finally, in unit [[Simics and TLM 2.0]] we provide a comparison between the dominant industry frameworks for ESLD, Simics and SystemC TLM.
 
-** Overview of SystemC TLM 2.0 API
-As stated in unit [[Transaction Level Model]], a Transaction Level Model is considered a virtual platform where an application can/is mapped.
-A *virtual platform* is a fully functional software model of a complete system, typically used for software development in the absence of hardware, or prior to hardware being available. 
-To be suitable for productive software development it needs to be fast, booting operating systems in seconds, and accurate enough such that code developed using standard tools on the virtual platform will run unmodified on real hardware. \cite{Leupers2010}.
+** The role of SystemC TLM 2.0
+As stated in unit [[Transaction Level Model]], a Transaction Level Model is considered a virtual platform where a software application can be mapped.
+The TLM 2.0 API enhances SystemC's expressiveness in order to facilitate the *modular description* and *fast simulation* of virtual platforms.
+As a language, unlike VHDL or SystemC, it is not meant for describing individual functional/architectural/system blocks/modules/components (henceforth *Intellectual Properperty (IP) blocks/modules/components*).
+Its role is to make these individual blocks communicate with each other, as demonstrated in figure [[fig:systemc_as_wrapper]].
 
-The TLM 2.0 API enhances SystemC's expressiveness in order to facilitate the description and fast simulation of virtual platforms.
-TLM 2.0 allows *IP interoperability* for the rapid development of fast virtual platforms and facilitate the simulation under a reference simulation kernel, that of SystemC.
+#+BEGIN_SRC ditaa :file Figures/tlm_as_wrapper.png :cmdline -S --font "Times New Roman"
+                                                                           +-------------------------------+
+                                                                           |                               |
+ ------------------------------------------------------------------------> | Native SystemC module for bus |
+         |                         |                          |            |                               |
+         v                         v                          v            +-------------------------------+
++--------+----------+     +--------+----------+      +--------+----------+
+|    TLM Wrapper    |     |    TLM Wrapper    |      |    TLM Wrapper    |
+|                   |     |                   |      |                   |
+|  +-------------+  |     |  +-------------+  |      |  +-------------+  |
+|  |    ISS      |  |     |  |             |  |      |  |             |  |
+|  |             |  |     |  |  Algorithm  |  |      |  |             |  |
+|  |+-----------+|  |     |  |             |  |      |  |    VHDL     |  |
+|  ||Object Code||  |     |  |    in C     |  |      |  |             |  |
+|  |+-----------+|  |     |  |             |  |      |  |             |  |
+|  +-------------+  |     |  +-------------+  |      |  +-------------+  |
++-------------------+     +-------------------+      +-------------------+
+#+END_SRC
+
+#+CAPTION: TLM 2.0 as a mixed language simulation technology
+#+NAME: fig:tlm_as_wrapper
+[[file:Figures/tlm_as_wrapper.png]]
+
+System modularity is equivalent to individual IP block *interoperability*, enabling the reuse of IP components in a "plug and play" fashion.
+TLM is relevant at every interface where an IP block needs to be plugged into a bus.
+Having a library of verified IP blocks at his disposal, the engineer is able to create new virtual platforms fast and with a minimal effort. 
+
+To be suitable for productive software development, a virtual platform needs to be fast, booting operating systems in seconds.
+It also needs to be accurate enough such that code developed using standard tools on the virtual platform will run unmodified on real hardware. \cite{Leupers2010}
+Compared to a standard RTL simulation, a TLM achieves a significant speed up by replacing communication through pin-level events with a single function call. 
+TLM uses the simulation engine available with SystemC.
+
+
+** TLM 2.0 terminology
+
+TLM 2.0 classifies IP blocks as initiators, targets and interconnect components.
+The terms initiator and target come forth as a replacement for the anachronistic terms master and slave.
+
+
+An *initiator* is a component that initiates new transactions.
+It is the initiator's duty to allocate memory for the transaction object or *payload*.
+Payloads are always passed by reference.
+
+
+A *target* component acts as the end point of a transaction. 
+As such, it is responsible for providing a response to the initiator.
+Request and response are combined into a single transaction object.
+Thus, the target responds by modifying certain fields in the payload.
+
+
+An *interconnect* component is responsible for routing a transaction on its way from initiator to target.
+The route of a transaction is not pre-defined.
+Routing is dynamic; it depends on the attributes of the payload, mainly its address field.
+There is no limitiation on the number of interconnect components participating in a transaction. 
+An initiator can also be directly connected to a target.
+Since an interconnect can be connected to multiple initiator and target components, it must be able to perform *arbitration* in case transactions "collide".
+
+
+The role of a component is not statically defined and it is not limited to one.
+It is determined on a transactions basis. 
+For example, it may function as an interconnect component for some transactions, and as a target for other transactions.
+
+
+Transactions are sent through initiator *sockets*, and received through target sockets.
+It goes without saying that an initiator component must have at least one initiator socket, a target component at least on target socket and a interconnet must possess both.
+_Each initiator-to-target socket connection supports both a forward and a backward path by which interface methods can be called in either direction._
+
+All the above terms are illustrated in figure [[fig:tlm_termilogy.png]]
+
+
+#+BEGIN_SRC ditaa :file Figures/tlm_terminology.png :cmdline -S -E --font "Times New Roman"
++-----------+ Initiator        +--------------+           Target +-----------+
+|           | socket           |              |           socket |           |
+|           +---+          +---+              +---+          +---+           |
+| Initiator | > |--------->| > | Interconnect | > |--------->| > |  Target   |
+|           +---+          +---+              +---+          +---+           |
+|           |                  |              |                  |           |
++-----------+                  +--------------+                  +-----------+
+      :                                ^                               ^
+      |                                |                               |
+      |                                |                               |
+      v                                |                               |
++------------+                         |                               |
+|            |                         :                               :
+|  Payload   |-------------------------+-------------------------------/
+|            |
++------------+
+#+END_SRC
+
+#+CAPTION: A basic TLM system
+#+NAME: fig:tlm_terminology
+#+RESULTS:
+[[file:Figures/tlm_terminology.png]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features ([[fig:TLM_features]]):
 - A set of core interfaces
@@ -677,8 +845,6 @@ TLM 2.0 API \cite{OpenSystemCInitiative2009} consists of the following features 
 #+CAPTION: TLM 2.0 use cases (adopted from \cite{OpenSystemCInitiative2009}).
 #+NAME: fig:TLM_features
 [[file:Figures/TLM_features.png]]
-
-*** Provide some clarification concerning the term IP :noexport:
 
 
 ** Transactions, Sockets, Initiators and Targets
@@ -697,36 +863,45 @@ Initiator sockets are used to forward method calls "up and out of" a component, 
 Socket binding is the act of connecting components together, thus defining the component whose method call will be eventually executed to service the transaction.
 From SystemC's viewpoint, a socket is basically a convenience class, wrapping a sc_port and an sc_export.
 
-Maybe explain in more detail SystemC's export and port mechanisms?
-Maybe you need to adopt a more SystemC like terminology? For example change the word "component" to "module".
-
-
-** Generic Payload
-The basic argument that is passed, by reference, in communicative method calls is called the *generic payload*.
-It is a structure that contains all the necessary information about the transaction.
-It supports the abstract modeling of memory-mapped buses, together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
-
-The main features/fields of the generic payload are:
-- Command 
-  Is it read or write?
-- Address
-  What is the address, who is supposed to serve the transaction.
-- Data
-  A pointer to the physical data as an array of bytes.
-- Phase
-  Since a transaction is a non-atomic operation, this indicates the stage of the transaction. It is used for a detailed modeling of communication protocols.  
-- Response
-  An enumeration, indicating whether the transaction was successful, and if not, what is the nature of the error.
 
 
 
 
-** Coding Styles
+** Coding Styles and Transport Interfaces
 LT is suited for describing virtual platforms intended for software development.
 However, where additional timing accuracy is required, typically for software performance estimation and architectural analysis use cases, the AT style is employed.
 Virtual platforms typically do not contain many cycle-accurate models of complex components because of the performance impact. 
 
 _COMMENT:_ This is a quite problematic section. You need to elaborate more, do not forget LT is on your thesis title. 
+
+
+
+** Generic Payload
+The basic argument that is passed, by reference, in communicative method calls is called the *generic payload*.
+It is a *structure* that encapsulates generic attributes relevant to a generic memory-mapped bus communication.
+The structure possesses an extensions mechanism the designer can use to define more specific.
+
+An *interoperable* TLM 2.0 component must depend only on the generic attributes of the generic payload.
+The presence of attributes through the extension mechansim can be ignored without breaking the functionality of the model.
+In such a case, the extensions mechanism carries simulation meta-data like pointers to module internal data structures or timestamps.
+
+
+| Attribute           | Type                                | Modifiable        | Description                                                                                                                                                                                                                                                                  |
+|---------------------+-------------------------------------+-------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Command             | \texttt{tlm_command} (enum)         | No                | Set by the initiator to either \texttt{TLM_READ} for read, \texttt{TLM_WRITE} for write or TLM_IGNORE to indicate that the command is set in the extensions mechanism.                                                                                                       |
+| Address             | \texttt{uint64}                     | Interconnect only | Can be modified by interconnects since by definition an interconnect must bridge different address spaces.                                                                                                                                                                   |
+| Data pointer        | \texttt{unsigned char*}             | No                | A pointer to the actual data being transfered.                                                                                                                                                                                                                               |
+| Data length         | \texttt{unsigned int}               | No                | Related to the data pointer, indicates the number of bytes that are being transfered                                                                                                                                                                                         |
+| Byte enable pointer | \texttt{unsigned char*}             | No                | A pointer to a byte enable mask that can be applied on the data (0xFF for data byte enabled, 0X00 for disabled)                                                                                                                                                              |
+| Byte enable length  | \texttt{unsigned int}               | No                | Only relevant when the byte enable pointer is not null. If this number is less than the data length, the byte enable mask is applied repeatedly.                                                                                                                             |
+| Streaming width     | \texttt{unsigned int}               | No                | Must be greated than 0. Largest address implied by the transaction is (address + streaming width - 1). Refer to *figure* for an example                                                                                                                                      |
+| DMI hint            | \texttt{bool}                       | Yes               | A hint given to the initiator of whether he can bypass the transport interface and access a target's memory directly through a pointer.                                                                                                                                      |
+| Response status     | \texttt{tlm_response_status} (enum) | Target only       | The initiator must set it to \texttt{TLM_INCOMPLETE_RESPONSE} prior to initiating the transaction. The target will set it to an appropriate value indicating the outcome of the transaction. For example for a successfull transaction the value is \texttt{TLM_OK_RESPONSE} |
+| Extensions          | \texttt{tlm_extension_base*)[]      | Yes               | The mechanism for allowing the generic payload to carry protocol specific attributes                                                                                                                                                                                         |
+  
+
+
+
 
 
 ** An Example
@@ -974,6 +1149,20 @@ The toolchain is available in several forms, depending on which C standard libra
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 * Computer Science Cheatsheet 					   :noexport:
 _Semantics:_ As a necessary propery of a modeling language whose models are meant to undergo
              synthesis and refinement. In order to have well-defined semantics, we need to
@@ -1117,6 +1306,7 @@ This is a historic legacy from telegraphy, in which the line is held high to sho
 By distinguishing the declaration of an interface from the implementation of its methods, 
 SystemC promotes a coding style in which communication is separated from behaviour, 
 a key feature to promote refinement from one level of abstraction to another.
+
 
 * C++ 								   :noexport:
 
