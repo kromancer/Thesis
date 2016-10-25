@@ -117,7 +117,7 @@ public:
 
 	    while (1)
 	    {
-                // ***********
+		// ***********
 		// Communicate
 		// ***********
 		MPI_Neighbor_allgather(&sendbuf, 1, MPI_Event, recvbuf, 1, MPI_Event, my_neighbors);
@@ -130,74 +130,82 @@ public:
 		    recvbuf[i].timestamp += lookahead[sources[rank][i]][rank];
 		    links[i].push( recvbuf[i] );
 		}
-
-		int index;
-		bool outbound_flight_created;
-		do {
 		
-		    // ***************************************************************************
-		    // Select appropriate event to process (currentEvent)
-		    // It belongs to the link with the minimum timestamp
-		    // Apart from incoming links, take into consideration the flight_schedule link
-		    // ***************************************************************************
-		    int min   = schedule.front().timestamp;
-		    index = -1;
-		    outbound_flight_created = false;
-		    for( int i=0; i < num_neighbors; i++)
+		// ***************************************************************************
+		// Select appropriate event to process (currentEvent)
+		// It belongs to the link with the minimum timestamp
+		// Apart from incoming links, take into consideration the flight_schedule link
+		// ***************************************************************************
+select_appropriate_event:
+		int min   = schedule.front().timestamp;
+		int index = -1;
+		for( int i=0; i < num_neighbors; i++)
+		{
+		    if (min>links[i].front().timestamp)
 		    {
-			if (min>links[i].front().timestamp)
-			{
-			    min = links[i].front().timestamp;
-			    index = i;
-			}
+			min = links[i].front().timestamp;
+			index = i;
 		    }
-		    if (index > -1)
-		    {
-			// Event came from incoming links (some neighbor)
-			currentEvent = links[index].front();
-			links[index].pop();
-		    }
-		    else
-		    {
-			// Event came from flight_schedulre
-			currentEvent = schedule.front();
-			schedule.pop();
-			outbound_flight_created = true;
-		    }
+		}
+		if (index > -1)
+		{
+		    // Event came from incoming links (some neighbor)
+		    currentEvent = links[index].front();
+		    links[index].pop();
+		}
+		else
+		{
+		    // Event came from flight_schedulre
+		    currentEvent = schedule.front();
+		    schedule.pop();
+		}
 		
-		    //******************************************
-		    // Compute and create new events
-		    // Computation is based on the type of event
-		    // There are 4 different kinds of events
-		    //******************************************
+		//******************************************
+		// Compute and create new events
+		// Computation is based on the type of event
+		// There are 4 different kinds of events
+		//******************************************
+		if ( rank == 0)
+		    cout << time << endl;
 
-		    // The essence of a DE simulation
-		    time = currentEvent.timestamp;
-		    if (rank==0) cout << time << endl ;
-		    
+		bool eventAdvancedTime = false;
+		if ( currentEvent.timestamp > time ) eventAdvancedTime = true;
+
+		// The essence of a DE simulation
+		time = currentEvent.timestamp;
+		if (index == -1)
+		{
 		    // Outbound flight
-		    if (index == -1)
-		    {
+		    // Create an outbound flight and update airport's log
+		    sendbuf = currentEvent;
+		    airport_log <<"@" << sendbuf.timestamp <<  "\tTo: " << airport_to_string[sendbuf.destination] << "\tID: " << sendbuf.id << endl;
+		}
+		else if (currentEvent.destination == rank)
+		{
+		    // Inbound Flight
+		    // Update airport's log
+		    airport_log <<"@" << currentEvent.timestamp <<  "\tFrom: " << airport_to_string[currentEvent.source] << "\tID: " << currentEvent.id << endl;
+		    // Create a null message
+		    sendbuf.timestamp = time;
+		    sendbuf.id        = -1;
+		    sendbuf.destination = -1;
 
-			// Create an outbound flight and update airport's log
-			sendbuf = currentEvent;
-			airport_log <<"@" << sendbuf.timestamp <<  "\tTo: " << airport_to_string[sendbuf.destination] << "\t" << "ID: " << sendbuf.id << endl;
-		    }
-		    // Inbound, Irrelevant or Null 
-		    else 
+		}
+		else
+		{
+		    // Null or Irrelevant message
+		    // Create a null message only if time has advanced
+		    // or if the link, from which the current event comes, is empty
+		    if (eventAdvancedTime || links[index].empty())
 		    {
-			// Inbound Flight
-			// Update airport's log
-			if (currentEvent.destination == rank)
-			    airport_log <<"@" << currentEvent.timestamp <<  "\tFrom: " << airport_to_string[currentEvent.source] << "\t" << "ID: " << currentEvent.id << endl;
-			
-			// Create a null message
 			sendbuf.timestamp = time;
 			sendbuf.id        = -1;
 			sendbuf.destination = -1;
-
 		    }
-		}while( !outbound_flight_created && !links[index].empty());
+		    else
+			// Should be replaced, this is a temporal patch
+			goto select_appropriate_event;
+		}
 		    
 	    } // End of while loop
 
@@ -249,6 +257,37 @@ int main(int argc, char *argv[])
     MPI_Finalize();
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+//#include "process.hpp"
+
+//template<int NUM_LINES>
+//Process<NUM_LINES>::Proc1111ess(){
+
+//BEGIN_AUTOGENERATED_SECTION:
+//	inLines[0].rank = 3;  //Line between iss1 and cache
+//	inLines[1].rank = 4;  //Line between iss1 and memory
+//	inLines[2].rank = 3;  //Line between iss2 and cache
+//	inLines[3].rank = 4;  //Line between iss2 and memory
+//	inLines[4].rank = 4;  //Line between cache and memory
+//END_AUTOGENERATED_SECTION
+
+//}
+
+
+//template<int NUM_LINES>
+//void Process<NUM_LINES>::eventLoop(){
+
+//}
+
 
 
 
