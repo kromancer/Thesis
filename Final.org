@@ -2,7 +2,45 @@
 #+AUTHOR:Konstantinos Sotiropoulos
 #+EMAIL: kisp@kth.se
 #+STARTUP: overview
+#+OPTIONS: toc:nil
 #+OPTIONS: broken-links:mark
+
+* Latex Headers 						   :noexport:
+#+LATEX_HEADER: \documentclass[11pt,a4paper,oneside,openright,abstractoff,titlepage,final,BCOR10mm]{scrreprt}
+#+LATEX_HEADER: \usepackage[margin=25mm]{geometry}
+#+LATEX_HEADER: \usepackage[margin=25mm]{geometry}
+#+LATEX_HEADER: \usepackage[english]{babel}
+#+LATEX_HEADER: \usepackage{inputenc}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage{lastpage}
+#+LATEX_HEADER: \usepackage{color}
+#+LATEX_HEADER: \usepackage[table]{xcolor}
+#+LATEX_HEADER: \usepackage{tabularx}
+#+LATEX_HEADER: \usepackage{subfigure}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{rotating} 
+#+LATEX_HEADER: \usepackage{lmodern} 
+#+LATEX_HEADER: \usepackage{amsmath}
+#+LATEX_HEADER: \usepackage{microtype}
+#+LATEX_HEADER: \usepackage{multirow}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{todonotes}
+#+LATEX_HEADER: \usepackage{float}
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \usepackage{pdfpages} 
+#+LATEX_HEADER: \usepackage{glossaries} 
+#+LATEX_HEADER: \usepackage[intoc]{nomencl}
+#+LATEX_HEADER: \usepackage{verse}
+#+LATEX_HEADER: \newcommand{\attrib}[1]{\nopagebreak{\raggedcenter \footnotesize #1\par}}
+#+LATEX_HEADER: \renewcommand{\poemtitlefont}{\raggedright\normalfont\large\bfseries\hspace{\leftmargin}}
+
+
+
+
+
+
 
 * Abstract
 The vision of a connected and automated society, the Internet of Things era has promised,
@@ -24,44 +62,75 @@ To demonstrate our approach and evaluate different process synchronization algor
 we use the model of a cache-coherent, symmetric multiprocessor based on the OpenRisc 1000 Instruction Set Simulator. Our results indicate a significant speedup against the reference SystemC simulation.
 
 *Keywords:* parallel discrete event simulation, conservative synchronization algorithms, transaction level models, SystemC TLM 2.0
+\clearpage
 
-* Maguire's Notes for Writing an Abstract 			   :noexport:
-_1. What is the topic area?_
-The vision of a connected and automated society, 
-the Internet of Things era has promised,
-is depending on the industry's ability 
-to design novel and complex electronic systems,
-while maintaining a short time to market.
+* Acknowledgement
+My Master's Thesis project was sponsored by Intel Sweden AB and was supervised by KTH's ICT department.
+Most of the work was carried out in Intel's offices in Kista, where I was kindly provided with all the necessary experimentation infastructure.\\
 
+Björn Runåker was the project's supervisor from the company's side.
+I would like to thank you Björn for placing your trust in me for carrying out this challenging task.
+Furthermore, I would also like to thank Magnus Karlsson for his valuable feedback.\\
 
-_2. Short problem statement_
-One of the first steps in the design of such systems is the in tandem simulation of hardware and software.
-Transaction Level Models, expressed in the SystemC modeling language, can facilitate this co-simulation.
-However, the sequential nature of the SystemC's Discrete Event simulation kernel is a limiting factor.
-Poor simulation performance often constraints the scope and depth of the design decisions that can be evaluated.
+Professor Ingo Sander and PhD student George Ungureanu were the examiner and academic advisor from the university's side. 
+I blame you for my intellectual Odyssey in the vast ocean of mathematical abstractions.
+I am now a sailor, on course for an Ithaka I may never reach.
+And I am most grateful for this beautiful journey.
+May our ForSyDe come true: the day when the conceptual wall between software and hardware collapses.
+\textit{Let there be computation}.\\
 
-
-_3. Why was this problem worth a Master's thesis project? Why no one else solved it yet?_
-The increase in computing power, modern processing units deliver, is only available for applications that can expose parallel operations.
-The major obstacle one faces, when trying to parallelize a simulation, is the preservation of causality; simulation events need to be processed in a chronological order.
-
-
-_4. How did you solve the problem?_
-It is the main objective of this thesis' project to demonstrate the feasibility of parallelizing the simulation of Transaction Level Models, outside SystemC's reference simulation environment.
-The difficult task of achieving causal, yet parallel, processing of simulation events, is accomplished by using proper process synchronization mechanisms.
-Our proposed implementation does not depend on the presence of a centralized simulation moderator. 
-It is implemented using the Message Passing Interface 3.0 framework.
+Mother and father you shall be acknowledged, I owe my existence to you.
+Maria I want to express my gratitude for your tolerance and support.
+Finally, Spandan, my comrade, you must always remember the price of intellect.
+Social responsibillity and chronic insomnia.
+\clearpage
 
 
 
-_5. Results/Conclusions/Consequences/Impact:_
-   _What are your key results/conclusions?_
-   _What will others do based upon your results?_
-   _What can be done now that you have finished - that could not be done before your thesis project was completed?_
+#+BEGIN_LATEX
+\begin{verse}[\linewidth]
+\itshape  As you set out for Ithaka \\
+          hope the voyage is a long one, \\
+          full of adventure, full of discovery. \\!
 
-To demonstrate our approach and evaluate different process synchronization algorithms,
-we use the model of a cache-coherent, symmetric multiprocessor based on the OpenRisc 1000 Instruction Set Simulator.
-Our results indicate a significant speedup against the reference SystemC simulation.
+          But do not hurry the journey at all. \\
+          Better if it lasts for years, \\
+          so you are old by the time you reach the island, \\
+          wealthy with all you have gained on the way, \\
+          not expecting Ithaka to make you rich. \\!
+
+          Ithaka gave you the marvelous journey. \\
+          Without her you would not have set out. \\
+          She has nothing left to give you now. \\!
+ 
+          And if you find her poor, Ithaka won’t have fooled you. \\
+          Wise as you will have become, so full of experience, \\
+          you will have understood by then what these Ithakas mean. \\!
+	  
+	  \attrib{ Konstantinos Kavafis, Ithaka }
+\end{verse}
+\clearpage
+#+END_LATEX
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 * Acronyms 							   
 | *ASIC*:  | Application Specific Integrated Circuit |
@@ -88,20 +157,6 @@ Our results indicate a significant speedup against the reference SystemC simulat
 | *CMB*:   | Chandy/Misra/Bryant algorithm           |
 \clearpage
 
-
-* Preface 							
-This is a Master's Thesis project that will be carried out in Intel Sweden AB and is supervised by KTH's ICT department.
-Mr. Bjorn Runaker (\texttt{bjorn.runaker@intel.com}) is the project's supervisor from the company's side, 
-while professor [[https://people.kth.se/~ingo/][Ingo Sander]] (\texttt{ingo@kth.se}) and PhD student [[http://people.kth.se/~ugeorge/][George Ungureanu]] (\texttt{ugeorge@kth.se}) are the examiner and supervisor from KTH. 
-The project begun on 2016-01-16 and will finish on 2016-06-30, as dictated by the contract of employment that I, Konstantinos Sotiropoulos a Master's student at the Embedded Systems program, have signed with the company.
-
-The scope of this project has been mutually agreed on and dialectically determined between the company's needs and the institute's research agenda.
-As Master's Thesis project, it will expose a scientific ground on which the engineering effort shall be rooted.
- 
-All the necessary equipment (software and hardware) has been kindly provided by the company.
-The exact legal context that will apply to any software produced as a result of this project is yet to be determined, 
-but will conform to the general context dictated by the documents already signed (documents' titles:  "Statement of Terms and Conditions of Fixed Term Employment" and "Employee Agreement") .
-\clearpage
 
 * Introduction
 The aim of this chapter is to present the general context of the problem statement;
@@ -230,6 +285,7 @@ Faster simulation
 ** Document Overview
 This unit be completed in the end
 \clearpage
+
 
 * Formulating The Problem Statement 
 The aim of this chapter is to present a theoretical framework that will eventually lead to the formulation of the problem statement.
@@ -415,6 +471,7 @@ The automation and generality the tools could deliver will be emulated by manual
 _COMMENT:_ Your thesis' value (to external parties) depends highly on delivering point 4.
 
 \clearpage
+
 
 * Out of Order PDES with MPI
 The goal of this chapter is to present the process synchronization algorithm that will be applied and give their implementation using the MPI API.
@@ -978,10 +1035,6 @@ and the examine the state diagram for the directory entry corresponding to each 
 
 Presented as UML state machine diagram
 
-
-
-
-
 #+BEGIN_LATEX
 \begin{tikzpicture}
 
@@ -1012,6 +1065,30 @@ Presented as UML state machine diagram
 \end{tikzpicture}
 #+END_LATEX
 
+In a directory-based protocol, the directory implements the other half of the coherence protocol.
+A message sent to a directory causes two different types of actions:
+updating the directory state and sending additional messages to satisfy the request.
+The states in the directory represent the three standard states for a block;
+unlike in a snooping scheme, however, the directory state indicates the state of all the cached copies
+of a memory block, rather than for a single cache block.
+
+The memory block may be uncached by any node, cached in multiple nodes and readable (shared), or
+cached exclusively and writable in exactly one node.
+In addition to the state of each block, the directory must track the set of nodes that have a copy
+of a block; we use a set called Sharers to perform this function.
+
+we use a set called Sharers to perform this function. 
+In multiprocessors with fewer than 64 nodes (each of which may represent four to eight times as many processors),
+this set is typically kept as a bit vector.
+Directory requests need to update the set Sharers and also read the set to perform invalidations.
+
+The directory receives three different requests: read miss, write miss, and data write-back.
+The messages sent in response by the directory are shown in bold,
+while the updating of the set Sharers is shown in bold italics.
+Because all the stimulus messages are external, all actions are shown in gray.
+Our simplified protocol assumes that some actions are atomic, such as requesting a value and sending
+it to another node; a realistic implementation cannot use this assumption.
+
 
 
 
@@ -1040,13 +1117,10 @@ We have the bare metal (newlib based) toolchain for compiling applications for t
 _COMMENT;_ What kind of application am I going to run on this platform?
 I see that most of the papers out there do some kind of mpeg2 decoding. That seems complex.
 
-
 * References
 \renewcommand\refname{}
 \bibliography{References}
 \bibliographystyle{myIEEEtran}
-
-
 
 
 
@@ -1226,72 +1300,5 @@ The toolchain is available in several forms, depending on which C standard libra
 
 
 
-
-
-
-
-* Latex Headers 						   :noexport:
-#+LATEX_CLASS: article
-#+LATEX_CLASS_OPTIONS: [12pt,twoside]
-#+LATEX_HEADER: \usepackage[paper=a4paper,dvips,top=1.5cm,left=1.5cm,right=1.5cm, foot=1cm,bottom=1.5cm]{geometry}
-#+LATEX_HEADER: \renewcommand{\rmdefault}{ptm} 
-#+LATEX_HEADER: \usepackage[scaled=.90]{helvet}
-#+LATEX_HEADER: \usepackage{courier}
-#+LATEX_HEADER: \usepackage{bookmark}
-#+LATEX_HEADER: \usepackage{fancyhdr}
-#+LATEX_HEADER: \pagestyle{fancy}
-#+LATEX_HEADER: \usepackage[dvipsnames*,svgnames]{xcolor} 
-#+LATEX_HEADER: \usepackage{tikz,ifthen,xstring,calc,pgfkeys,pgfopts}
-#+LATEX_HEADER: \usepackage{tikz-uml}
-#+LATEX_HEADER: \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning,calc,shapes}
-#+LATEX_HEADER: \usepackage[utf8]{inputenc}
-#+LATEX_HEADER: \usepackage[swedish,english]{babel}
-#+LATEX_HEADER: \usepackage{rotating}		
-#+LATEX_HEADER: \usepackage{array}		
-#+LATEX_HEADER: \usepackage{graphicx}	 
-#+LATEX_HEADER: \usepackage{float}	
-#+LATEX_HEADER: \usepackage{color}      
-#+LATEX_HEADER: \usepackage{mdwlist}
-#+LATEX_HEADER: \usepackage{setspace}   
-#+LATEX_HEADER: \usepackage{listings}	
-#+LATEX_HEADER: \usepackage{bytefield}  
-#+LATEX_HEADER: \usepackage{tabularx}	
-#+LATEX_HEADER: \usepackage{multirow}
-#+LATEX_HEADER: \usepackage{algorithm}
-#+LATEX_HEADER: \usepackage{algpseudocode}	
-#+LATEX_HEADER: \usepackage{dcolumn}	
-#+LATEX_HEADER: \usepackage{url}	
-#+LATEX_HEADER: \usepackage[perpage,para,symbol]{footmisc} 
-#+LATEX_HEADER: \usepackage[all]{hypcap}
-#+LATEX_HEADER: \definecolor{darkblue}{rgb}{0.0,0.0,0.3} %% define a color called darkblue
-#+LATEX_HEADER: \definecolor{darkred}{rgb}{0.4,0.0,0.0}
-#+LATEX_HEADER: \definecolor{red}{rgb}{0.7,0.0,0.0}
-#+LATEX_HEADER: \definecolor{lightgrey}{rgb}{0.8,0.8,0.8} 
-#+LATEX_HEADER: \definecolor{grey}{rgb}{0.6,0.6,0.6}
-#+LATEX_HEADER: \definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
-#+LATEX_HEADER: \hyphenpenalty=15000 
-#+LATEX_HEADER: \tolerance=1000
-#+LATEX_HEADER: \newcommand{\rr}{\raggedright} 
-#+LATEX_HEADER: \newcommand{\rl}{\raggedleft} 
-#+LATEX_HEADER: \newcommand{\tn}{\tabularnewline}
-#+LATEX_HEADER: \newcommand{\colorbitbox}[3]{%
-#+LATEX_HEADER: \rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}\bitbox{#2}{#3}}
-#+LATEX_HEADER: \newcommand{\red}{\color{red}}
-#+LATEX_HEADER: \makeatletter
-#+LATEX_HEADER: \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex} {\normalfont\normalsize\bfseries}}
-#+LATEX_HEADER: \makeatother
-#+LATEX_HEADER: \makeatletter
-#+LATEX_HEADER: \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex} {\normalfont\normalsize\bfseries}}
-#+LATEX_HEADER: \makeatother
-#+LATEX_HEADER: \setcounter{tocdepth}{3}
-#+LATEX_HEADER: \setcounter{secnumdepth}{5}
-#+LATEX_HEADER: \renewcommand{\headrulewidth}{0pt}
-#+LATEX_HEADER: \lhead{Konstantinos Sotiropoulos}
-#+LATEX_HEADER: \chead{Ms Thesis Intermediate Report}
-#+LATEX_HEADER: \rhead{\date{\today}}
-#+LATEX_HEADER: \makeatletter
-#+LATEX_HEADER: \let\ps@plain\ps@fancy 
-#+LATEX_HEADER: \makeatother
-#+LATEX_HEADER: \setlength{\headheight}{15pt}
 
 

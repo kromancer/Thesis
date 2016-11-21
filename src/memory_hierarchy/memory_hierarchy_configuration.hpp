@@ -1,16 +1,23 @@
 #ifndef MEM_HIER_CFG_H
 #define MEM_HIER_CFG_H
 
-
+#include <cstdint>
 #include <cmath>
-//#include "tlm.h"
-//#include "tlm_utils/multi_passthrough_initiator_socket.h"
-//#include "tlm_utils/multi_passthrough_target_socket.h"
 
-//using Address  = unsigned int;
-//using SetIndex = unsigned int;
-//using BlockTag = unsigned int;
-//using uint     = unsigned int;
+
+enum Operation {READ, WRITE, INVALIDATE, DATA_REPLY, WRITE_BACK};
+enum Component {CPU, CACHE, DIRECTORY, MEMORY};
+
+
+struct Event
+{
+    uint64_t  timestamp;
+    Operation operation;
+    uint64_t  address;
+    Component destination;
+    Component source;
+};
+
 
 /*******************************************************
  * SYSTEM CONFIGURATION
@@ -88,8 +95,6 @@ inline void getSetIndexAndTag(Address a, SetIndex *setIndex, BlockTag *blockTag)
     *blockTag = discardedBlockOffset >> setIndexLength;
     *setIndex = setIndexMask & discardedBlockOffset;
 }
-
-
 
 
 #endif

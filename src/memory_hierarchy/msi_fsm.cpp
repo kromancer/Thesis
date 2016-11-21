@@ -1,4 +1,4 @@
-#include "msi_state_machine.hpp"
+#include "msi_fsm.hpp"
 #include <iostream>
 
 
@@ -170,7 +170,6 @@ sc::result Modified::react(const Ev_insertShared &e)
 Invalid::Invalid( my_context ctx):
     my_base(ctx)
 {
-    std::cout << "--Invalid--" << std::endl;
     context<Msi_machine>().augmentInvalidList();
 }
 
