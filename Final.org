@@ -268,8 +268,11 @@ Poor simulation performance often constraints the scope and depth of the design 
 
 
 ** TODO Research Methodology
+Twofold identify concepts, how these concepts are interpreted in sdes, how these concepts could be re interpreted for pdes
+mathematical concepts can be the base for software engineering
+no more ontological oo design
 "From Mathematics to Generic Programming"
-
+maybe put a concept map
 
 
 ** TODO Objectives
@@ -298,14 +301,15 @@ However, one must keep in mind that the term "implementation complexity" often c
 * Background
 This chapter wishes to inform the reader about the theoretical constituents of this project.
 [[Electronic System-Level Design]] presents the outermost context; that is the engineering discipline of *Electronic System-Level Design (ESLD)* and how SystemC TLM 2.0 fits into the whole picture.
-Section [[The Discrete Event Model of Computation]] hopes to help the reader understand why *Electronic System-Level Design Language* (ESLDL) models can be simulated.
-It concludes by presenting an algorithm describing SystemC's simulation engine.
+Section [[The Discrete Event Model of Computation]] hopes to help the reader understand why *Electronic System-Level Design Language* (ESLDL) models can be executed.
+In Section [[SystemC's Discrete Event Simulator]], SystemC's simulation engine is presented. This section is complemented by the code example found in Appendix \ref{AppendixA}.
 Before proceeding, the reader is adviced to abandon momentarily any preconceptions about design, system, model, computation, time, concurrency and causality.
 
 ** Electronic System-Level Design
 Section [[The Design Process]] defines the fundamental concepts of design, system, model and simulation.
 In Sections [[Electronic Systems Design]] to [[Transaction-Level Model]], using Gajski and Kuhn's Y-Chart, the concept of a Transaction-Level Model is determined, as an instance in the engineering practice of Electronic System-Level Design (ESLD).
 Section [[SystemC and TLM]] a rudimentary look on SystemC's role in ESLD.
+
 
 *** The Design Process
 We define the process of *designing* as the engineering art of incarnating a desired functionality into a perceivable, thus concrete, artifact.
@@ -323,6 +327,7 @@ A desired property of a model is executability that is its ability to demonstrat
 An *executable model*, allows the engineer to form hypotheses, conduct experiments on the model and finally evaluate design decisions.
 It is now evident that executable models can firmly associate the design process with the scientific method.
 The execution of a model is also known as *simulation* \cite{Editor2014}.
+
 
 
 *** Electronic Systems Design
@@ -415,6 +420,7 @@ At this level the distinction between hardware and software is a mere design cho
 Thereby the term *system-level design* is used to describe design activity at this level.
 
 
+
 *** Transaction-Level Model
 A *Transaction-Level Model* (TLM) can now be defined as the point in the Y-Chart where the physical axis meets the system abstraction level.
 As mentioned in the previous unit, a TLM can be thought of as a *Virtual Platform* (VP), where an application can be mapped \cite{Rigo2011}.
@@ -426,6 +432,7 @@ There are three pragmatic reasons that stimulate the development of a transactio
 At first, as already mentioned, software engineers must be equipped with a virtual platform they can use for *software development*, early on in the design flow, without needing to wait for the actual silicon to arrive.
 Secondly, a TLM serves as a testbed for *architectural exploration* in order to tune the overall system architecture, with software in mind, prior to detailed design.
 Finally, a TLM can be a reference model for hardware *functional verification*, that is, a golden model to which an RTL implementation can be compared.
+
 
 
 
@@ -445,7 +452,7 @@ With Section [[Models of Computation]] the reader will be able to understand why
 In Sections [[Discrete Event Model of Computation]] we present the *Discrete Event Model of Computation* (DE MoC).
 As with any MoC, the section presents what constitutes a component and what actions it can perform.
 Sections [[Causality and Concurrency]] and [[Time and Determinism]] define the concepts of causality, concurrency, time and determinism in the theoretical framework developed in the previous section.
-In Section [[Sequential Discrete Event Simulation]], SystemC's simulation engine is presented as an algorithm that realizes the operational semantics of a sequential *Discrete Event Simulator* (DES).
+
 
 *** Models of Computation
 A *language* is a set of symbols, rules for combining them (its syntax), and rules for interpreting combinations of symbols (its semantics). 
@@ -561,14 +568,8 @@ One such chain is the sequence $a,b,c,d,f$.
 Event $a$ may causaly affect $f$.
 Events $d,e$ are concurrent: there is no chain that contains both.
 Event $d$ cannot causaly affet $e$ and vice versa.
-The time axis is not resolved; a *"clock"* mechanism for relating an event with a number, its *timestamp*, has not been defined.
+The time axis is not resolved; a clocking mechanism for relating an event with a number, its timestamp, has not been defined.
 That is why the placement of events on the plane, for example events $d,e$ is quite arbitrary, non-unique and maybe counter intuitive.
-
-The definition of clocks is deferred to the implementation of the DE abstract machine.
-It is highly depended on the nature of the undelying machine. 
-Is it a *parallel* machine, that is a machine that preserves the spatial decomposition defined in the DE?
-Or is it a *sequential* machine, where space dimensionality must be emulated.
-A realization of the DE abstract machine is called a *Discrete Event Simulator (DES)*.
 
 [fn:223] For execution, the reader has to imagine the presence of many intermediate arrows, between two subsequent events on the same horizontal arrow. The start is at the left event and the tip at the right.
 
@@ -577,9 +578,15 @@ A realization of the DE abstract machine is called a *Discrete Event Simulator (
 When implementing a DE MoC, one needs to differentiate between two notions of time: Simulated/logic time and real/wallclock time.
 *Real/Wallclock time* refers to the notion of time existing in the simulator; for example a x86 Time Stamp Counter (TSC), which counts the number of oscillation events since the reset event.
 *Simulated/logic time* is defined as a the notion of time in the DE. 
-Since $\mathds{E}$ is partially ordered and only the sets $P_i$ are totally ordered, we are forced to reach the conclusion that the DE MoC instigates a *relativistic notion of time*.
+Since $\mathds{E}$ is partially ordered and only the sets $P_i$ are totally ordered, one is forced to reach the conclusion that the DE MoC instigates a *relativistic notion of time*.
 Simulated time may be different across processes, at any moment in real time.
 In other words, there is no global perception of logic time, that would allow, for example, the time axis in Figure \ref{fig:DE} to be resolved/measured/quantized or, force a unique placement of events $d,e$ in the plane.
+
+Logic time modeling is deferred to the implementation of the DE abstract machine.
+It is highly depended on the nature of the undelying machine. 
+Is it a *parallel* machine, that is a machine that preserves the spatial decomposition defined in the DE?
+Or is it a *sequential* machine, where space dimensionality must be emulated.
+A realization of the DE abstract machine is called a *Discrete Event Simulator (DES)*.
 
 If a DES can infer a total ordering of $\mathds{E}$, somehow, then the simulation is said to be *deterministic*.
 A total ordering of $\mathds{E}$ also infers a total ordering of the set $\mathds{S}$: the system states encountered during simulation ($\mathds{S} \subseteq \mathds{A}$).
@@ -591,71 +598,160 @@ How does the human brain handles the relativistic nature of time; it infers tota
 Alas, human intuition is biased towards a deterministic understanding of the physical world.
 Intellect, though, is (hopefully) much more capable!
 
+\clearpage
+
+
+** SystemC's Discrete Event Simulator
+Section [[Coroutines]] demonstrates how SystemC realizes the concept of a process.
+This section is complemented by the code examples found in Appendices \ref{AppendixA} and \ref{AppendixB}.
+
+*** Coroutines
+SystemC's distribution comes with a sequential realization of the DE MoC, referred to as the reference *SystemC simulation engine* \cite{OpenSystemCInitiative2012}.
+It is a sequential implementation because the spatial decomposition of the system is emulated through *coroutines* (also known as co-operative multitasking). 
+Co-routines in SystemC have been counterintuively named as \texttt{SC\_METHOD}, \texttt{SC\_THREAD} or \texttt{SC\_CTHREAD}.
+A coroutine is neither a function nor a thread.
+
+Processes, realized as coroutines[fn:pthread], perform their actions (computation, communication), henceforth *run*, without interruption.
+At any moment in real time only a single process can be running.
+No other process can run until the running process has voluntarily *yielded*.
+Furthermore, a non-running process can not preempt or interrupt the running process.
+
+A process can be declared sensitive to a number of events (static sensitivity).
+Moreover, a process can declare itself sensitive to events (dynamic sensitivity).
+All of the events the process is sensitive to, form its *sensitivity list*.
+A yielded process is awaiting for events in its sensitivity list to to be triggered.
+
+Before yielding, a process saves its context and registers its identity in a global structure of coroutine handlers called the *waiting list*.
+Along comes the question: to whom does a yielding process pass the baton of control flow?
+
+[fn:pthread] The exact library that realizes co-routines in C++ is determined during the compilation of the SystemC distribution. 
+             In GNU/Linux, SystemC version 2.3.1 supports QuickThreads and Posix Threads.
+	     However, it is highly propable that future revisions of the C++ standard will include *resumable functions*, a concept semantically equivalent to coroutines.
 
 
 
+*** The kernel
+The *kernel* is the simulation's director \cite{Editor2014}, the maestro of a well orchestrated simulation music.
+Processes yield to the kernel, a coroutine himself.
+In the presence of an ill-behaved never yielding process, the kernel is powerless [fn:kernel].
+
+The kernel is responsible for many things[fn:forward]:
+1. It sorts the *global event queue* according to timestamp order.
+2. It is from his perspective that a non-relativistic notion of logic time is formed: 
+   it maintains a *clock* that advances according to the timestamp of the event last triggered.
+3. When the list of *runnable* processes has been depleted, it is his duty to trigger the next, according to timestamp order, event.
+4. When triggering an event, it must identify which processes can be moved from the waiting to the runnable list. 
+   The decision is based on a process sensitivity list.
+5. It is responsible for *context switching* between the running and a runnable process. 
+   The selection of the running process from the list of runnable processes is implementation-defined.
+   An example of such a situation can be found in Appendix \ref{AppendixB}.
+6. If there are no events in the global event queue and the list of runnable processes is empty, it must *terminate* the simulation.
+
+A spectre is haunting the previous description of the kernel: how is logic time modeled?
+
+[fn:kernel] This is exactly the most important problem faced by early operating systems (16-bit era). 
+            Their cooperative nature could not discipline poorly designed applications.
+[fn:forward] Please note that many terms are forward-declared and defined either further down in the description or in upcoming sections.
+
+*** Modeling Time
+Logic time is represented as a vector [fn:dense] $(t,n) \in \mathbb{N}^2$.
+Every event is associated with the moment in logic time it occured.
+In other words, every event has a *timestamp*.
+Ordering of events comes as a lexicographical comparison between timestamps.
+Two events $e_1, e_2$ associated with the timestamps $(t_1,n_1), (t_2, n_2)$ are said to be *simultaneous* if $t_1 = t_2$.
+If both $t_1 = t_2$ and $n_1 = n_2$ they are *strongly simultaneous*.
+
+The first co-ordinate of a logic time vector is meant for modeling real time.
+*Modeled real time values* are used as timing annotations the designer injects into the system in order to describe the duration of communication and execution in the physical system.
+To avoid quantization errors and the non-uniform distribution of floating point values, time is internally represented as an integral multiple of an SI unit referred to as the time resolution.
+The integral multiplier is limited by the underlying machine's capabilities: in a 64-bit architecture its maximum value is $2^{64}-1$.
+The minimum time resolution SystemC can provide is that of a femtosecond ($10^{-15}$ seconds).
+
+To assist in the construction of modeled real time values, SystemC provides the class \texttt{sc\_time}.
+\texttt{sc\_time}'s constructor takes two arguments: (\texttt{double}, \texttt{SC\_TIME}) [fn:unit].
+The designer needs to be very careful when providing time annotations: modeled real time is internally represented as an integral value, despite \texttt{sc\_time}'s constructor having a floating point argument.
+The mistake of using a value of \texttt{sc\_time(0.5, SC\_FS)} can only be detected during *run-time*.
+The same applies for a value of \texttt{sc\_time(1, SC\_SEC)} with a time resolution of 1 \texttt{SC\_FS}.
 
 
+[fn:dense] This time modeling technique is referred to as *superdense time* in \cite{Editor2014}. 
+           However, this is not consistent across literature, for example in \cite{Furia2010}.
+[fn:unit] \texttt{SC\_TIME} is an enumeration: \texttt{SC\_SEC} for a second, \texttt{SC\_MS} for a millisecond etc.
 
 
-*** Sequential Discrete Event Simulation
-SystemC's reference implementation of the DES, referred to as the *SystemC kernel* \cite{OpenSystemCInitiative2012}, is an example of a sequential realization of the DE MoC.
-It is a sequential implementation because spatial decomposition is emulated through the co-routine mechanism (also known as co-operative multitasking). 
-Processes perform their actions (computation, communication), henceforth *run*, without interruption.
-In a single core machine that means that only a single process can be running at any moment in real time.
-No other process can run until the running process has yielded.
-A non-running process shall not preempt or interrupt the running process \cite{OpenSystemCInitiative2012}.
-
-A sequential implementation demands the presence of a simulation director, henceforth *kernel*.
-It is the kernel's responsibility to create a total ordering of simulation events, to switch "focus" between processes and to facilitate process communication.
+*** Events
 
 
+Events in SystemC are realized as instances of the class \texttt{sc\_event}.
+A process explicitly "makes" an event occur by calling either of these variations of the \texttt{sc\_event.notify} method:
++ \texttt{notify()}: Immediate occurence.
++ \texttt{notify(SC\_ZERO\_TIME)}: Delayed occurence.
++ \texttt{notify(sc\_time t)}: Scheduled occurence.
 
 
-To perform his duties, the kernel maintains a *centralized event list* sorted by timestamps and knows which process is *running*, which are *runnable*, and which processes are waiting for events.
-Runnable processes have had events to which they are sensitive triggered and are waiting for the running process to yield to the kernel so that they can be scheduled.
+Now that a metric for logic time has been established, we be more specific on a process yields.
+Yielding is explicitly stated by a calling:
++ \texttt{wait()}
++ \texttt{wait(sc\_time)}
++ \texttt{wait(sc\_event)}
 
 
-
-
-To avoid quantization errors and the non-uniform distribution of floating point values, time is expressed as an integer multiple of a real value referred to as the time resolution. 
-
-
-The kernel controls the execution order by selecting the earliest event in the event queue and making its time-stamp the current simulation time.
-It then determines the process the event is destined for, and finds all other events in the event queue with the same time-stamp that are destined for the same process \cite{Black2010}.
-The operation of the kernel is exemplified in listing \ref{alg:kernel}.
-
-
-
-
-#+BEGIN_LATEX
+*** The Simulation Procedure
+#+BEGIN_EXPORT latex
 \begin{algorithm}
 \caption{SystemC event loop, adopted from \cite{Schumacher2010}}
 \label{alg:kernel}
 \begin{algorithmic}[1]
 
-   \While{timed events to process exist}  \Comment{Simulation time progression}
-      \State trigger events at that time
+   \State run all processes 
+   \State order events
+   \While{scheduled events exist}        \Comment{Simulation time progression}
+      \State order events and trigger the event with the smallest timestamp
+      \State advance simulation time
+      \State make all sensitive processes runnable
       \While {runnable processes exist}   \Comment{Delta cycle progression}
          \While {runnable processes exist}
-	     \State run all triggered processes
+	     \State run all runnable processes
              \State trigger all immediate notifications
+             \State make all sensitive processes runnable
          \EndWhile
-         \State update values of changed channels
-	 \State trigger all delta time events
+	 \State trigger all delayed events
+         \State make all sensitive processes runnable
        \EndWhile
-       \State advance time to next event time
    \EndWhile
 
 \end{algorithmic}
 \end{algorithm}
-#+END_LATEX
+#+END_EXPORT
+
+
 
 \clearpage
 
 
+
+
 ** Parallel Discrete Event Simulation
 Units [[Parallel Discrete Event Simulation(or)]] and [[Causality and Synchronization]] introduce the concept of Parallel Discrete Event Simulation (PDES) and identify the fundamental causality hazards.
+
+*** Prior Art
+The previous section has made evident that the reference implementation of the SystemC kernel assumes sequential execution and therefore can not utilize modern massively parallel host platforms. 
+The most logical step in achieving faster simulations is to realize concurrency, from interleaved process execution to simultaneous/parallel execution.
+By assigning each process to a different processing unit of the host platform (core or hardware thread) we enter the domain of *Parallel Discrete Event Simulation (PDES)*.
+After making the strategical decision that for improving a DE simulator's performance one must orchestrate parallel execution, 
+the first tactical decision encountered
+is whether to keep a single simulated time perspective, 
+or distribute it among processes.
+
+For PDES implementations that enforce global simulation time, the term *Synchronous PDES* has been coined in \cite{Schumacher2010}.
+In Synchronous PDES, parallel execution of processes is performed within a delta cycle. 
+With respect to Alg \ref{alg:kernel}, we can say that a Synchronous PDES parallelizes the execution of the innermost loop (line 4).
+However, as we will see in later sections, this approach will bare no fruits in the simulation of TLM Loosely Timed simulations, since delta cycles are never triggered \cite{Chen2012}.
+Therefore, we switch our interest in *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}; 
+allowing each process to have its own perception of simulated time, determined by the last event it received.
+
+\clearpage
+
 
 *** Causality Hazards 
 The distribution of simulation time opens Pandora's box. 
@@ -695,44 +791,10 @@ For conservative algorithms, model introspection and static analysis tools might
 while the rollback mechanism of an optimistic algorithm may require complex entities, such as a hardware/software transactional memory \cite{Anane2015} .
 
 
-This means that there is a notion of two actions (communication or computation) being either ordered in time
-(one occurs before the other) or being simultaneous.
-
-Only the top-level director advances time.
-We all harbor a naive notion of a uniform fabric of time, shared by all participants in the physical world.
-By such a notion is a fiction, and real systems are strongly affected by errors in time measurement and discrepancies
-between logical and physical notions of time.
-
-Each event has both a value and a timestamp, where the timestamp defines a global ordering between events.
-A timestamp is a superdense time value, consisting of a model time and a microstep.
-A DE model executes chronologically, processing the oldest events (those with earlier time stamps) first.
-Time advances as events are processed, both in the model and in the outside world.
-There is potential confusion, therefore, between model time, 
-which is the time that evolves in the model, and real time, 
-which is the time that elapses in the real world while the model executes.
-
-
-*** Prior Art
-The previous section has made evident that the reference implementation of the SystemC kernel assumes sequential execution and therefore can not utilize modern massively parallel host platforms. 
-The most logical step in achieving faster simulations is to realize concurrency, from interleaved process execution to simultaneous/parallel execution.
-By assigning each process to a different processing unit of the host platform (core or hardware thread) we enter the domain of *Parallel Discrete Event Simulation (PDES)*.
-After making the strategical decision that for improving a DE simulator's performance one must orchestrate parallel execution, 
-the first tactical decision encountered
-is whether to keep a single simulated time perspective, 
-or distribute it among processes.
-
-For PDES implementations that enforce global simulation time, the term *Synchronous PDES* has been coined in \cite{Schumacher2010}.
-In Synchronous PDES, parallel execution of processes is performed within a delta cycle. 
-With respect to Alg \ref{alg:kernel}, we can say that a Synchronous PDES parallelizes the execution of the innermost loop (line 4).
-However, as we will see in later sections, this approach will bare no fruits in the simulation of TLM Loosely Timed simulations, since delta cycles are never triggered \cite{Chen2012}.
-Therefore, we switch our interest in *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}; 
-allowing each process to have its own perception of simulated time, determined by the last event it received.
-
-\clearpage
-
-
 
 * Methodology
+
+
 \clearpage
 
 
@@ -1034,6 +1096,7 @@ Did you try at least one of these tools?
 
 []
 
+
 * Analysis
 \clearpage
 
@@ -1049,8 +1112,9 @@ The following are the main research contributions of this work:
 + In Section [[The Discrete Event Model of Computation]] a different approach is adopted for presenting the DE MoC, 
   when compared to the reference work in MoCs by the Ptolemy Project [fn:ptolemy].
   It is the fact that time modeling is not included in the description of the DE MoC itself; 
-  Time modeling is susceptible to different realizations depending on whether the DE MoC will be executed on a sequential or parallel machine.
-  Lamport's "happens before" relationship \cite{Lamport1978} suffices in revealing the timed and concurrent nature of the MoC.
+  Time modeling is an implementation concern.
+  For the abstract/mathematical description of the DE MoC, Lamport's "happens before" relationship \cite{Lamport1978} suffices in describing 
+  the important concepts emanating (e.g. causality, concurrency and determinism).
 
 
 ** Limitations
@@ -1119,6 +1183,333 @@ this project is organically bound to the ongoing discussion about SystemC's new 
 [fn:PRES] All presentations from the event are available at: [http://accellera.org/news/events/systemc-evolution-day-2016]
 
 
+* References
+\renewcommand\refname{}
+\bibliography{References}
+\bibliographystyle{myIEEEtran}
+\clearpage
+
+
+* Appendices                                                         :ignore:
+#+BEGIN_EXPORT latex
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+#+END_EXPORT
+
+** Producer Consumer :ignore:
+#+BEGIN_EXPORT latex
+\subsection{Producer Consumer Example in SystemC}
+\label{AppendixA}
+#+END_EXPORT
+
+This example complements the presentation of the SysteC simulation engine in Section [[Sequential Discrete Event Simulation]].
+It is an example of a producer-consumer system.
+The producer communicates with the consumer via a fifo channel.
+Its primary purpose is to demystify the way primitive channels are implemented in SystemC, by revealing their event driven nature.
+
+These are the interfaces the channel must be able to provide to the actors: 
+#+BEGIN_SRC cpp
+  #include "systemc.h"
+  #include <iostream>
+  using namespace sc_core;
+
+  //****************
+  // FIFO Interfaces
+  //****************
+  // Fifo interface exposed to Producers
+  class fifo_write_if: virtual public sc_interface
+  {
+  public:
+      // blocking write
+      virtual void write(char) = 0;
+      // number of free entried
+      virtual int numFree() const = 0;
+  };
+  // Fifo interface exposed to Consumers
+  class fifo_read_if: virtual public sc_interface
+  {
+  public:
+      // blocking read
+      virtual char read() = 0;
+      // number of available entries
+      virtual int numAvailable() const = 0;
+  };
+#+END_SRC
+
+
+Following, is the interface of the fifo channel, which internally acts like a circular buffer.
+#+BEGIN_SRC cpp
+  //*************
+  // FIFO channel
+  //*************
+  class Fifo: public sc_prim_channel, public fifo_write_if, public fifo_read_if
+  {
+  protected:
+      int   size;
+      char *buf;
+      int   free;
+      int   ri; // read index
+      int   wi; // write index
+      int   numReadable, numRead, numWritten;
+      // For notifying Producer and Consumer
+      sc_event Ev_dataRead;
+      sc_event Ev_dataWritten;
+  public:
+      // Constructor
+      explicit Fifo(int _size=16):
+	  sc_prim_channel(sc_gen_unique_name("thefifo"))
+	  {
+	      size = _size;
+	      buf = new char[_size];
+	      reset();
+	  }
+      // Destructor
+      ~Fifo(){ delete [] buf; }
+      int  numAvailable() const { return numReadable - numRead; }
+      int  numFree() const { return size - numReadable; }
+      void reset() { free=size; ri=0; wi=0; }
+      void write(char c);
+      char read();
+      void update();
+  };
+#+END_SRC
+
+Next we see how the channel realizes the blocking read and write interfaces.
+The \texttt{read} and \texttt{write} methods are executed during the *evaluation phase*.
+The co-routine that executes these methods will yield immediately if it reaches the \texttt{wait} statement.
+When an event is passed as an argument to the \texttt{wait} function, the co-routine's sensitivity is said to change dynamically.
+The \texttt{request\_update} method (inherited from \texttt{sc\_prim\_channel}) is a kernel callback. 
+It signals the kernel that during the *update phase* he should execute the channel's \texttt{update} method.
+#+BEGIN_SRC cpp
+  // Blocking write implementation
+  void Fifo::write(char c)
+  {
+      if (numFree() == 0)
+	  wait( Ev_dataRead );
+      numWritten++;
+      buf[wi] = c;
+      wi = (wi+1) % size; // Circular buffer
+      free--;
+      request_update();
+  }
+  // Blocking read implementation
+  char Fifo::read()
+  {
+      if (numAvailable() == 0)
+	  wait( Ev_dataWritten );
+      numRead++;
+      char temp  = buf[ri];
+      ri = (ri+1) % size; // Circular buffer
+      free++;
+      request_update();
+      return temp;
+  }
+#+END_SRC
+
+Following, is the implementation of the \texttt{update} method, which is executed during the update phase by the kernel's.
+A yielded (*blocked*) co-routine might end up in the *runnable* set if it has declared its sensitivity to the event being notified. 
+#+BEGIN_SRC cpp
+  // Update method called in the UPDATE phase of the simulation
+  void Fifo::update()
+  {
+      if (numRead > 0)
+	  Ev_dataRead.notify(SC_ZERO_TIME);
+      if (numWritten > 0)
+	  Ev_dataWritten.notify(SC_ZERO_TIME);
+      numReadable = size - free;
+      numRead = 0;
+      numWritten = 0;
+  }
+
+#+END_SRC
+
+Next we see the implementation of the producer and consumer modules.
+The co-routine is declared sensitive (static sensitivity) to a clock's rising edge.
+The co-routine that represents these modules executes the \texttt{run} function.
+Since all co-routines are declared runnable at *elaboration*, 
+they need to yield immediately after entering the function.
+#+BEGIN_SRC cpp
+class Producer: public sc_module
+{
+public:
+    sc_port<fifo_write_if> out;
+    sc_in<bool> clock;
+    void run()
+	{
+	    while(1)
+	    {
+		wait(); // wait for clock edge
+		out->write(1);
+		cout << "Produced at: " << sc_time_stamp() << endl;
+	    }
+	}
+    // Constructor
+    SC_CTOR(Producer)
+	{
+	    SC_THREAD(run);
+	    sensitive << clock.pos();
+	}
+};
+
+
+class Consumer: public sc_module
+{
+public:
+    sc_port<fifo_read_if> in;
+    sc_in<bool> clock;
+    void run()
+	{
+	    while(1)
+	    {
+		wait(); // wait for clock edge
+		char temp = in->read();
+		cout << "Consumed at: " << sc_time_stamp() << endl;
+	    }
+	}
+    SC_CTOR(Consumer)
+	{
+	    SC_THREAD(run);
+	    sensitive << clock.pos();
+	}
+
+};
+#+END_SRC
+
+Finally, the modules are linked with the fifo and their clock, and simulation is started.
+#+BEGIN_SRC cpp
+int sc_main(int argc, char *argv[])
+{
+    sc_clock clkFast("ClkFast", 1, SC_NS);
+    sc_clock clkSlow("ClkSlow", 500, SC_NS);
+
+    Fifo fifo1;
+
+    Producer p1("p1");
+    p1.out(fifo1);
+    p1.clock(clkFast);
+
+    Consumer c1("c1");
+    c1.in(fifo1);
+    c1.clock(clkSlow);
+
+    sc_start(5000, SC_NS);
+    
+    return 0;
+}
+#+END_SRC
+
+
+
+
+** Non-Determinism in SystemC :ignore:
+#+BEGIN_EXPORT latex
+\subsection{Non-Determinism in SystemC}
+\label{AppendixB}
+#+END_EXPORT
+
+The following code example should in theory lead to non-deterministic behavior.
+It models a race condition.
+The system contains 3 processes which access a sharedVariable: 2 of them write it and 1 reads it.
+At every clock pulse, all 3 processes are made *runnable*.
+In practice however there is a repeatable pattern: processes are selected in the order in which their modules are instantiated.
+If this holds, the one can draw the conclusion that logic time in SystemC has an implied third dimension: it is a vector $(t,n,p_{id}) \in \mathbb{N}^3$, and thus simulation events are totally ordered, which makes any simulation deterministic.
+SystemC's LRM explicitly states:
+\textit{"The order in which process instances are selected from the set of runnable processes is implementation-defined. However, if a specific version of a specific implementation runs a specific application using a specific input data set, the order of process execution shall not vary from run to run."}
+
+#+BEGIN_SRC cpp
+  #include "systemc.h"
+
+  using namespace sc_core;
+
+
+  std::string sharedVariable;
+
+  SC_MODULE(chaos1)
+  {
+      sc_in<bool> clock;
+
+      void run()
+      {
+	  while(1)
+	  {
+	      wait();
+	      sharedVariable = "chaos";
+	  }
+      }
+
+      SC_CTOR(chaos1)
+      {
+	  SC_THREAD(run);
+	  sensitive << clock.pos(); // static sensitivity
+      }
+  };
+
+  SC_MODULE(chaos2)
+  {
+      sc_in<bool> clock;
+
+      void run()
+      {
+	  while(2)
+	  {
+	      wait();
+	      sharedVariable = "and destruction";
+	  }
+      }
+
+      SC_CTOR(chaos2)
+      {
+	  SC_THREAD(run);
+	  sensitive << clock.pos(); // static sensitivity
+      }
+    
+  };
+
+  SC_MODULE(observer)
+  {
+      sc_in<bool> clock;
+
+      void run()
+      {
+	  while(2)
+	  {
+	      wait();
+	      cout << sharedVariable << endl;
+	  }
+      }
+
+      SC_CTOR(observer)
+      {
+	  SC_THREAD(run);
+	  sensitive << clock.pos(); // static sensitivity
+      }
+    
+  };
+
+
+
+
+
+  int sc_main(int argc, char *argv[])
+  {
+      sc_clock clock("clock", 1, SC_NS);
+      chaos1 c1("c1");
+      chaos2 c2("c2");
+      observer ob("ob");
+	
+      c1.clock(clock);
+      c2.clock(clock);
+      ob.clock(clock);
+    
+      sc_start(2, SC_NS);
+    
+      return 0;
+  }
+
+
+#+END_SRC
 
 
 * Use Case :noexport:
@@ -1259,12 +1650,6 @@ We have the bare metal (newlib based) toolchain for compiling applications for t
 
 _COMMENT;_ What kind of application am I going to run on this platform?
 I see that most of the papers out there do some kind of mpeg2 decoding. That seems complex.
-
-
-* References
-\renewcommand\refname{}
-\bibliography{References}
-\bibliographystyle{myIEEEtran}
 
 
 * SystemC TLM 2.0    :noexport:
@@ -1414,7 +1799,6 @@ A component's role is signified by the type of *sockets* it contains.
 Initiator sockets are used to forward method calls "up and out of" a component, while target sockets are used to allow method calls "down and into" a component \cite{doulos}.
 Socket binding is the act of connecting components together, thus defining the component whose method call will be eventually executed to service the transaction.
 From SystemC's viewpoint, a socket is basically a convenience class, wrapping a sc\_port and an sc\_export.
-
 
 
 
@@ -1635,3 +2019,4 @@ the partitioning of the application to the elements of the platform.
 + Increase a spacing between lines
 + Header for every page
 + Section about FSM, put footnotes
++ The "Ingo Paradox"
