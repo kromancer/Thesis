@@ -40,6 +40,8 @@
 #+LATEX_HEADER: \renewcommand{\poemtitlefont}{\raggedright\normalfont\large\bfseries\hspace{\leftmargin}}
 #+LATEX_HEADER: \hypersetup{ colorlinks = true, urlcolor = cyan, linkcolor = blue, citecolor = red }
 #+LATEX_HEADER: \usepackage{dsfont}
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{arrows,shapes,automata}
 
 
 * Titlepage                                                          :ignore:
@@ -144,6 +146,12 @@ Maria, I want to express my gratitude for your tolerance and support.
 Finally, Spandan, my comrade, you must always remember the price of intellect.
 Social responsibillity and chronic insomnia.
 
+\vspace{1.0cm}
+
+\noindent
+Stockholm, \today
+
+\textit{Konstantinos Sotiropoulos}
 \clearpage
 
 #+BEGIN_LATEX
@@ -226,13 +234,13 @@ without disclosing any commercially sensitive information, the reader is exposed
 The problem definition is then presented in Section [[Problem Definition]].
 Section [[Hypothesis]] presents the hypothesis; an optimistic assumption that motivated this work.
 Section [[Purpose]] attempts to provide a general answer to the cui bono question. For a specific answer, the reader is encouraged to jump to section [[Reflections]].
-Following the classification presented in \cite{Hakansson2013}, Section [[Research Methodology]] describes the research methodology applied.
+Section [[Research Methodology]] describes the research methodology followed.
 Section [[Objectives]] and [[Delimitations]] clarify the software engineering extend; what artifacts need to be constructed, in order to address the problem statement.
 A synopsys of this document can be found in [[Structure of this thesis]]
 
 
 ** Overview
-This project follows the work of Björn Runåker \cite{Runaker2015} on his effort to parallelize the simulation of the next generation (5G) of radio base stations.
+This project follows the work of Björn Runåker[fn:bjorn] \cite{Runaker2015} on his effort to parallelize the simulation of the next generation (5G) of radio base stations.
 Telecom radio base stations are indeed a very heterogeneous system.
 To say the least, a virtual platform describing the system consists of a Network Processing Unit (NPU), Field Programmable Gate Array (FPGA) logic and a group of Digital Signal Procesors (DSP).
 For a more pictorial exposition of the situation the reader is encouraged to refer to the work of Björn.
@@ -242,15 +250,10 @@ parallelism is achieved through multiple instations of SystemC's simulation engi
 However, a question is left open;
 the feasibilty and merits of a "fine-grained" treatment, where parallelsim is achieved within a single instance of the simulation engine.
 
+[fn:bjorn] Björn Runåker works as a Platform Application Engineer for Intel in Stockholm: https://www.linkedin.com/in/runaker
+
 
 ** TODO Problem Definition
-
-
-** TODO Hypothesis
-Given the fact that we are dealing with multiprocessor systems
-ample opportunities for parallelization 
-to leverage process synchronization overhead and yield a simulation speedup, 
-compared to 
 
 
 ** Purpose
@@ -267,18 +270,22 @@ It is obvious, that if a virtual platform is to be used for software development
 Poor simulation performance often constraints the scope and depth of the design decisions that can be evaluated.
 
 
-** TODO Research Methodology
-Twofold identify concepts, how these concepts are interpreted in sdes, how these concepts could be re interpreted for pdes
-mathematical concepts can be the base for software engineering
-no more ontological oo design
-"From Mathematics to Generic Programming"
-maybe put a concept map
-
-
 ** TODO Objectives
+Parallel Discrete Event Simulator proposal
 In order to reach The answer of requires the development of the following software applications:
 
++ A DE MoC with concepts distributed computing. Maybe mention lamport's award announcement.
 + An MPI realization of a process synchronization algorithm in the context of an event-based 
++ Case Study 1:
++ Case Study 2:
++ Compiler Proposal:
+
+
+** TODO Hypothesis
+Given the fact that we are dealing with multiprocessor systems
+ample opportunities for parallelization 
+to leverage process synchronization overhead and yield a simulation speedup, 
+compared to 
 
 
 ** Delimitations
@@ -291,6 +298,52 @@ However, one must keep in mind that the term "implementation complexity" often c
   this thesis will not produce any sort of tool or utility.
 
 + Any form of quantitative comparison between the proposed and existing attempts to parallelize SystemC TLM 2.0 simulations.
+
+
+** Research Methodology
+The presentation of the research methodology, adopted in this work, is influenced by Anne Håkansson's paper titled \textit{"Portal of Research Methods and Methodologies for Research Projects and Degree Projects"} \cite{Hakansson2013}.
+This work presents a qualitative research on the field of Parallel Discrete Event Simulator development for Electronic Systems Simulation.
+The novelty of the subject makes qualitative research a necessary step for establishing the relevant theories and experimentation procedures needed by more quantitative approaches.
+The methodology applied is illustrated in Figure \ref{fig:methodology}.
+A further explanation of the figure is imminent:
++ *Criticalism*: The reality of Parallel Discrete Event Simulator development is being historically determined by the evolution of computational hardware.
++ *Conceptual*: Simulator development has not been properly associated with their relevant theoretical understanding: the Discrete Event Model of Computation.
+                Terms like process, time, concurrency, determinism and causality are inconsistently used and usually lack of a proper mathematical definition within a solid framework.
+		The development of the proposed Parallel Discrete Event Simulator is steered by this conceptual exploration.
+                The importance of formalizing concepts with mathematics before development can be seen in the book \textit{"From Mathematics to Generic Programming"} by Alexander Stepanov and Daniel Rose \cite{Stepanov2014}, 
++ *Coded Case studies*: The proposed Parallel Discrete Event Simulator is tested by the implementation of the two case studies.
++ *Inductive*: The hypothesis is tested against the successful implementation of the two case studies. 
++ *Transferability*: The verification of two case studies can only be the basis step of inductive inference.
+                     There is still the induction step, that is hoped to be adressed by the proposition of a compiler, that will allow every Loosely-Timed Transaction Level Model to "fit" the proposed Parallel Discrete Event Simulator.
+
+#+BEGIN_EXPORT latex
+\begin{figure}[htpb]
+\centering
+\tikzstyle{block} = [draw, fill=white, rectangle, minimum height=3em, minimum width=6em]
+\tikzstyle{sum} = [draw, fill=blue!20, circle, node distance=1cm]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+% The block diagram code is probably more verbose than necessary
+\begin{tikzpicture}[node distance=3cm]%auto,>=latex']
+    % We start by placing the blocks
+    \node [block, pin={[pinstyle]above:Philosophical Assumption}] (crit) {\small Criticalism};
+    \node [block, pin={[pinstyle]below:Research Approach}, right of=crit] (conc) {\small Conceptual};
+    \node [block, pin={[pinstyle]above:Research Strategy}, right of=conc, text width=2.5cm, align=center] (ind) {\small Induction on Case Studies};
+    \node [block, pin={[pinstyle]below:Quality Assurance}, right of=ind] (tra) {\small Transferability};
+
+    % Once the nodes are placed, connecting them is easy. 
+    \draw [draw,->]  (crit) -- node {} (conc);
+    \draw [->]       (conc) -- node {} (ind);
+    \draw [->]       (ind) --  node {} (tra);
+
+\end{tikzpicture}
+\caption{Qualitative Research Methodology}
+\label{fig:methodology}
+\end{figure}
+#+END_EXPORT
+\clearpage
 
 
 ** Structure of this thesis
@@ -450,9 +503,8 @@ TLM 2.0 has been standardized seperately in \cite{OpenSystemCInitiative2009}.
 ** The Discrete Event Model of Computation
 With Section [[Models of Computation]] the reader will be able to understand why a linguistic artifact, such as a model, can be "animated".
 In Sections [[Discrete Event Model of Computation]] we present the *Discrete Event Model of Computation* (DE MoC).
-As with any MoC, the section presents what constitutes a component and what actions it can perform.
+As with any MoC, the section presents what constitutes a component and what actions the component can perform.
 Sections [[Causality and Concurrency]] and [[Time and Determinism]] define the concepts of causality, concurrency, time and determinism in the theoretical framework developed in the previous section.
-
 
 *** Models of Computation
 A *language* is a set of symbols, rules for combining them (its syntax), and rules for interpreting combinations of symbols (its semantics). 
@@ -473,22 +525,23 @@ All of the above painstaking narrative has been formed to reach the following co
 The dominant MoC related to an ESLDL is called the *Discrete Event (DE)* MoC, and it is the presence of the DE MoC that makes an ESLDL model executable.
 
 
-
 *** Discrete Event Model of Computation
 The components of a DE MoC are called *processes*.
+The set of processes is denoted by $\mathbb{P}$.
 Processes introduce a spatial decompostion of a system;
 The system is mathematically represented as a set of variables $\mathds{V}$, and every process is related to a subset of $\mathds{V}$.
-The *system's state* is a mapping from $\mathds{V}$ to a value domain $\mathds{U}$.
-The system changes states in a discrete fashion; 
-the set $\mathds{A}$ of all possible system states can be enumerated by natural numbers ($\|\mathds{A}\| = \aleph_0$).
+The system's *state* is a mapping from $\mathds{V}$ to a value domain $\mathds{U}$.
+The system changes states in a *discrete* fashion; 
+the set $\mathds{A}$ of all possible system states can be enumerated by natural numbers ($|\mathds{A}| = \aleph_0$).
 
 A process can now be defined as a set of *events* $P_i \subseteq \mathds{E}$ where $i\in\mathbb{N}$.
-$\mathds{E}$ is a universal set on which processes $P_i$ define a partition: $\bigcup_{i=1}^{n} P_i = \mathds{E}$ and $P_i \cap P_j = \emptyset$ where $i,j,n \in \mathbb{N}$ and $n$ is the number of processes.
-An event denotes a system state change; from the system's perspective, it can be regarding as a mapping $\mathds{A} \rightarrow \mathds{A}$.
+An event denotes a system state change; from the system's perspective, it can be regarded as a mapping $\mathds{A} \rightarrow \mathds{A}$.
+$\mathds{E}$ is a universal set on which processes $P_i$ define a partition: 
+
 
 $\mathds{E}$ is a partially ordered set under the relationship *"happens before"*, denoted by the symbol $\sqsubset$ \cite{Lamport1978}.
 The binary relationship $\sqsubset$, apart from being antisymmetric and transitive, is irreflexive; 
-an event can not "happen before" itself, it is counter intuitive to expect this when modeling physical systems.
+an event can not "happen before" itself.
 
 On a process two actions are performed: communication and execution.
 Both of these can be defined as functions $\mathds{E} \rightarrow \mathds{E}$.
@@ -503,9 +556,14 @@ Communication has a similar property: $e_1 \sqsubset f(e_1)$ where $e_1 \in P_i$
 
 *** Causality and Concurrency
 The binary relationship *"causaly affects"*, denoted by the symbol $\propto$, is introduced.
-Causality, 
-as a philosophical assumption about the behaviour of the system, 
-can now be interpreted by the following statement: for any two events $e_1,e_2 \in \mathds{E}$ it is true that $e_1 \propto e_2 \implies e_1 \sqsubset e_2$.
+Causality, as a philosophical assumption about the behaviour of the system, can now be interpreted by the following statement: 
+
+#+BEGIN_EXPORT latex
+\begin{equation}
+e_1,e_2 \in \mathds{E} .  e_1 \propto e_2 \implies e_1 \sqsubset e_2
+\end{equation}
+#+END_EXPORT
+
 Two events $e_1,e_2 \in \mathds{E}$ are *concurrent* if neither $e_1 \sqsubset e_2$ nor $e_2 \sqsubset e_1$ holds.
 It follows, that concurrent events are not causaly related.
 
@@ -568,27 +626,33 @@ One such chain is the sequence $a,b,c,d,f$.
 Event $a$ may causaly affect $f$.
 Events $d,e$ are concurrent: there is no chain that contains both.
 Event $d$ cannot causaly affet $e$ and vice versa.
-The time axis is not resolved; a clocking mechanism for relating an event with a number, its timestamp, has not been defined.
+The time axis is not resolved; a time modeling technique for relating an event with a number, its timestamp, has not yet been defined. 
 That is why the placement of events on the plane, for example events $d,e$ is quite arbitrary, non-unique and maybe counter intuitive.
 
 [fn:223] For execution, the reader has to imagine the presence of many intermediate arrows, between two subsequent events on the same horizontal arrow. The start is at the left event and the tip at the right.
 
 
 *** Time and Determinism
-When implementing a DE MoC, one needs to differentiate between two notions of time: Simulated/logic time and real/wallclock time.
-*Real/Wallclock time* refers to the notion of time existing in the simulator; for example a x86 Time Stamp Counter (TSC), which counts the number of oscillation events since the reset event.
-*Simulated/logic time* is defined as a the notion of time in the DE. 
-Since $\mathds{E}$ is partially ordered and only the sets $P_i$ are totally ordered, one is forced to reach the conclusion that the DE MoC instigates a *relativistic notion of time*.
-Simulated time may be different across processes, at any moment in real time.
-In other words, there is no global perception of logic time, that would allow, for example, the time axis in Figure \ref{fig:DE} to be resolved/measured/quantized or, force a unique placement of events $d,e$ in the plane.
-
-Logic time modeling is deferred to the implementation of the DE abstract machine.
-It is highly depended on the nature of the undelying machine. 
-Is it a *parallel* machine, that is a machine that preserves the spatial decomposition defined in the DE?
-Or is it a *sequential* machine, where space dimensionality must be emulated.
 A realization of the DE abstract machine is called a *Discrete Event Simulator (DES)*.
+When implementing a DES, one needs to differentiate between two notions of time: Simulated/logic time and real/wallclock time.
+*Real/Wallclock time* refers to the notion of time existing in the simulator's environment; for example a x86 Time Stamp Counter (TSC) measuring the number of cycles since reset.
+*Logic/real time* is defined as a the notion of time in the DES; a *logic time modeling* technique associates an event with a value, which is called its *timestamp*.
+Since $\mathds{E}$ is partially ordered and only the sets $P_i$ are totally ordered, one is forced to reach the conclusion that the nature of the DE MoC instigates a *relativistic notion of logic time*.
+Logic time may be different across processes, at any moment in real time, and it is only through communication that a global perception of logic time can be formulated.
 
-If a DES can infer a total ordering of $\mathds{E}$, somehow, then the simulation is said to be *deterministic*.
+Logic time modeling is deferred to the implementation of the DE abstract machine and is highly depended on the nature of the undelying hardware. 
+Is it *parallel*, where the spatial decomposition defined in the DE can be preserved? 
+Or is it *sequential*, where space dimensionality must be emulated.
+The only restrictions DE semantics impose on a logic time modelling technique $C$ are:
+
+#+BEGIN_EXPORT latex
+\begin{equation}
+       e_1 \sqsubset e_2 \implies C(e_1) < C(e_2) \\
+       |Range(C)| = \aleph_0
+\end{equation}
+#+END_EXPORT
+
+If a DES can infer a total ordering of $\mathds{E}$, through a logic time modeling technique, then the simulation is said to be *deterministic*.
 A total ordering of $\mathds{E}$ also infers a total ordering of the set $\mathds{S}$: the system states encountered during simulation ($\mathds{S} \subseteq \mathds{A}$).
 Determinism is a very important reasoning facility, engineers seek from the simulation of the systems they construct, in order to provide any formal statement about the system's behavior.
 Physicists, especially those engaged with quantum mechanics, are more tolerant to non-determinism.
@@ -597,8 +661,6 @@ For amusement purposes only, the reader can regard her/his brain as a DES.
 How does the human brain handles the relativistic nature of time; it infers total orderings for the events of reality.
 Alas, human intuition is biased towards a deterministic understanding of the physical world.
 Intellect, though, is (hopefully) much more capable!
-
-\clearpage
 
 
 ** SystemC's Discrete Event Simulator
@@ -630,22 +692,26 @@ Along comes the question: to whom does a yielding process pass the baton of cont
 
 
 
+
 *** The kernel
 The *kernel* is the simulation's director \cite{Editor2014}, the maestro of a well orchestrated simulation music.
 Processes yield to the kernel, a coroutine himself.
 In the presence of an ill-behaved never yielding process, the kernel is powerless [fn:kernel].
 
 The kernel is responsible for many things[fn:forward]:
-1. It sorts the *global event queue* according to timestamp order.
-2. It is from his perspective that a non-relativistic notion of logic time is formed: 
-   it maintains a *clock* that advances according to the timestamp of the event last triggered.
-3. When the list of *runnable* processes has been depleted, it is his duty to trigger the next, according to timestamp order, event.
-4. When triggering an event, it must identify which processes can be moved from the waiting to the runnable list. 
-   The decision is based on a process sensitivity list.
-5. It is responsible for *context switching* between the running and a runnable process. 
+1. If there are no events in the *global event queue* and the list of runnable processes is empty, it must *terminate* the simulation.
+2. It sorts the global event queue according to timestamp order.
+3. It possesses a global perspective over logic time:
+   *global time* advances according to the timestamp of the event (from the global event queue) last triggered.
+4. When the list of *runnable* processes has been depleted, it is his duty to trigger the next, according to timestamp order, event.
+   It first checks whether there are events in the *delta notification queue*. 
+   Triggering these events do not advance global time.
+   It then checks the global event queue.
+5. When triggering an event, it must identify which processes can be moved from the waiting to the runnable list. 
+   The decision is based on a process' sensitivity list.
+6. It is responsible for *context switching* between the running and a runnable process. 
    The selection of the running process from the list of runnable processes is implementation-defined.
    An example of such a situation can be found in Appendix \ref{AppendixB}.
-6. If there are no events in the global event queue and the list of runnable processes is empty, it must *terminate* the simulation.
 
 A spectre is haunting the previous description of the kernel: how is logic time modeled?
 
@@ -653,40 +719,49 @@ A spectre is haunting the previous description of the kernel: how is logic time 
             Their cooperative nature could not discipline poorly designed applications.
 [fn:forward] Please note that many terms are forward-declared and defined either further down in the description or in upcoming sections.
 
+
+
 *** Modeling Time
-Logic time is represented as a vector [fn:dense] $(t,n) \in \mathbb{N}^2$.
-Every event is associated with the moment in logic time it occured.
-In other words, every event has a *timestamp*.
+Logic time can be represented as a vector [fn:dense] $\in \mathbb{N}^n$ where $n \in \mathbb{N}}$.
+This time modeling technique is referred to as *superdense time* \cite{Editor2014}. 
+Every event is associated with a vector; in other words, every event has a timestamp.
 Ordering of events comes as a lexicographical comparison between timestamps.
-Two events $e_1, e_2$ associated with the timestamps $(t_1,n_1), (t_2, n_2)$ are said to be *simultaneous* if $t_1 = t_2$.
-If both $t_1 = t_2$ and $n_1 = n_2$ they are *strongly simultaneous*.
+
+SystemC explicitly defines logic time as a vector $(t,n)$.
+Although, as demonstrated in Appendix \ref{AppendixB}, there is an implied third dimension.
 
 The first co-ordinate of a logic time vector is meant for modeling real time.
 *Modeled real time values* are used as timing annotations the designer injects into the system in order to describe the duration of communication and execution in the physical system.
-To avoid quantization errors and the non-uniform distribution of floating point values, time is internally represented as an integral multiple of an SI unit referred to as the time resolution.
+The choice of using the term "superdense" for this logic time modeling technique can now be understood: 
+between any two events $e_1, e_2$, with modeled real time values $t_1, t_2$, $\exists e_3$, such that $timestamp(e_1) < timestamp(e_3) < timestamp(t_2)$.
+Two events $e_1, e_2$ associated with the timestamps $(t_1,n_1), (t_2, n_2)$ are said to be *simultaneous* if $t_1 = t_2$.
+If both $t_1 = t_2$ and $n_1 = n_2$ they are *strongly simultaneous*.
+
+To avoid quantization errors and the non-uniform distribution of floating point values, SystemC internally represented logic time as an integral multiple of an SI unit referred to as the time resolution.
 The integral multiplier is limited by the underlying machine's capabilities: in a 64-bit architecture its maximum value is $2^{64}-1$.
 The minimum time resolution SystemC can provide is that of a femtosecond ($10^{-15}$ seconds).
 
 To assist in the construction of modeled real time values, SystemC provides the class \texttt{sc\_time}.
 \texttt{sc\_time}'s constructor takes two arguments: (\texttt{double}, \texttt{SC\_TIME}) [fn:unit].
-The designer needs to be very careful when providing time annotations: modeled real time is internally represented as an integral value, despite \texttt{sc\_time}'s constructor having a floating point argument.
+The designer needs to be very careful when providing timing annotations: modeled real time is internally represented as an integral value, despite \texttt{sc\_time}'s constructor having a floating point argument.
 The mistake of using a value of \texttt{sc\_time(0.5, SC\_FS)} can only be detected during *run-time*.
 The same applies for a value of \texttt{sc\_time(1, SC\_SEC)} with a time resolution of 1 \texttt{SC\_FS}.
 
 
-[fn:dense] This time modeling technique is referred to as *superdense time* in \cite{Editor2014}. 
-           However, this is not consistent across literature, for example in \cite{Furia2010}.
+
+[fn:dense] This terminology is not consistent across literature, for example the term *dense* \cite{Furia2010} may also imply that logic time $\in \mathbb{R}$ or $\mathbb{Q}$.
+           By Cantor's \textit{"diagonal count"}, $|\mathbb{N}\times...\times\mathbb{N}| = \aleph_0 < |R|$.
+           The terms *superdense* and *dense* in this case are semantically different.
+	   
 [fn:unit] \texttt{SC\_TIME} is an enumeration: \texttt{SC\_SEC} for a second, \texttt{SC\_MS} for a millisecond etc.
 
 
 *** Events
-
-
 Events in SystemC are realized as instances of the class \texttt{sc\_event}.
-A process explicitly "makes" an event occur by calling either of these variations of the \texttt{sc\_event.notify} method:
-+ \texttt{notify()}: Immediate occurence.
-+ \texttt{notify(SC\_ZERO\_TIME)}: Delayed occurence.
-+ \texttt{notify(sc\_time t)}: Scheduled occurence.
+Processes perform event *notifications*, by calling either of these variations of the \texttt{sc\_event.notify} method:
++ \texttt{notify(sc\_time t)}:     (Scheduled occurence) The process adds the event to the global event queue. All sensitive processes will become runnable when the kernel triggers the event.
++ \texttt{notify()}:               (Immediate notify)    The process signals a flag within the kernel. All sensitive processes in the waiting list are moved to the runnable list, at the next context switch.
++ \texttt{notify(SC\_ZERO\_TIME)}: (Delayed occurence)   The process adds the event to delta notification queue. All sensitive processes in the waiting list are moved to the runnable list, after the runnable list becomes empty.
 
 
 Now that a metric for logic time has been established, we be more specific on a process yields.
@@ -694,6 +769,7 @@ Yielding is explicitly stated by a calling:
 + \texttt{wait()}
 + \texttt{wait(sc\_time)}
 + \texttt{wait(sc\_event)}
+
 
 
 *** The Simulation Procedure
@@ -705,12 +781,12 @@ Yielding is explicitly stated by a calling:
 
    \State run all processes 
    \State order events
-   \While{scheduled events exist}        \Comment{Simulation time progression}
+   \While{scheduled events exist}          \Comment{Global clock progression loop}
       \State order events and trigger the event with the smallest timestamp
       \State advance simulation time
       \State make all sensitive processes runnable
-      \While {runnable processes exist}   \Comment{Delta cycle progression}
-         \While {runnable processes exist}
+      \While {runnable processes exist}    \Comment{Delta cycle progression loop}
+          \While {runnable processes exist}\Comment{Immediate notifications loop}
 	     \State run all runnable processes
              \State trigger all immediate notifications
              \State make all sensitive processes runnable
@@ -750,7 +826,7 @@ However, as we will see in later sections, this approach will bare no fruits in 
 Therefore, we switch our interest in *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}; 
 allowing each process to have its own perception of simulated time, determined by the last event it received.
 
-\clearpage
+
 
 
 *** Causality Hazards 
@@ -790,13 +866,13 @@ Both groups present severe implementation difficulties.
 For conservative algorithms, model introspection and static analysis tools might be very difficult to develop,
 while the rollback mechanism of an optimistic algorithm may require complex entities, such as a hardware/software transactional memory \cite{Anane2015} .
 
+\clearpage
 
 
 * Methodology
-
+** TLM 2.0 translation
 
 \clearpage
-
 
 * Out of Order PDES with MPI
 The goal of this chapter is to present the process synchronization algorithm that will be applied and give their implementation using the MPI API.
@@ -1096,9 +1172,132 @@ Did you try at least one of these tools?
 
 []
 
-
 * Analysis
+** Time Complexity
+The following assumption is made: the time complexity of a deterministic DES (Section [[Time and Determinism]]), is of the form $\mathcal{O}(f(|\mathds{E}|))$.
+In the proposed OoO PDES:
+
+#+BEGIN_LATEX latex
+\begin{equation} 
+   |\mathdbs(E)| = f(|\mathbb{P}|, \min\{lookahead(P_i,P_j)\}_{i,j \leq |\mathbb{P}|}).
+\end{equation}
+#+END_LATEX
+
+In simpler terms: 
++ The total number of simulation events is highly sensitive to the number of null messages.
++ The number of null messages produced is proportional to the minimum lookahead value across the system.
++ In the worst case, the minimum lookahead will be 1. This introduces a qualitative shift in time complexity, which now becomes: 
+  $\mathcal{O}(f(t_end-t_start))$ with $t_{end}$ and $t_{start}$ being the timestamps of the first and last simulation events.
+This well established empirical observation \cite{Fujimoto1999} for simulators dependent on the CMB algorithm, has been confirmed.
+
+
+** Monotonicity of Communication
+In the DE MoC, any a communication function possessing the property $e_1 \sqsubset e_2 \implies g(e_1) \sqsubset g(e_2)$ is called *monotonic*.
+In the context of the proposed PDES, it can be easily proven that any communication function that uses a lookahead which is only influenced by $(P_i, P_j)$ is monotonic.
+The communication functions that are used in the case studies are monotonic.
+
+And here comes a reasonable question: What happens if the lookahead function is not only influenced by $(P_i, P_j)$.
+For example, consider the following situation: 
+at an airport, an airplane's departure is followed by the departure of a faster airplane.
+Both the flights are destined for the same target airport.
+The faster aircraft is meant to arrive at the target airport sooner.
+Using the visual understanding of the DE MoC from Section [[Causality and Concurrency]], the situation is captured in Figure \ref{fig:nonmon}.
+
+#+BEGIN_EXPORT latex
+\begin{figure}[htpb]
+\centering
+\begin{tikzpicture}[
+arrow/.style={draw,->,>=stealth},
+point/.style={circle,fill=black},
+every node/.style={node distance = 10},
+]
+\node (p1) at (0,2) {$p_1$};
+\node (p2) at (0,1) {$p_2$};
+\node (p1l) at (0.2,2) {};
+\node (p2l) at (0.2,1) {};
+\node (p1r) at (8,2) {};
+\node (p2r) at (8,1) {};
+
+\draw[arrow] (p1l.center) to (p1r);
+\path[arrow] (p2l.center) to (p2r);
+\path[draw]  (p1l.center) edge (p2l.center);
+
+\node[point, label={\small slow dep.}] (a) at (3,2) {};
+\node[point, label={\small fast dep.}] (b) at (5,2) {};
+\node[point, label=below:{\small fast arr.}] (c) at (2,1) {};
+\node[point, label=below:{\small slow arr.}] (d) at (6,1) {};
+
+%\node[point] (k) at (4,1) {};
+%\node [below of = k] {a};
+%\node[point, label=b] (l) at (7,2) {};
+
+\path[arrow] (b) edge node [right] {} (c);
+\path[arrow] (a) edge node [right] {} (d);
+%\path[arrow] (k) edge node [right] {} (l);
+
+\end{tikzpicture}
+\caption{Non-monotonic communication in the DE MoC} 
+\label{fig:nonmon}
+\end{figure}
+#+END_EXPORT
+
+How can a DES cope with non-monotonic communication?
+A naive approach would be to define a static execution schedule: first $p_1$ and then $p_2$.
+The naivety of the approach lies in the following self-contradiction: why run a simulation if you already know its outcome?
+
+The proposed PDES can not handle such a situation. 
+Timestamps in $p_2$ 's incoming link are not placed in an increasing timestamp order by $p_1$ and thus $p_1$ is bound to face a causality error: its local time will advance backwards.
+It is therefore evident that the only way to tackle this situation, while keeping the CMB synchronization mechanism, is to transform the model in a way that all communication functions are monotonic.
+To identify the needed transformation, one must take a closer look on the nature of the imbalance that causes non-monotonicity.
+The concept of airplane speed was introduced, and speed is nothing more than a backdoor for time: 
+alas, time has managed to break loose from the confining cage of logic time modeling; he demands explicit introduction into the system as a process!
+
+The needed transformation is depicted in Figure \ref{fig:nonmon}. The weights over the links denote the lookahead ($L$ for lookahead).
+The two airport processes, $p_1$ and $p_2$, no longer communicate directly with each other.
+They rely on process "time" to advance the flight through space.
+
+#+BEGIN_EXPORT latex
+\begin{figure}[htpb]
+\centering
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick]
+  %\tikzstyle{every state}=[fill=white,draw=none,text=white]
+
+  \node[state]         (p1)                         {$p_1$};
+  \node[state]         (time) [above right of=p1]   {$time$};
+  \node[state]         (p2)   [below right of=time] {$p_2$};
+
+  \path[every node/.style={sloped,anchor=south,auto=false}]
+        (p1)   edge [bend left]  node {$L(p_1, p_2)$} (time)
+        (p2)   edge [bend right] node {$L(p_2, p_1)$} (time)
+        (time) edge [loop above] node {1}           (time)
+               edge [bend right] node {1} (p2)
+               edge [bend left]  node {1} (p1);
+		
+\end{tikzpicture}
+\caption{Non-monotonic transformation using the CMB synchronization algorithm} 
+\label{fig:nonmon}
+\end{figure}
+#+END_EXPORT
+
+Process "time" self communicates, thus forms a causal loop.
+Process "time" is a *clock*, with the term "clock" being now formally defined as any process with a feedback loop governed by a computation function without a fixed-point.
+An intuitive understanding of this definition can be easily conceived, if one thinks of a digital logic NOT gate that has its output wired to its input.
+
+It is quite clear that this system has the worst-case time complexity of the proposed OoO PDES: the minimum lookahead is 1.
+A DES that always produces worst-case behavior is called a *step simulator* [fn:magic].
+
+For SystemC's DES the situation is quite similar.
+The transformation can be described in many ways, but the core idea remains the same:
+there is a need for an \texttt{sc\_clock} instance, which is nothing more than a predifined process, functioning in the same way as the "time" process.
+
+
+
+
+
 \clearpage
+
+[fn:magic] Handling non-monotonic communication, while having $\mathcal{O}(f(|\mathdbs{\mathds{E}}|))$ time complexity, is an interesting property, a DES might possess.
+           If this situation has not been explicitly identified, the author would like to claim the name \texttt{"Sander-Ungureanu-Sotiropoulos (SUS)"}, to describe this property.
 
 
 * Conclusion and Future Work
@@ -1119,7 +1318,8 @@ The following are the main research contributions of this work:
 
 ** Limitations
 + The theoretical description of the DE MoC in section [[The Discrete Event Model of Computation]] is far from complete.
-  It lacks of a Turing completeness proof.
+  Since the DE MoC is considered as an abstract machine, there should be a proof that would indicate its equivalence with some form of a Turing machine.
+  In the same spirit, Section [[Monotonicity of Communication]] assumes that a deterministic DES is equivalent to a deterministic Turing machine, without presenting a proof.
 
 + Intel's Xeon Phi coprocessor was not used as an experimentation tool, despite this being specified as a primary objective in the project plan.
   Its Multiple Instruction Multiple Date (MIMD) architecture and its highly parametirized MPI implementation, makes it an ideal platform for performing the proposed OoO PDES simulation.
@@ -1412,11 +1612,12 @@ int sc_main(int argc, char *argv[])
 The following code example should in theory lead to non-deterministic behavior.
 It models a race condition.
 The system contains 3 processes which access a sharedVariable: 2 of them write it and 1 reads it.
-At every clock pulse, all 3 processes are made *runnable*.
+At every clock pulse, all 3 processes are made runnable.
 In practice however there is a repeatable pattern: processes are selected in the order in which their modules are instantiated.
 If this holds, the one can draw the conclusion that logic time in SystemC has an implied third dimension: it is a vector $(t,n,p_{id}) \in \mathbb{N}^3$, and thus simulation events are totally ordered, which makes any simulation deterministic.
 SystemC's LRM explicitly states:
 \textit{"The order in which process instances are selected from the set of runnable processes is implementation-defined. However, if a specific version of a specific implementation runs a specific application using a specific input data set, the order of process execution shall not vary from run to run."}
+One could device the following terms to describe this situation: *non-deterministic yet repeatable* or *pseudo non-deterministic*.
 
 #+BEGIN_SRC cpp
   #include "systemc.h"
@@ -1510,7 +1711,6 @@ SystemC's LRM explicitly states:
 
 
 #+END_SRC
-
 
 * Use Case :noexport:
 In this chapter we describe the transaction level model we are going to use for conducting our experimentation.
@@ -1650,7 +1850,6 @@ We have the bare metal (newlib based) toolchain for compiling applications for t
 
 _COMMENT;_ What kind of application am I going to run on this platform?
 I see that most of the papers out there do some kind of mpeg2 decoding. That seems complex.
-
 
 * SystemC TLM 2.0    :noexport:
 Compared to a detailed hardware simulation, where communication is realized through a number of pin level events trigerring context switches inside the simulator, 
@@ -1855,10 +2054,6 @@ A modification of just the kernel will not suffice.
 
 \clearpage
 
-
-
-
-
 * Caches :noexport:
 
 ** Directory Based Cache Coherence
@@ -2005,7 +2200,6 @@ The Intel i7 uses a variant of a MESI protocol, called MESIF, which adds a state
 which sharing processor should respond to a request. It is designed to enhance performance in distributed
 memory organizations.
 
-
 * Graveyard :noexport:
 A common practice among modern system-level design tools/methodologies, like Intel's CoFluent Studio, is for the designer to construct two intermediate models;
 An application model, that is the behavioral view of the system and 
@@ -2020,3 +2214,40 @@ the partitioning of the application to the elements of the platform.
 + Header for every page
 + Section about FSM, put footnotes
 + The "Ingo Paradox"
++ Maybe add a dedication page
+#+BEGIN_EXPORT latex
+\begin{equation}
+\bigcup_{i=1}^{n} P_i = \mathds{E} \text{and} P_i \cap P_j = \emptyset \text{where} i,j,n \in \mathbb{N}, i \neq j, n=|\mathbb{P}|
+\end{equation}
+#+END_EXPORT
+
+
+
+
+* Completeness :noexport:
+As an axiom of the DE MoC, the following statement is proposed:
+
+\begin{equation} \label{eq:start}
+\forall{e}  \in \mathds{E} . \exists e_{start} \in \mathds{E} .  e_{start} \sqsubset e
+\end{equation}
+
+Event $e_{start}$ can be understood as the first event of the simulation, which is neither the outcome of communication nor execution, but just occurs.
+There is an intuitive way of "confirming" the validity of such an axiomatic proposition. 
+The presence of an endogenous point of primordial singularity, can be also found in the prevailing cosmological model for the universe ("Big Bang").
+Furthermore, the presence of another special event is assumed. Event $e_{end}$ can be understood as the simulation's termination:
+
+\begin{equation} \label{eq:end}
+\forall e \in \mathds{E} . \exists e_{end} \in \mathds{E} . e \sqsubset e_{end}
+\end{equation}
+
+With the introduction of $e_{start}$ and $e_{end}$, set $\mathds{E}$ becomes a *Bottomed Complete Partial Order* (BCPO).
+Having set $\mathds{E}$ as a BCPO brings forth a further classification of execution and communication functions.
+For example, scott-continuity
+These properties along with assumption \ref{eq:end} can be used when reasoning about a simulation's termination.
+A system that can be proven not to satisfy assumption \label{eq:end} is called a *Zeno model*[fn:zeno].
+
+
+[fn:zeno] A quite typical example of a non terminating DE simulation is Zeno's \textit{"Achilles and the Tortoise"} paradox, hence the term "Zeno model"
+\clearpage
+
+
