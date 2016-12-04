@@ -1,12 +1,9 @@
-#+TITLE: Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
+#+TITLE: SPELLCHECK Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
 #+AUTHOR:Konstantinos Sotiropoulos
 #+EMAIL: kisp@kth.se
 #+STARTUP: overview
 #+KEYWORDS: parallel discrete event simulation, conservative synchronization algorithms, transaction level models, SystemC TLM 2.0
 #+OPTIONS: toc:nil title:nil date:nil creator:nil email:nil author:nil broken-links:mark tasks:nil
-
-
-
 
 * Latex Preamble                                                     :ignore:
 #+LATEX_HEADER: \documentclass[11pt,a4paper,oneside,openright,abstractoff,titlepage,final,BCOR10mm]{scrreprt}
@@ -42,6 +39,8 @@
 #+LATEX_HEADER: \usepackage{dsfont}
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{arrows,shapes,automata}
+#+LATEX_HEADER: \usepackage{algorithm}
+#+LATEX_HEADER: \usepackage{algpseudocode}	
 
 
 * Titlepage                                                          :ignore:
@@ -131,7 +130,7 @@ My Master's Thesis project was sponsored by Intel Sweden AB and was supervised b
 Most of the work was carried out in Intel's offices in Kista, where I was kindly provided with all the necessary experimentation infastructure.\\
 
 Björn Runåker was the project's supervisor from the company's side.
-I would like to thank you Björn for placing your trust in me for carrying out this challenging task.
+I would like to thank you Björn, for placing your trust in me, for carrying out this challenging task.
 Furthermore, I would also like to thank Magnus Karlsson for his valuable feedback.\\
 
 Professor Ingo Sander and PhD student George Ungureanu were the examiner and academic advisor from the university's side. 
@@ -238,7 +237,6 @@ Section [[Research Methodology]] describes the research methodology followed.
 Section [[Objectives]] and [[Delimitations]] clarify the software engineering extend; what artifacts need to be constructed, in order to address the problem statement.
 A synopsys of this document can be found in [[Structure of this thesis]]
 
-
 ** Overview
 This project follows the work of Björn Runåker[fn:bjorn] \cite{Runaker2015} on his effort to parallelize the simulation of the next generation (5G) of radio base stations.
 Telecom radio base stations are indeed a very heterogeneous system.
@@ -282,6 +280,8 @@ In order to reach The answer of requires the development of the following softwa
 
 
 ** TODO Hypothesis
+The \texttt{primum movens}
+healthy amount of parallelism available in the simulation of Electronic Systems
 Given the fact that we are dealing with multiprocessor systems
 ample opportunities for parallelization 
 to leverage process synchronization overhead and yield a simulation speedup, 
@@ -306,15 +306,6 @@ This work presents a qualitative research on the field of Parallel Discrete Even
 The novelty of the subject makes qualitative research a necessary step for establishing the relevant theories and experimentation procedures needed by more quantitative approaches.
 The methodology applied is illustrated in Figure \ref{fig:methodology}.
 A further explanation of the figure is imminent:
-+ *Criticalism*: The reality of Parallel Discrete Event Simulator development is being historically determined by the evolution of computational hardware.
-+ *Conceptual*: Simulator development has not been properly associated with their relevant theoretical understanding: the Discrete Event Model of Computation.
-                Terms like process, time, concurrency, determinism and causality are inconsistently used and usually lack of a proper mathematical definition within a solid framework.
-		The development of the proposed Parallel Discrete Event Simulator is steered by this conceptual exploration.
-                The importance of formalizing concepts with mathematics before development can be seen in the book \textit{"From Mathematics to Generic Programming"} by Alexander Stepanov and Daniel Rose \cite{Stepanov2014}, 
-+ *Coded Case studies*: The proposed Parallel Discrete Event Simulator is tested by the implementation of the two case studies.
-+ *Inductive*: The hypothesis is tested against the successful implementation of the two case studies. 
-+ *Transferability*: The verification of two case studies can only be the basis step of inductive inference.
-                     There is still the induction step, that is hoped to be adressed by the proposition of a compiler, that will allow every Loosely-Timed Transaction Level Model to "fit" the proposed Parallel Discrete Event Simulator.
 
 #+BEGIN_EXPORT latex
 \begin{figure}[htpb]
@@ -343,7 +334,19 @@ A further explanation of the figure is imminent:
 \label{fig:methodology}
 \end{figure}
 #+END_EXPORT
-\clearpage
+
+
++ *Criticalism*: The reality of Parallel Discrete Event Simulator development is being historically determined by the evolution of computational hardware.
++ *Conceptual*: Simulator development has not been properly associated with their relevant theoretical understanding: the Discrete Event Model of Computation.
+                Terms like process, time, concurrency, determinism and causality are inconsistently used and usually lack of a proper mathematical definition within a solid framework.
+		The development of the proposed Parallel Discrete Event Simulator is steered by this conceptual exploration.
+                The importance of formalizing concepts with mathematics before development can be seen in the book \textit{"From Mathematics to Generic Programming"} by Alexander Stepanov and Daniel Rose \cite{Stepanov2014}, 
++ *Coded Case studies*: The proposed Parallel Discrete Event Simulator is tested by the implementation of the two case studies.
++ *Inductive*: The hypothesis is tested against the successful implementation of the two case studies. 
++ *Transferability*: The verification of two case studies can only be the basis step of inductive inference.
+                     There is still the induction step, that is hoped to be adressed by the proposition of a compiler, that will allow every Loosely-Timed Transaction Level Model to "fit" the proposed Parallel Discrete Event Simulator.
+
+
 
 
 ** Structure of this thesis
@@ -662,10 +665,14 @@ How does the human brain handles the relativistic nature of time; it infers tota
 Alas, human intuition is biased towards a deterministic understanding of the physical world.
 Intellect, though, is (hopefully) much more capable!
 
+\clearpage
+
 
 ** SystemC's Discrete Event Simulator
-Section [[Coroutines]] demonstrates how SystemC realizes the concept of a process.
-This section is complemented by the code examples found in Appendices \ref{AppendixA} and \ref{AppendixB}.
+Section [[Coroutines]] presents the fundamental mechanism behind SystemC's DES: coroutines.
+Sections [[The kernel]] to [[Event Notification and Process Yielding]] give an analytic description of the actions performed in SystemC's simulation environment.
+An algorithmic description of the simulator's main event loop can be found in Section [[SystemC's Main Event Loop]].
+The Section is complemented by the code examples found in Appendices \ref{AppendixA} and \ref{AppendixB}.
 
 *** Coroutines
 SystemC's distribution comes with a sequential realization of the DE MoC, referred to as the reference *SystemC simulation engine* \cite{OpenSystemCInitiative2012}.
@@ -703,11 +710,11 @@ The kernel is responsible for many things[fn:forward]:
 2. It sorts the global event queue according to timestamp order.
 3. It possesses a global perspective over logic time:
    *global time* advances according to the timestamp of the event (from the global event queue) last triggered.
-4. When the list of *runnable* processes has been depleted, it is his duty to trigger the next, according to timestamp order, event.
+4. When the list of runnable processes has been depleted, it is his duty to trigger the next, according to timestamp order, event.
    It first checks whether there are events in the *delta notification queue*. 
    Triggering these events do not advance global time.
    It then checks the global event queue.
-5. When triggering an event, it must identify which processes can be moved from the waiting to the runnable list. 
+5. When *triggering* an event, it must identify which processes can be moved from the waiting to the runnable list. 
    The decision is based on a process' sensitivity list.
 6. It is responsible for *context switching* between the running and a runnable process. 
    The selection of the running process from the list of runnable processes is implementation-defined.
@@ -756,42 +763,41 @@ The same applies for a value of \texttt{sc\_time(1, SC\_SEC)} with a time resolu
 [fn:unit] \texttt{SC\_TIME} is an enumeration: \texttt{SC\_SEC} for a second, \texttt{SC\_MS} for a millisecond etc.
 
 
-*** Events
+*** Event Notification and Process Yielding
 Events in SystemC are realized as instances of the class \texttt{sc\_event}.
-Processes perform event *notifications*, by calling either of these variations of the \texttt{sc\_event.notify} method:
+Processes perform event notifications, by calling either of these variations of the \texttt{sc\_event.notify} method:
 + \texttt{notify(sc\_time t)}:     (Scheduled occurence) The process adds the event to the global event queue. All sensitive processes will become runnable when the kernel triggers the event.
 + \texttt{notify()}:               (Immediate notify)    The process signals a flag within the kernel. All sensitive processes in the waiting list are moved to the runnable list, at the next context switch.
 + \texttt{notify(SC\_ZERO\_TIME)}: (Delayed occurence)   The process adds the event to delta notification queue. All sensitive processes in the waiting list are moved to the runnable list, after the runnable list becomes empty.
 
 
-Now that a metric for logic time has been established, we be more specific on a process yields.
-Yielding is explicitly stated by a calling:
-+ \texttt{wait()}
-+ \texttt{wait(sc\_time)}
-+ \texttt{wait(sc\_event)}
+Yielding is explicitly stated by a calling a variant of the \texttt{sc\_module.wait} method. The most important are:
++ \texttt{wait()}:            The process remains in the waiting list, until events in its sensitivity list are triggered.
++ \texttt{wait(sc\_time t)}   Before yielding, the process adds a newly created event in the global event queue, with timestamp = \texttt{t + global\_time}. It also becomes sensitive to this event.
++ \texttt{wait(sc\_event e)}  Before yielding, the process modifies its sensitity list, so as to include \texttt{e}
 
 
 
-*** The Simulation Procedure
+*** SystemC's Main Event Loop
+What follows is an algorithmic description of SystemC's main event loop.
 #+BEGIN_EXPORT latex
 \begin{algorithm}
-\caption{SystemC event loop, adopted from \cite{Schumacher2010}}
+\caption{SystemC's event loop (kernel's perspective)}
 \label{alg:kernel}
 \begin{algorithmic}[1]
 
-   \State run all processes 
-   \State order events
    \While{scheduled events exist}          \Comment{Global clock progression loop}
-      \State order events and trigger the event with the smallest timestamp
-      \State advance simulation time
+      \State order events in global event queue
+      \State trigger the event with the smallest timestamp
+      \State advance global time
       \State make all sensitive processes runnable
       \While {runnable processes exist}    \Comment{Delta cycle progression loop}
           \While {runnable processes exist}\Comment{Immediate notifications loop}
-	     \State run all runnable processes
+	     \State run a process
              \State trigger all immediate notifications
              \State make all sensitive processes runnable
          \EndWhile
-	 \State trigger all delayed events
+	 \State trigger all delta notifications
          \State make all sensitive processes runnable
        \EndWhile
    \EndWhile
@@ -809,25 +815,8 @@ Yielding is explicitly stated by a calling:
 
 ** Parallel Discrete Event Simulation
 Units [[Parallel Discrete Event Simulation(or)]] and [[Causality and Synchronization]] introduce the concept of Parallel Discrete Event Simulation (PDES) and identify the fundamental causality hazards.
-
-*** Prior Art
-The previous section has made evident that the reference implementation of the SystemC kernel assumes sequential execution and therefore can not utilize modern massively parallel host platforms. 
-The most logical step in achieving faster simulations is to realize concurrency, from interleaved process execution to simultaneous/parallel execution.
-By assigning each process to a different processing unit of the host platform (core or hardware thread) we enter the domain of *Parallel Discrete Event Simulation (PDES)*.
-After making the strategical decision that for improving a DE simulator's performance one must orchestrate parallel execution, 
-the first tactical decision encountered
-is whether to keep a single simulated time perspective, 
-or distribute it among processes.
-
-For PDES implementations that enforce global simulation time, the term *Synchronous PDES* has been coined in \cite{Schumacher2010}.
-In Synchronous PDES, parallel execution of processes is performed within a delta cycle. 
-With respect to Alg \ref{alg:kernel}, we can say that a Synchronous PDES parallelizes the execution of the innermost loop (line 4).
-However, as we will see in later sections, this approach will bare no fruits in the simulation of TLM Loosely Timed simulations, since delta cycles are never triggered \cite{Chen2012}.
-Therefore, we switch our interest in *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}; 
-allowing each process to have its own perception of simulated time, determined by the last event it received.
-
-
-
+In unit [[Prior Art]] we give an overview of prior art in the field of PDES in ESLD.
+is an event safe to execute
 
 *** Causality Hazards 
 The distribution of simulation time opens Pandora's box. 
@@ -869,151 +858,53 @@ while the rollback mechanism of an optimistic algorithm may require complex enti
 \clearpage
 
 
-* Methodology
-** TLM 2.0 translation
+*** Prior Art
+The previous section has made evident that the reference implementation of the SystemC kernel assumes sequential execution and therefore can not utilize modern massively parallel host platforms. 
+The most logical step in achieving faster simulations is to realize concurrency, from interleaved process execution to simultaneous/parallel execution.
+By assigning each process to a different processing unit of the host platform (core or hardware thread) we enter the domain of *Parallel Discrete Event Simulation (PDES)*.
+After making the strategical decision that for improving a DE simulator's performance one must orchestrate parallel execution, 
+the first tactical decision encountered
+is whether to keep a single simulated time perspective, 
+or distribute it among processes.
+
+For PDES implementations that enforce global simulation time, the term *Synchronous PDES* has been coined in \cite{Schumacher2010}.
+In Synchronous PDES, parallel execution of processes is performed within a delta cycle. 
+With respect to Alg \ref{alg:kernel}, we can say that a Synchronous PDES parallelizes the execution of the innermost loop (line 4).
+However, as we will see in later sections, this approach will bare no fruits in the simulation of TLM Loosely Timed simulations, since delta cycles are never triggered \cite{Chen2012}.
+Therefore, we switch our interest in *Out-of-Order PDES (OoO PDES)* \cite{Chen2015}; 
+allowing each process to have its own perception of simulated time, determined by the last event it received.
+
+The most important:
+RISC: Recoding infrastructure for SystemC \cite{Liu2015}.
+
+Miscellaneous:
+SystemC-SMP \cite{Mello2010}
+SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
+sc\_during \cite{Moy}
 
 \clearpage
 
-* Out of Order PDES with MPI
-The goal of this chapter is to present the process synchronization algorithm that will be applied and give their implementation using the MPI API.
 
-In units [[The Chandy/Misra/Bryant synchronization algorithm]] and [[On Demand Synchronization]] we present the conservative synchronization algorithms that will be evaluated.
+** Message Passing Interface
+Section [[Rationale]] presents the rationale behind choosing MPI, as the means for achieving spacial decomposition, in the proposed OoO PDES.
 In unit [[Semantics of point-to-point Communication in MPI]] and [[MPI Communication Modes]] we present the semantics of the Message Passing Interface (MPI) communication primitives.
-In unit [[MPI Realization of CMB]] we provide pseudo code for the realization of the CMB using the MPI communication primitives.
-In unit [[Existing PDES]] we give an overview of prior art in the field of PDES in ESLD.
+This Chapter is complemented by Appendix \ref{AppendixD}, where the reader can experience MPI's elegance, by means of an example implementation of the pipeline pattern.
+Please note that the term process in this section refers to the Operating System concept.
+
+*** Rationale
+*Message Passing Interface* 3.0 (MPI) was the preferred implementation framework for the proposed OoO PDES.
+Events are modeled as structured messages, and communication as message passing.
+The rationale behind this choice can be summarized as follows:
++ The ease of expressing process communication, that leads to improved readability and maintainability, when compared to other process manipulation APIs (e.g. POSIX)
++ Scalability. Tons of it. Any computing device or cluster with Internet Access, from a Raspberry Pi to Tianhe-2, is more than welcome to participate in the simulation.
+  If the MPI runtime environment is configured properly, the software developer may remain agnostic about the exact communication fabric (e.g. shared memory, TCP/IP, DAPL).
++ High performance. Prior to version 3.0, MPI was deemed a bad choice for applications confined in shared memory nodes. 
+  Threading APIs (e.g. OpenMP), or hybrid approached were a more favorable choice.   
+  With the introduction of MPI 3.0, shared memory regions, for conducting communication apart from message passing, can be exposed to processes.
+  
 
 
-** The Chandy/Misra/Bryant synchronization algorithm
-The synchronization algorithm at the heart of the proposed OoO PDES is known as the *Chandy/Misra/Bryant (CMB)* \cite{Bryant} \cite{Chandy1979}.
-Historically, it has been the first of the family of conservative synchronization algorithms \cite{Fujimoto1990}.
-
-According to the algorithm, the physical system to be simulated must be modeled as a number of communicating sequential *processes*.
-The system's state, a set of variables, is distributed in a disjoint way, across the processes.
-Computation is reactive; it is sparked by an event and produces further events and *side-effects* (changes in a subset of the system's variables).
-Each process keeps its own perspective of simulated time through a *clock* variable.
-The value of the clock is equal to the timestamp of the last event selected for computation.
-
-Based on the system's state segregation, a static determination of which processes are interdependent can be established.
-This is indicated by placing a *link* for each pair of dependent processes.
-From a process' perspective a link can be either *outgoing*, meaning that events are sent via the link, or *incoming* meaning that events are received through it.
-An incoming link must encapsulate a First-In-First-Out (FIFO) data structure for storing incoming events, in the order they are received.
-
-The order by which events are received is *chronological*; non decreasing timestamp order.
-This system-wide property is maintained by making each process select for computation the event that has the smallest timestamp.
-A formal proof of how this local property *induces* a system-wide property can be found in \cite{Bryant} \cite{Chandy1979}.
-Chronological reception of events is a necessary, but not sufficient, condition for ensuring *causality*.
-The algorithm deals with the "is an event safe to execute" dilemma by forcing a process to *block* until each of its incoming links contains an event.
-All the above are demonstrated in Listing \ref{alg:kernel}. 
-The synchronization algorithm is realized as a process' main event loop.
-
-#+BEGIN_LATEX
-\begin{algorithm}
-\caption{Process event loop, without deadlock avoidance}
-\label{alg:initial_CMB}
-\begin{algorithmic}[1]
-
-   \While{process clock < some T}  
-      \State \textbf{Block} until each incoming link FIFO contains at least one event
-      \State Pop event M, with the \textbf{smallest} timestamp across all incoming links.
-      \State Set process' \textbf{clock} = timestamp(M)
-      \State \textbf{React} to event M
-      \State \textbf{Communicate} resulting events over the appropriate links
-   \EndWhile
-
-\end{algorithmic}
-\end{algorithm}
-#+END_LATEX
-
-
-** Deadlock Avoidance
-The naive realization of the process' event loop presented in Listing \ref{alg:kernel} leads to deadlock situations like the one depicted in Figure [[fig:deadlock]].
-The queues placed along the outer loop are empty, thus simulation has halted, even though there are pending events (across the queues of the inner loop).
-A global simulation moderator could easily detect deadlocks and allow the process, that has access to the event with the global minimum timestamp, to resume execution.
-The presence of a moderator, however, would violate the distributed nature of the simulation, thus increasing the implementation complexity of the simulation environment.
-Furthermore, 
-
-For the context of this thesis, a distributed mechanism is more favorable.
-What follows is a presentation of a distributed mechanism for overcoming these situations, referred to as the *null-event deadlock avoidance* \cite{Fujimoto1999}.
-
-#+BEGIN_SRC ditaa  :file Figures/deadlock.png :cmdline -S --font "Times New Roman"
-+--------------+
-|ARL           |
-|@2            |----------------------+
-|              |                      |
-|             8|<------------------+  |
-|   ?          |                   |  |
-+--------------+                   |  |
-    ^  |                           |  |
-    |  |                           |  |
-    |  |                           |  |
-    |  |                           |  |
-    |  |                           |  |
-    |  |                           |  |
-    |  |                           |  :
-    :  v                           |  v
-+--------------+              +--------------+
-|      5       |              |       ?      |
-|              |------------->|6             |
-|              |              |              |
-|             ?|<=------------|              |
-|              |              |              |
-|CDG           |              |SKG           |
-|@3            |              |@5            |
-+--------------+              +--------------+
-#+END_SRC
-#+CAPTION: Deadlock scenario justifying the use of Null messages in the CMB
-#+NAME: fig:deadlock
-#+RESULTS:
-[[file:Figures/deadlock.png]]
-
-Figure demonstrates an air traffic simulation, where the airports (ARL, CDG and SKG) constitute the simulation processes.
-The events exchanged between the airports model flights, the time unit being arbitrary.
-At deadlock, every airport is at time 5.
-
-Furthermore, it is assumed that there is an *a priori* knowledge conserning the flight time between airports.
-This knowledge is referred to as the *lookahead* and takes the form of a function $lookahead:(PxP) \rightarrow time$
-For example, by selecting the distance between every airport to be 3 time units, one can deduce the following:
-since SKG is at 5 then ARL or CDG should not expect any event from SKG before 8.
-
-To communicate this fact, SKG could create a special kind of event, a *null event*, with no data value, but with a timestamp 8 (clock+lookahead) and place it on its outgoing links.
-A null event is still an event, so CDG would acknowledge it during the selection phase, thus being able to receive the flight from ARL.
-CDG now sits at 5 and in the same fashion it could broadcast a null event with timestamp 8.
-It is evident that the deadlock has been solved, at the expense of flooding the communication links with null events.
-
-
-#+BEGIN_LATEX
-\begin{algorithm}
-\caption{Process event loop, with deadlock avoidance}
-\label{alg:null-event}
-\begin{algorithmic}[1]
-
-   \While{process clock < some T}  
-      \State \textbf{Block} until each incoming link FIFO contains at least one event
-      \State Remove event M with the smallest timestamp from its FIFO.
-      \State Set process' clock = timestamp(M)
-      \State \textbf{React} to event M
-      \State \textbf{Communicate} either a null or meaningful event to each outgoing link with timestamp = clock + lookahead
-   \EndWhile
-
-\end{algorithmic}
-\end{algorithm}
-#+END_LATEX
-
-
-** Criticism
-The modified, for deadlock avoidance, algorithm is described in listing \ref{alg:null-event}.
-The important points one must notice with this deadlock avoidance mechanism are that:
-- Null events are created when a process updates its clock, that is upon processing an event.
-- Each process propagates null events on all of its outgoing links.
-- The efficiency of this mechanism is highly dependent on the designer's ability to determine sufficiently large lookaheads. 
-- The lookahead must be a function 
-
-
-** Semantics of point-to-point Communication in MPI
-_There is a problem here: There are two sections. Semantics of Nonblocking and Blocking communications in the MPI manual_
-
-The framework chosen for implementing the PDES is the *Message Passing Interface* 3.0 (MPI).
-Events are modeled as structured messages, while event diffusion/communication as message passing.
+*** Semantics of point-to-point Communication in MPI
 MPI is a message passing library interface specification, standardized and maintained by the Message Passing Interface Forum \cite{citation}.
 It is currently available for C/C++, FORTRAN and Java from multiple vendors (Intel, IBM, OpenMPI) \cite{citation}.
 MPI addresses primarily the message passing parallel programming model, 
@@ -1046,10 +937,8 @@ because it is each time overtaken by another message,
 sent from another source. 
 It is the programmer’s responsibility to prevent starvation in such situations.
 
-_COMMENT:_ Why did you choose MPI?
 
-
-** MPI Communication Modes
+*** MPI Communication Modes
 The MPI API contains a number of variants, or *modes*, for the basic communication primitives.
 They are distinguished by a single letter prefix (e.g. \texttt{MPI\_Isend(...)}, \texttt{MPI\_Irecv(...)}).
 As dictated by the MPI version 3.0, the following communication modes are supported \cite{MessagePassingInterfaceForum2012}:
@@ -1073,7 +962,7 @@ waiting for buffer space to become available or for a matching receive to be pos
 This behavior is preferable in many situations. 
 Consider a situation where a producer repeatedly produces new values and sends them to a consumer. 
 Assume that the producer produces new values faster than the consumer can consume them. 
-If buffered sends are used, then a buffer overflow will result. 
+If buffered sends are used, then a buffer overflow will eventually occur. 
 Additional synchronization has to be added to the program so as to prevent this from occurring. 
 
 *S for synchronous mode: \texttt{MPI\_Ssend(...)}*
@@ -1093,18 +982,159 @@ On some systems, this allows the removal of a hand-shake operation that is other
 A send operation that uses the ready mode has the same semantics as a standard send operation, or a synchronous send operation; 
 it is merely that the sender provides additional information to the system (namely that a matching receive is already posted), that can save some overhead. 
 
-Maybe you should consider non-blocking communication not as a *mode*.
-
-*I for non-blocking mode: \texttt{MPI\_Isend(...)}, \texttt{MPI\_Ibsend(...)}, \texttt{MPI\_Issend(...)} and \texttt{MPI\_Irecv(...)*
+*I for non-blocking mode: \texttt{MPI\_Isend(...)}, \texttt{MPI\_Ibsend(...)}, \texttt{MPI\_Issend(...)} and \texttt{MPI\_Irecv(...)}*
 Non-blocking message passing calls return control immediately (hence the prefix I), 
 but it is the user's responsibility to ensure that communication is complete, 
 before modifying/using the content of the data buffer.
 It is a complementary communication mode that works en tandem with all the previous.
 The MPI API contains special functions for testing whether a communication is complete, or even explicitly waiting until it is finished.
+In Appendix \ref{AppendixD} the reader can find an example use case for this communication mode.
+
+
+\clearpage
+
+
+* Out of Order PDES with MPI
+The goal of this chapter is to present the process synchronization algorithm that will be applied in the proposed OoO PDES.
+In Section [[The Chandy/Misra/Bryant synchronization algorithm]] and [[Deadlock Avoidance]] we present the conservative synchronization algorithm known as *Chandy Misra Bryantt* (CMB).
+In Section [[MPI Realization of CMB]] a pseudocode description of the CMB is demonstrated. The pseudocode incorporates MPI communication primitives.
+
+** The Chandy/Misra/Bryant synchronization algorithm
+The synchronization algorithm at the heart of the proposed OoO PDES is known as the *Chandy/Misra/Bryant (CMB)* \cite{Bryant} \cite{Chandy1979}.
+Historically, it has been the first of the family of conservative synchronization algorithms \cite{Fujimoto1990}.
+According to the algorithm, the physical system to be simulated must be modeled as a number of communicating sequential processes.
+The system's state, a set of variables, is partioned amongst the system's processes.
+Execution is reactive; it is sparked by an event and produces further events and side-effects (changes in the system's state variables).
+Each process keeps its own perspective of logic time through a counter.
+The counter advances according to the timestamp of the last event selected for execution.
+
+Based on the system's state segregation, a static determination of which processes are interdependent can be established.
+This is indicated by placing a *link* for each pair of dependent processes.
+From a process' perspective a link can be either outgoing, meaning that events are sent via the link, or incoming, meaning that events are received through it.
+An incoming link must encapsulate an unbounded [fn:kahn] First-In-First-Out (FIFO) data structure  for storing incoming events, in the order they are received.
+
+The order by which events are received is *chronological*; non decreasing timestamp order.
+This system-wide property is maintained by making each process select for computation the event that has the smallest timestamp.
+A formal proof of how this local property *induces* a system-wide property can be found in \cite{Bryant} \cite{Chandy1979}.
+
+Chronological reception of events is a necessary, but not sufficient, condition for ensuring *causality*.
+The algorithm deals with the "is an event safe to execute" dilemma by *blocking* a process until each of its incoming links contains an event.
+All the above are demonstrated in Algorithm \ref{alg:initial_CMB}. 
+The synchronization algorithm is realized as a process' main event loop.
+
+#+BEGIN_LATEX
+\begin{algorithm}
+\caption{Process event loop, without deadlock avoidance}
+\label{alg:initial_CMB}
+\begin{algorithmic}[1]
+
+   \While{process time < some T}  
+      \State \textbf{Block} until each incoming link contains at least one event
+      \State select event M, with the \textbf{smallest} timestamp across all incoming links.
+      \State set process' \textbf{counter} = timestamp(M)
+      \State \textbf{execute} event M
+      \State \textbf{communicate} resulting events over the appropriate links
+   \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+#+END_LATEX
+
+[fn:kahn] The system description is quite similar to that of another MoC called \textit{"Kahn process networks"} \cite{Editor2014}, which also uses unbounded FIFOs as a channel communication mechanism.
+          The difference is qualitative: the DE MoC incorporates timing semantics.
+          A Kahn process network is *untimed* by definition.
+
+
+** Deadlock Avoidance
+The naive realization of the process' event loop presented in Algorithm \ref{alg:initial_CMB} leads to deadlock situations, like the one depicted in Figure [[fig:deadlock]].
+The links placed along the outer loop are empty (dashed lines), thus simulation has halted, even though there are pending events (across the links of the inner loop).
+
+A global simulation moderator could easily detect deadlocks and allow the process, that has access to the event with the global minimum timestamp, to resume execution.
+The presence of a moderator, however, would violate the distributed nature of the simulation, and thus increase the implementation complexity of the simulation environment.
+For the context of this thesis, a distributed mechanism is more favorable.
+What follows is the presentation of a distributed mechanism for overcoming these situations, referred to as the *null-event deadlock avoidance* \cite{Fujimoto1999}.
+
+#+BEGIN_SRC ditaa  :file Figures/deadlock.png :cmdline -S --font "Times New Roman"
++--------------+
+|ARL           |--------------------------+
+|@2            |                          |
+|              |                          |
+|       arrival|<------------------+      |
+|  ?         @8|                   |      |
++--------------+                   |      |
+   ^     |                         |      |
+   |     |                         |      |
+   |     |                         |      |
+   |     |                         |      |
+   |     |                         |      |
+   |     |                         |      |
+   |     |                         |      :
+   :     v                         |      v
++--------------+              +-------------+
+|      arrival |              |           ? |
+|      @5      |------------->|arrival      |
+|              |              |@6           |
+|              |              |             |
+|             ?|<=------------|             |
+|CDG           |              |          SKG|
+|@3            |              |           @5|
++--------------+              +-------------+
+#+END_SRC
+#+CAPTION: Deadlock scenario justifying the use of Null messages in the CMB
+#+ATTR_LATEX: :width 0.64\linewidth 
+#+NAME: fig:deadlock
+[[file:Figures/deadlock.png]]
+
+Figure [[fig:deadlock]] demonstrates an air traffic simulation, where the airports (ARL, CDG and SKG) constitute the simulation processes.
+The events exchanged between the airports represent flights (the time unit being arbitrary).
+Furthermore, it is assumed that there is an *a priori* knowledge conserning the flight time between airports.
+This knowledge is referred to as the *lookahead* and takes the form of a function $(P \times P) \rightarrow \mathbb{N}$.
+By selecting the distance between every airport to be 3 time units, one can deduce the following:
+If SKG is at time 5, then ARL or CDG should not expect any flight arriving from SKG before time 8.
+
+The simulation is deadlocked: all of the airports contain an empty link and therefore, according to Algorithm \ref{alg:initial_CMB}, they must block.
+At deadlock, the counter values for each airport are: (ARL,2), (SKG,5), (CDG,3).
+The intuition behind any technique, that could break the deadlock, should rely on the followig observation:
+if CDG knew that SKG is at time 5, then it could be able to accept the incoming fligh from ARL, without breaking causality.
+
+To "communicate" this information, SKG could create a special kind of event, a *null event* that does not represent a flight. 
+Its timestamp should be 8 (counter+lookahead) and the event should be placed on all of SKG's outgoing links.
+With this null event, SKG is informing the other airports about its time perspective.
+A null event is still an event, so CDG would acknowledge it during the selection phase, and thus would be able to receive the flight from ARL.
+CDG now sits at 5 and in the same fashion it could broadcast a null event with timestamp 8, that would in turn unblock ARL.
+It is evident that the deadlock situation has been resolved, at the expense of flooding the communication links with null events.
+
+The modified, for deadlock avoidance, algorithm is described in Algorithm \ref{alg:null-event}.
+The important facts one must keep in mind with this deadlock avoidance mechanism are:
+- The logic time counter of a process is still determined by the last event selected for execution.
+- Null events are created when a process updates its logic time counter.
+- Each process propagates null events on all of its outgoing links.
+- The efficiency of this mechanism is highly dependent on the designer's ability to determine sufficiently large lookaheads. 
+
+#+BEGIN_LATEX
+\begin{algorithm}
+\caption{Process event loop, with deadlock avoidance}
+\label{alg:null-event}
+\begin{algorithmic}[1]
+
+   \While{process clock < some T}  
+      \State \textbf{Block} until each incoming link FIFO contains at least one event
+      \State Remove event M with the smallest timestamp from its FIFO.
+      \State Set process' clock = timestamp(M)
+      \State \textbf{React} to event M
+      \State \textbf{Communicate} either a null or meaningful event to each outgoing link with timestamp = clock + lookahead
+   \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+#+END_LATEX
 
 
 ** MPI Realization of CMB
-Listing \ref{alg:CMB_mpi} is a pseudo code, sketching out the CMB process event loop, using MPI's communication primitives.
+Listing \ref{alg:CMB_mpi} is a pseudo code, sketching out the CMB synchronization algorithm with null event deadlock avoidance, using MPI's communication primitives.
+The mechanism should be incorporated in a process' main event loop.
+It is quite obvious that the concept of an event has been reduced to a simple data structure, with the timestamp being the most important field.
+Much like SystemC, logic time modeling is an implied vector $(t,n,l)$: $t$ is the value of a process' counter, $n$ (delta) and $l$ are implied by, the event's position in the links' FIFO and the process' rank, respectively.
 #+BEGIN_LATEX
 \begin{algorithm}
 \caption{CMB Process event loop in MPI}
@@ -1115,33 +1145,93 @@ Listing \ref{alg:CMB_mpi} is a pseudo code, sketching out the CMB process event 
       \State post a MPI\_Irecv on each incoming peer process
       \State post a MPI\_Wait: block until every receive has been completed
       \State save each message received in a separate, per incoming link, FIFO.
-      \State identify message M with the smallest time-stamp
-      \State set clock = time-stamp(M)
+      \State identify message M with the smallest timestamp
+      \State set counter = timestamp(M)
       \State process message M
-      \State post a MPI\_Issend to each outgoing link L with time-stamp = clock + Lookahead(clock,L,...)
+      \State post a MPI\_Issend to each outgoing link L with timestamp = counter + Lookahead(myRank, recvRank)
    \EndWhile
 
 \end{algorithmic}
 \end{algorithm}
 #+END_LATEX
 
-Applications have specific communication patterns
 
-Also provides information about the application's communication behavior to the MPI implementation.
-
-*Topology mapping*
-_One of the major features of MPI's topology interface is that it can easily be used to adapt the MPI proces layout to the underlying network and system topology._
-
-non cartesian topologies
-
-What is the implementation type of the event?
-Let us custom pack them in one 64 bit integer.
-Extract them by mapping.
-
-Since you always send an event to your neighbors, either a meaningfull one or a null, why not broadcast?
+\clearpage
 
 
-** Evaluation Metrics
+
+
+* Methodology
+This chapter is a synoptic presentation [fn:github] of the case studies constructed for the evaluation of the proposed OoO PDES.
+Section [[Case Study 1: Airtraffic Simulation]] presents an airtraffic simulation, following the example presented in Section [[Deadlock Avoidance]].
+The Section is complemented with Appendix \ref{AppendixC}
+
+[fn:github] The source code for the case studies is publicly accessible in the following github repository: https://github.com/kromancer/Thesis.
+
+** Case Study 1: Airtraffic Simulation
+The topological arrangement of the airports is determined at compile time.
+For example, the 3 airport topology described in Figure [[fig:deadlock]] is demonstrated in Appendix \ref{AppendixC}
+Every airport is given a schedule of departures and the system's computational objective is to create a log of departures/arrivals per airport.
+
+An airport's main event loop is demonstrated in Figure \ref{fig:airport}.
+The series of communication primitives presented in Algorithm \ref{CMB_mpi} have almost the same aggregate effect as the collective communication primitive \texttt{MPI\_Neighbor\_Allgather}.
+There is one big difference however. 
+By employing this collective operation, communication and execution confront to the their simple definition, presented in Section [[The Discrete Event Model of Computation]], where both input and output require/produce one event.
+
+
+#+BEGIN_EXPORT latex
+\begin{figure}[htpb]
+\centering
+\begin{tikzpicture} [
+    auto,
+    decision/.style = { diamond, draw=black, thick, fill=white,
+                        text badly centered,
+                        inner sep=1pt, rounded corners },
+    block/.style    = { rectangle, draw=black, thick, 
+                        fill=white, text centered,
+                        rounded corners, minimum height=2em },
+    line/.style     = { draw, thick, ->, shorten >=2pt },
+  ]
+  % Define nodes in a matrix
+  \matrix [column sep=5mm, row sep=5mm] {
+                    & \node [decision] (n0) {\scriptsize\texttt{!readyToTerminate}};  & \\
+                    & \node [block, text centered] (n1) {\small\texttt{MPI\_Neighbor\_Allgather(...)}}; & \\
+                    & \node [block, text centered, text width=5cm] (n2) {\small\texttt{Event e = links.nextEvent()} \small\texttt{counter = e.tstamp()}};    & \\
+                    & \node [decision] (n3) {\scriptsize\texttt{!e.isOutbound()}};  & \node [block, text width=2.5cm] (n4) {\small\texttt{updateLog()} \texttt{sendbuf = e}}; & \\
+                    & \node [decision] (n5) {\scriptsize\texttt{!e.isInbound()}};   & \node [block] (n6) {\small\texttt{updateLog()}}; & \\
+                    & \node  (n7) {};   &  \node (n8) {};& \\
+                    & \node [decision, text width=2.8cm] (n9) {\scriptsize\texttt{links.isAnyEmpty()} \small\texttt{||} \scriptsize\texttt{!e.isOutbound()}};  & \\
+  };
+  % connect all nodes defined above
+  \begin{scope} [every path/.style=line]
+    \path (n0)        --    (n1);
+    \path (n1)        --    (n2);
+    \path (n2)        --    (n3);
+    \path (n3)        --    node [near start] {yes} (n4);
+    \path (n4)        --++ (2,0) |-    (n8);
+    \path (n3)        --    (n5);
+    \path (n5)        --    node [near start] {yes} (n6);
+    \path (n6)        --    (n8);
+    \path (n5)        --    (n7);
+    \path (n8)        --    (n7);
+    \path (n7)        --    (n9);
+    \path (n9)        --++ (-5,0) |-   node [near end] {yes}(n0);
+    \path (n9)        --++ (-5,0) |-   node [near end] {no} (n2);
+  \end{scope}
+\end{tikzpicture}
+\caption{Case Study 1: Airport's event loop (in \texttt{Process::run()})} 
+\label{fig:airport}
+\end{figure}
+#+END_EXPORT
+
+
+
+
+
+
+
+
+*** Evaluation Metrics
 The first evaluation metric of the proposed PDES implementation will be its performance against the reference SystemC kernel.
 It will be measured by experimentation on the project's use case.
 
@@ -1153,24 +1243,13 @@ The detection of causality errors must be facilitated in a per process level and
 A concrete realization of the accuracy metric comes in the form of a counter each process increments whenever it executes an event with a time-stamp lower than its clock (the time-stamp of the last processed event).
 Ideally, if the synchronization algorithms have been realized correctly, no causality errors should be detected.
 
-_COMMENT:_ This section will become more concrete when we start experimentation.
 
+** Case Study 2: Cache-coherent Multiprocessor
 
-** Existing PDES
-The most important:
-RISC: Recoding infrastructure for SystemC \cite{Liu2015}.
+*** TLM 2.0 translation
 
-Miscellaneous:
-SystemC-SMP \cite{Mello2010}
-SpecC \cite{Domer2011}, although the latter is not meant for SystemC.
-sc\_during \cite{Moy}
-
-_COMMENT:_ This section is incomplete that should not be incomplete in an Intermediate report. 
-Are you reinventing the wheel? 
-Did you try at least one of these tools?
 \clearpage
 
-[]
 
 * Analysis
 ** Time Complexity
@@ -1187,7 +1266,7 @@ In simpler terms:
 + The total number of simulation events is highly sensitive to the number of null messages.
 + The number of null messages produced is proportional to the minimum lookahead value across the system.
 + In the worst case, the minimum lookahead will be 1. This introduces a qualitative shift in time complexity, which now becomes: 
-  $\mathcal{O}(f(t_end-t_start))$ with $t_{end}$ and $t_{start}$ being the timestamps of the first and last simulation events.
+  $\mathcal{O}(f(t_{end}-t_{start}))$ with $t_{end}$ and $t_{start}$ being the timestamps of the first and last simulation events.
 This well established empirical observation \cite{Fujimoto1999} for simulators dependent on the CMB algorithm, has been confirmed.
 
 
@@ -1314,6 +1393,8 @@ The following are the main research contributions of this work:
   Time modeling is an implementation concern.
   For the abstract/mathematical description of the DE MoC, Lamport's "happens before" relationship \cite{Lamport1978} suffices in describing 
   the important concepts emanating (e.g. causality, concurrency and determinism).
++ *Topology mapping* To the best of our knowledge
+  One of the major features of MPI's topology interface is that it can easily be used to adapt the MPI proces layout to the underlying network and system topology.
 
 
 ** Limitations
@@ -1400,7 +1481,7 @@ this project is organically bound to the ongoing discussion about SystemC's new 
 
 ** Producer Consumer :ignore:
 #+BEGIN_EXPORT latex
-\subsection{Producer Consumer Example in SystemC}
+\subsection{SystemC: Producer Consumer}
 \label{AppendixA}
 #+END_EXPORT
 
@@ -1605,7 +1686,7 @@ int sc_main(int argc, char *argv[])
 
 ** Non-Determinism in SystemC :ignore:
 #+BEGIN_EXPORT latex
-\subsection{Non-Determinism in SystemC}
+\subsection{SystemC: Non-Determinic yet Repeatable}
 \label{AppendixB}
 #+END_EXPORT
 
@@ -1711,6 +1792,171 @@ One could device the following terms to describe this situation: *non-determinis
 
 
 #+END_SRC
+\clearpage
+
+** MPI Example: The Pipeline Pattern :ignore:
+#+BEGIN_EXPORT latex
+\subsection{MPI: The Pipeline Pattern}
+\label{AppendixD}
+#+END_EXPORT
+
+Much like an assembly line, 
+the pipeline pattern is useful when the problem at hand can be understood/modeled as a series of chained actions.
+The magic happens by overlapping execution and communication.
+Just think of how cars are manufuctured.
+The following example simulates the daily routine of an assembly line worker in a car factory.
+
+As with any MPI program, the reader must keep in mind that, unless explicitly specified, all of the processes will get a copy of the *same executable*.
+So as to differentiate control flow, the process must acquire its unique ID from the MPI runtime environment.
+#+BEGIN_SRC cpp
+#include "mpi.h"
+#include <iostream>
+#include <climits>
+#include <unistd.h> 
+
+int main(int argc, char *argv[])
+{
+    int myId, workerLeft, workerRight, numWorkers;
+    bool isFirst(false), isLast(false);
+    int completedTask(INT_MIN), nextTask(INT_MIN), taskAtHand(INT_MIN);
+
+    // Register with the factory's administration
+    MPI_Init(&argc, &argv);
+    // What is my id
+    MPI_Comm_rank(MPI_COMM_WORLD, &myId);
+    // How many workers in the factory
+    MPI_Comm_size(MPI_COMM_WORLD, &numWorkers);
+
+#+END_SRC
+
+Each assembly line worker must know who is on the left and who is on the right.
+#+BEGIN_SRC cpp
+    // Who is on my left
+    if( myId != 0)
+	workerLeft = myId - 1;
+    else
+    {
+	// The first worker has access to the raw materials
+	isFirst = true;
+	taskAtHand = 0;
+	nextTask = 0;
+    }
+
+    // Who is on my right
+    if( myId != numWorkers-1)
+	workerRight = myId + 1;
+    else
+    {
+	isLast = true;
+	workerRight = myId;	
+    }
+#+END_SRC
+
+
+For each worker there is a task at hand, a new task coming from its left and the task he completed.
+The communication is carried out by the conveyor belt, so it is not her/his concern.
+She/He just places the completed task on the belt, takes the next task and continues working.
+While the task at hand is being computed, communication is happening on the background.
+
+After some initial delay, proportional to the size of the pipeline (the number of workers), cars are produced at a constant rate!
+#+BEGIN_SRC cpp
+    // Daily routine (or lifelong slavery?)
+    while(1)
+    {
+	MPI_Request signals[2];
+	MPI_Status  statuses[2];
+	// Communicate but don't block
+	if (!isLast)
+	    MPI_Isend(&completedTask, 1, MPI_INT, workerRight, 1, MPI_COMM_WORLD, &signals[0]);
+	if (!isFirst)
+	    MPI_Irecv(&nextTask, 1, MPI_INT, workerLeft, 1, MPI_COMM_WORLD, &signals[1]);
+
+	// Simulate Work
+	taskAtHand++;
+	sleep(1);
+
+	// Work is done, prepare for communication
+	completedTask = taskAtHand;
+	taskAtHand    = nextTask;
+
+	// This is meaningful only to the last worker
+	if( completedTask == numWorkers)
+	    std::cout << "Car is ready!" << std::endl;
+
+	if (isFirst)
+	    MPI_Wait(&signals[0], &statuses[0]);
+	else if (isLast)
+	    MPI_Wait(&signals[1], &statuses[1]);
+	else
+	    MPI_Waitall(2, signals, statuses);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+#+END_SRC
+
+
+An open source and gratis implementation of the MPI API is the [[https://www.open-mpi.org/][Open MPI]].
+Under the assumption that an MPI implementation has been installed, the steps for compilation and execution look like:
+#+BEGIN_SRC sh
+mpic++ pipeline.cpp
+mpirun -n 4 a.out
+#+END_SRC
+
+\clearpage
+
+
+** Case Study 1: Airport Topology :ignore:
+#+BEGIN_EXPORT latex
+\subsection{Case Study 1: Airport Topology}
+\label{AppendixC}
+#+END_EXPORT
+
+The following header file describes the airport topology presented in Figure [[fig:deadlock]]
+#+BEGIN_SRC cpp
+// FILE: topology.hpp
+#ifndef TOPOLOGY_HPP
+#define TOPOLOGY_HPP
+#include <string>
+enum  Airport {SKG, ARL, CDG};
+const int lookahead[3][3] = { {0,3,2}, {3,0,1}, {2,1,0} };
+const Airport airports[3] = {SKG, ARL, CDG};
+const std::string airport_to_string[3] = { "SKG", "ARL", "CDG"};
+const int indegree[3] = {2,2,2};
+const int sources[3][2] = { {1,2}, {0,2},  {0,1} };
+const int sourceweights[3][2] = { {1,1}, {1,1}, {1,1}};
+#endif
+#+END_SRC
+
+The information is deserialized at runtime by \texttt{MPI\_Dist\_graph\_create\_adjacent}, 
+which is responsible for creating the airport's "neighborhood".
+Therefore, the fundamental communication primitive used, \texttt{MPI\_Neighbor\_allgather}, 
+will have all the necessary information to perform the broadcast and collect (allgather) operation.
+#+BEGIN_SRC cpp
+// FILE: process.cpp
+#include "process.hpp"
+#include "topology.hpp"
+
+Process::Process(int rank)
+    : rank(rank),
+      counter(0),
+      num_neighbors(indegree[rank]),
+      no_inbound_flights_in_links(true)
+{
+    MPI_Info info;
+    MPI_Dist_graph_create_adjacent( MPI_COMM_WORLD, \
+                                num_neighbors, \
+                                sources[rank], \
+                                sourceweights[rank], \
+                                num_neighbors, \
+                                sources[rank], \
+                                sourceweights[rank], \
+                                info, 1, &my_neighbors);
+...
+}
+#+END_SRC
+
 
 * Use Case :noexport:
 In this chapter we describe the transaction level model we are going to use for conducting our experimentation.
@@ -1850,6 +2096,7 @@ We have the bare metal (newlib based) toolchain for compiling applications for t
 
 _COMMENT;_ What kind of application am I going to run on this platform?
 I see that most of the papers out there do some kind of mpeg2 decoding. That seems complex.
+
 
 * SystemC TLM 2.0    :noexport:
 Compared to a detailed hardware simulation, where communication is realized through a number of pin level events trigerring context switches inside the simulator, 
@@ -2054,6 +2301,7 @@ A modification of just the kernel will not suffice.
 
 \clearpage
 
+
 * Caches :noexport:
 
 ** Directory Based Cache Coherence
@@ -2200,6 +2448,7 @@ The Intel i7 uses a variant of a MESI protocol, called MESIF, which adds a state
 which sharing processor should respond to a request. It is designed to enhance performance in distributed
 memory organizations.
 
+
 * Graveyard :noexport:
 A common practice among modern system-level design tools/methodologies, like Intel's CoFluent Studio, is for the designer to construct two intermediate models;
 An application model, that is the behavioral view of the system and 
@@ -2215,12 +2464,13 @@ the partitioning of the application to the elements of the platform.
 + Section about FSM, put footnotes
 + The "Ingo Paradox"
 + Maybe add a dedication page
++ What to do with this equation:
 #+BEGIN_EXPORT latex
 \begin{equation}
 \bigcup_{i=1}^{n} P_i = \mathds{E} \text{and} P_i \cap P_j = \emptyset \text{where} i,j,n \in \mathbb{N}, i \neq j, n=|\mathbb{P}|
 \end{equation}
 #+END_EXPORT
-
++ Tikzify
 
 
 
