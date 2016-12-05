@@ -1,5 +1,6 @@
 #ifndef TOPOLOGY_HPP
 #define TOPOLOGY_HPP
+
 #include <string>
 
 enum Airport {SKG, ARL, TXL};

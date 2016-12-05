@@ -72,11 +72,3 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-/*
-The most primitive computation, from the industrial revolution
-The Life of an assemly line worker, in a car factory.
-Much like an assembly line
-Overlapping Communication with Execution
-decomposed as a series of chained actions
-after the initial wait 
- */
