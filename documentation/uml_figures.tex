@@ -1,0 +1,178 @@
+% Created 2016-11-13 sön 16:58
+% Intended LaTeX compiler: pdflatex
+\documentclass[12pt,twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage[paper=a4paper,dvips,top=1.5cm,left=1.5cm,right=1.5cm, foot=1cm,bottom=1.5cm]{geometry}
+\renewcommand{\rmdefault}{ptm}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage[dvipsnames*,svgnames]{xcolor}
+\usepackage{tikz,ifthen,xstring,calc,pgfkeys,pgfopts}
+\usepackage{tikz-uml}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning,calc,shapes}
+\usepackage[utf8]{inputenc}
+\usepackage[swedish, english]{babel}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{color}
+\usepackage{mdwlist}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{bytefield}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{dcolumn}
+\usepackage{url}
+\usepackage[perpage,para,symbol]{footmisc}
+\usepackage[all]{hypcap}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.3} %% define a color called darkblue
+\definecolor{darkred}{rgb}{0.4,0.0,0.0}
+\definecolor{red}{rgb}{0.7,0.0,0.0}
+\definecolor{lightgrey}{rgb}{0.8,0.8,0.8}
+\definecolor{grey}{rgb}{0.6,0.6,0.6}
+\definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
+\hyphenpenalty=15000
+\tolerance=1000
+\newcommand{\rr}{\raggedright}
+\newcommand{\rl}{\raggedleft}
+\newcommand{\tn}{\tabularnewline}
+\newcommand{\colorbitbox}[3]{%
+\rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}\bitbox{#2}{#3}}
+\newcommand{\red}{\color{red}}
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex} {\normalfont\normalsize\bfseries}}
+\makeatother
+\makeatletter
+\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex} {\normalfont\normalsize\bfseries}}
+\makeatother
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{5}
+\renewcommand{\headrulewidth}{0pt}
+\lhead{Konstantinos Sotiropoulos}
+\chead{Ms Thesis Intermediate Report}
+\rhead{\date{\today}}
+\makeatletter
+\let\ps@plain\ps@fancy
+\makeatother
+\setlength{\headheight}{15pt}
+\author{Konstantinos Sotiropoulos}
+\date{\today}
+\title{Parallel Simulation of SystemC Loosely-Timed Transaction Level Models}
+\hypersetup{
+ pdfauthor={Konstantinos Sotiropoulos},
+ pdftitle={Parallel Simulation of SystemC Loosely-Timed Transaction Level Models},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 24.5.1 (Org mode 9.0)}, 
+ pdflang={English}}
+
+
+
+
+
+
+
+
+
+
+
+\begin{document}
+
+
+
+
+
+
+
+
+
+\begin{figure}[htpb]
+\centering
+\begin{tikzpicture}
+
+
+  \umlbasicstate[name=invalid, fill=white, anchor=north]{invalid}
+  \umlbasicstate[name=shared, right=12cm of invalid-body.north, anchor=north, fill=white]{shared}
+  \umlbasicstate[name=modified, below left=4cm and 4.5cm of shared-body.south, fill=white]{modified}
+  \umlstateinitial[above=1cm of invalid, name=initial]
+
+  \umltrans{initial}{invalid}
+
+  % Invalid transition  
+  \umltrans[arg={CPU\_read/}, pos=0.7, anchor1=30, anchor2=150]{invalid}{shared}
+  \umlVHtrans[anchor2=150, arg={CPU\_write/}, pos=1.6]{invalid}{modified}
+
+  % Shared transitions
+  \umltrans[anchor1=170, anchor2=10, arg={invalidate/}, pos=0.7]{shared}{invalid}
+  \umlVHtrans[anchor1=245, anchor2=30, arg={CPU\_write\_hit/}, pos=1.5]{shared}{modified}
+  \umlVHtrans[anchor1=280, anchor2=5, arg={CPU\_write\_miss/}, pos=1.5]{shared}{modified}
+  \umltrans[pos=1.2, arg={CPU\_read\_miss || CPU\_read\_hit}, recursive=90|10|3cm, recursive direction=top to right]{shared}{shared}
+
+  % Modified transitions
+  \umlVHtrans[pos=0.5, arg={CPU\_read\_miss/}, anchor1=90, anchor2=190]{modified}{shared}
+%  \umlVHtrans[arg={fetch/}, anchor1=70, anchor2=210]{modified}{shared}
+  \umlHVtrans[pos=0.75, anchor1=175, anchor2=245, arg={fetch\_invalidate/}]{modified}{invalid}
+  \umltrans[pos=2.2, arg={CPU\_write\_miss}, recursive=-20|280|2.3cm, recursive direction=right to bottom]{modified}{modified}
+  \umltrans[pos=1.5, arg={CPU\_read\_hit || CPU\_write\_hit}, recursive=260|200|4cm, recursive direction=bottom to left]{modified}{modified}
+  
+
+
+\end{tikzpicture}
+\end{figure}
+
+
+
+
+
+
+
+
+
+\begin{figure}[htpb]
+\centering
+\tikzstyle{int}=[draw, fill=blue!20, minimum size=2em]
+\tikzstyle{init} = [pin edge={to-,thin,black}]
+\begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+    \node [int, pin={[init]above:$v_0$}] (philosophical \\  assumption) {$\frac{1}{s}$};
+    \node (b) [left of=a,node distance=2cm, coordinate] {a};
+    \node [int, pin={[init]above:$p_0$}] (c) [right of=a] {$\frac{1}{s}$};
+    \node [coordinate] (end) [right of=c, node distance=2cm]{};
+    \path[->] (b) edge node {$a$} (a);
+    \path[->] (a) edge node {$v$} (c);
+    \draw[->] (c) edge node {$p$} (end) ;
+\end{tikzpicture}
+\caption{Research Methodology}
+\label{fig:methodology}
+\end{figure}
+
+
+\end{document}
+
+
+
+
+
+
+
+
+\end{document}

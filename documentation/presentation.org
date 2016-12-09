@@ -1,0 +1,111 @@
+#+TITLE: Parallel Simulation of SystemC Loosely-Timed Transaction Level Models
+#+AUTHOR: Konstantinos Sotiropoulos
+#+EMAIL: kisp@kth.se
+
+
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xcolor=x11names,compress]
+#+BEAMER_HEADER: \usepackage{graphicx}
+#+BEAMER_HEADER: \usepackage{tikz}
+#+BEAMER_HEADER: \usetikzlibrary{decorations.fractals}
+#+BEAMER_HEADER: \useoutertheme[subsection=false,shadow]{miniframes} 
+#+BEAMER_HEADER: \useinnertheme{default}
+#+BEAMER_HEADER: \usefonttheme{serif}
+#+BEAMER_HEADER: \usepackage{palatino}
+#+BEAMER_HEADER: \setbeamerfont{title like}{shape=\scshape}
+#+BEAMER_HEADER: \setbeamerfont{frametitle}{shape=\scshape}
+#+BEAMER_HEADER: \setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4} 
+#+BEAMER_HEADER: \setbeamercolor*{normal text}{fg=black,bg=white} 
+#+BEAMER_HEADER: \setbeamercolor*{alerted text}{fg=red} 
+#+BEAMER_HEADER: \setbeamercolor*{example text}{fg=black} 
+#+BEAMER_HEADER: \setbeamercolor*{structure}{fg=black} 
+#+BEAMER_HEADER: \setbeamercolor*{palette tertiary}{fg=black,bg=black!10} 
+#+BEAMER_HEADER: \setbeamercolor*{palette quaternary}{fg=black,bg=black!10} 
+#+BEAMER_HEADER: \renewcommand{\(}{\begin{columns}}
+#+BEAMER_HEADER: \renewcommand{\)}{\end{columns}}
+#+BEAMER_HEADER: \newcommand{\<}[1]{\begin{column}{#1}}
+#+BEAMER_HEADER: \renewcommand{\>}{\end{column}}
+
+#+BEGIN_EXPORT beamer
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\scshape Introduction}
+\begin{frame}
+\title{Presentation Title}
+%\subtitle{SUBTITLE}
+\author{
+	Cameron Bracken\\
+	{\it Humboldt State University}\\
+}
+\date{
+	\begin{tikzpicture}[decoration=Koch curve type 2] 
+		\draw[DeepSkyBlue4] decorate{ decorate{ decorate{ (0,0) -- (3,0) }}}; 
+	\end{tikzpicture}  
+	\\
+	\vspace{1cm}
+	\today
+}
+\titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Introduction}
+\tableofcontents
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\scshape Background}
+\subsection{frame 1}
+\begin{frame}{frame 1}
+\begin{itemize}
+\item Item A
+\item Item B
+\begin{itemize}
+\item Subitem 1
+\item Subtem 2
+\end{itemize}
+\item Item C
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{frame 2}
+\begin{frame}{frame 2}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{frame 3}
+\begin{frame}{frame 3}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\scshape Methodology}
+\subsection{frame 1}
+\begin{frame}{frame 1}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{frame 1}
+\begin{frame}{frame 1}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\scshape Results}
+\subsection{Frame 1}
+\begin{frame}{Frame 1}
+
+\end{frame}
+#+END_EXPORT 
