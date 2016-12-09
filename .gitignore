@@ -32,3 +32,8 @@ tramp
 *.mtc1
 *.out
 *.synctex.gz
+*.snm
+*.nav
+*.vrb
+Fatal
+_minted*
