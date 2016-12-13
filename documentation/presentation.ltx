@@ -1,4 +1,8 @@
 \documentclass{beamer}
+\usepackage{nccmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,automata,positioning}
+
 \mode<presentation> {
 %\usetheme{default}
 %\usetheme{AnnArbor}
@@ -47,6 +51,9 @@
 \usecolortheme{whale}
 %\usecolortheme{wolverine}
 
+\usefonttheme{serif} 
+
+
 %\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
 %\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
 \setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
@@ -75,17 +82,16 @@ Intel Sweden AB
 {
   \leavevmode%
   \hbox{%
-  \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+  \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
     \usebeamerfont{author in head/foot}\insertshortauthor%~~\beamer@ifempty{\insertshortinstitute}{}{(\insertshortinstitute)}
   \end{beamercolorbox}%
-  \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+  \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
     \usebeamerfont{title in head/foot}\insertshorttitle
   \end{beamercolorbox}%
-  \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
-    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{1em}
-    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,center]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{1pt} 
   \end{beamercolorbox}}%
-  \vskip0pt%
+  %\vskip0pt%
 }
 \makeatother
 
@@ -101,14 +107,38 @@ Intel Sweden AB
   \begin{tabular}{ll} 
   \noindent \tiny Supervisor: 		        & \tiny{Bj{\"o}rn Run{\aa}ker (Intel Sweden AB)} \\ 
   \noindent \tiny Examiner:  	 		& \tiny{Prof. Ingo Sander (KTH)}\\ 
-  \noindent \tiny Academic adviser: 	        & \tiny{PhD student George Ungureanu (KTH)}
+  \noindent \tiny Academic advisor: 	        & \tiny{PhD student George Ungureanu (KTH)}
 \end{tabular}
-
 \end{frame}
 
+
+
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor%~~\beamer@ifempty{\insertshortinstitute}{}{(\insertshortinstitute)}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,center]{date in head/foot}%
+    \insertframenumber{} / \inserttotalframenumber\hspace*{1pt} 
+  \end{beamercolorbox}}%
+  %\vskip0pt%
+}
+\makeatother
+
+
+
+
+
+
+
 \begin{frame}
-\frametitle{Overview} % Table of contents slide, comment this block out to remove it
-\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\frametitle{Overview} 
+\tableofcontents
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -116,120 +146,323 @@ Intel Sweden AB
 %----------------------------------------------------------------------------------------
 
 %------------------------------------------------
-\section{First Section} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
+\section{Introduction}
 %------------------------------------------------
 
-\subsection{Subsection Example} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
+\subsection{Motivation}
 
 \begin{frame}
-\frametitle{Paragraphs of Text}
-Sed iaculis dapibus gravida. Morbi sed tortor erat, nec interdum arcu. Sed id lorem lectus. Quisque viverra augue id sem ornare non aliquam nibh tristique. Aenean in ligula nisl. Nulla sed tellus ipsum. Donec vestibulum ligula non lorem vulputate fermentum accumsan neque mollis.\\~\\
-
-Sed diam enim, sagittis nec condimentum sit amet, ullamcorper sit amet libero. Aliquam vel dui orci, a porta odio. Nullam id suscipit ipsum. Aenean lobortis commodo sem, ut commodo leo gravida vitae. Pellentesque vehicula ante iaculis arcu pretium rutrum eget sit amet purus. Integer ornare nulla quis neque ultrices lobortis. Vestibulum ultrices tincidunt libero, quis commodo erat ullamcorper id.
+  \frametitle{Motivation}
+  \begin{itemize}
+  \item This project stems from the work of Bj{\"o}rn Run{\aa}ker:\\
+    \hspace*{20pt} speeding up the simulation of 5G radio base stations.
+    \vskip 0.6cm
+  \item A \textbf{coarse-grained} approach was adopted: \\
+    \hspace*{20pt} multiple instantiations of SystemC's simulation engine.
+    \vskip 0.6cm
+  \item But motivated a \textbf{finer-grained} approach: \\
+    \hspace*{20pt} parallelism within a single instance?
+  \end{itemize}
 \end{frame}
 
 %------------------------------------------------
+\subsection{Problem Statement}
 
 \begin{frame}
-\frametitle{Bullet Points}
+  \frametitle{Problem Statement}
+  \begin{itemize}
+  \item The verdict is categorical: \\
+    \hspace*{20pt} SystemC's Reference Simulation Environment \\
+    \hspace*{20pt} must be \textbf{bypassed}.
+    \vskip 0.6cm
+  \item Transaction Level Modeling in SystemC:\\
+    \hspace*{20pt}\textbf{breaks the separation of concerns} between\\
+    \hspace*{17pt} execution and communication.
+        \vskip 0.6cm
+  \item \textbf{Address the question:} \\
+    \hspace*{20pt} can we transform a SystemC TLM 2.0 LT model simulation \\
+    \hspace*{20pt} into a parallel application? \\
+  \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\subsection{Purpose}
+
+\begin{frame}
+  \frametitle{Purpose}
+  \begin{itemize}
+  \item SystemC TLM 2.0 used to construct \textbf{Virtual Platforms}: \\
+    \hspace*{20pt} enabling hardware/software co-simulation.
+    \vskip 0.6cm
+  \item From SystemC Evolution Day 2016: \\
+    \hspace*{16pt} \textit{"SystemC must embrace true parallelism \\
+    \hspace*{20pt} otherwise it will go down the same path as the dinosaurs"}
+  \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\subsection{Qualitative Research Methodology}
+
+\begin{frame}
+  \frametitle{Qualitative Research Methodology}
+  \resizebox{0.95\textwidth}{!}{
+    \centering
+    \tikzstyle{block} = [draw, fill=white, rectangle, minimum height=3em, minimum width=6em]
+    \tikzstyle{sum} = [draw, fill=blue!20, circle, node distance=1cm]
+    \tikzstyle{input} = [coordinate]
+    \tikzstyle{output} = [coordinate]
+    \tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+    % The block diagram code is probably more verbose than necessary
+    \begin{tikzpicture}[node distance=3cm]%auto,>=latex']
+      % We start by placing the blocks
+      \node [block, pin={[pinstyle]above:Philosophical Assumption}] (crit) {\small Criticalism};
+      \node [block, pin={[pinstyle]below:Research Approach}, right of=crit] (conc) {\small Conceptual};
+      \node [block, pin={[pinstyle]above:Research Strategy}, right of=conc, text width=2.5cm, align=center] (ind) {\small Induction on Case Studies};
+      \node [block, pin={[pinstyle]below:Quality Assurance}, right of=ind] (tra) {\small Transferability};
+
+      % Once the nodes are placed, connecting them is easy. 
+      \draw [draw,->]  (crit) -- node {} (conc);
+      \draw [->]       (conc) -- node {} (ind);
+      \draw [->]       (ind) --  node {} (tra);
+
+    \end{tikzpicture}
+  }
+\end{frame}
+
+
+%------------------------------------------------
+\section{Background}
+%------------------------------------------------
+
+\subsection{SystemC LT TLMs}
+
+%------------------------------------------------
+\begin{frame}
+  \frametitle{The Role of SystemC TLM 2.0}
+  \begin{figure}
+    \centering
+    \includegraphics[width=.95\textwidth]{Figures/tlm_as_wrapper.png}
+  \end{figure}
+  \vskip 0.6cm
+  Enabling the reuse of IP components in a "plug and play" fashion.
+\end{frame}
+%------------------------------------------------
+
+
+
+%------------------------------------------------
+\begin{frame}
+  \frametitle{The Role of SystemC TLM 2.0}
+  \begin{figure}
+    \centering
+    \includegraphics[width=.95\textwidth]{Figures/tlm_as_wrapper.png}
+  \end{figure}
+  \vskip 0.6cm
+  Enabling the reuse of IP components in a "plug and play" fashion.
+\end{frame}
+%------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{The DE Model of Computation}
+
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{The DE Model of Computation}
+
 \begin{itemize}
-\item Lorem ipsum dolor sit amet, consectetur adipiscing elit
-\item Aliquam blandit faucibus nisi, sit amet dapibus enim tempus eu
-\item Nulla commodo, erat quis gravida posuere, elit lacus lobortis est, quis porttitor odio mauris at libero
-\item Nam cursus est eget velit posuere pellentesque
-\item Vestibulum faucibus velit a augue condimentum quis convallis nulla gravida
+\item Provides the \textbf{operational semantics} of: \\
+  \hspace*{20pt} Electronic System-Level Design Languages.
+  \vskip 0.6cm
+\item A model is a system of: \\
+  \hspace*{20pt} \textbf{processes} that \textbf{execute} and \textbf{communicate}
+  \vskip 0.6cm
+\item Logic Time vs Real Time: \\
+  \hspace*{20pt} logic time is also relativistic.
 \end{itemize}
-\end{frame}
 
+\end{frame}
 %------------------------------------------------
 
+
+%------------------------------------------------
 \begin{frame}
-\frametitle{Blocks of Highlighted Text}
-\begin{block}{Block 1}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue. Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan dolor.
-\end{block}
+\frametitle{The DE Manifold}
 
-\begin{block}{Block 2}
-Pellentesque sed tellus purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum quis magna at risus dictum tempor eu vitae velit.
-\end{block}
+\resizebox{0.95\textwidth}{!}{
+\begin{tikzpicture}[
+    arrow/.style={draw,->,>=stealth},
+    point/.style={circle,fill=black},
+    every node/.style={node distance = 10},
+  ]
+  \node (p1) at (0,2) {$p_1$};
+  \node (p2) at (0,1) {$p_2$};
+  \node (p3) at (0,0) {$p_3$};
+  \node (p1l) at (0.2,2) {};
+  \node (p2l) at (0.2,1) {};
+  \node (p3l) at (0.2,0) {};
+  \node (p1r) at (8,2) {};
+  \node (p2r) at (8,1) {};
+  \node (p3r) at (8,0) {};
 
-\begin{block}{Block 3}
-Suspendisse tincidunt sagittis gravida. Curabitur condimentum, enim sed venenatis rutrum, ipsum neque consectetur orci, sed blandit justo nisi ac lacus.
-\end{block}
+  \path[draw] (p1l.center) edge (p3l.center);
+  \draw[arrow] (p1l.center) to (p1r);
+  \path[arrow] (p2l.center) to (p2r);
+  \path[arrow] (p3l.center) to (p3r);
+
+  \node[point] (a) at (1,2) {};
+  \node [below of = a] {a};
+  \node[point] (b) at (2.5,2) {};
+  \node [below of = b] {b};
+  \node[point] (c) at (1,1) {};
+  \node [below of = c] {c};
+  \node[point] (d) at (5.5,1) {};
+  \node [below of = d] {d};
+  \node[point] (e) at (1.75,0) {};
+  \node [below of = e] {e};
+  \node[point] (f) at (7,0) {};
+  \node [below of = f] {f};
+
+  \path[arrow] (b) edge node [right] {} (c);
+  \path[arrow] (d) edge node [right] {} (f);
+\end{tikzpicture}
+}
+
+\vskip 0.2cm
+
+\textbf{Execution:} \\
+\begin{fleqn}
+  \begin{align*}
+    b = f(a) \implies a \propto b \implies a \sqsubset b
+    \end{align*}
+\end{fleqn}
+
+\vskip 0.4cm
+
+\textbf{Communication:} \\
+\begin{fleqn}
+  \begin{align*}
+    c = g(b) \implies b \propto c \implies b \sqsubset c
+    \end{align*}
+\end{fleqn}
+
+
+
+
 \end{frame}
-
 %------------------------------------------------
 
+\subsection{SystemC's DES}
+
+%------------------------------------------------
 \begin{frame}
-\frametitle{Multiple Columns}
-\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
-
-\column{.45\textwidth} % Left column and width
-\textbf{Heading}
-\begin{enumerate}
-\item Statement
-\item Explanation
-\item Example
-\end{enumerate}
-
-\column{.5\textwidth} % Right column and width
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue. Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan dolor.
-
-\end{columns}
+  \frametitle{SystemC's DES}
+  \begin{itemize}
+  \item A realization of the DE MoC: \\
+    \hspace*{20pt} is a \textbf{Discrete Event Simulator (DES)}.
+    \vskip 0.6cm
+  \item SystemC's DES: \\
+    \hspace*{20pt} uses \textbf{coroutines} to emulate space dimensionality.
+    \vskip 0.6cm
+  \item Enforces a global perspective on logic time: \\
+    \hspace*{20pt} since space is emulated.
+    \vskip 0.6cm
+  \end{itemize}
 \end{frame}
-
-%------------------------------------------------
-\section{Second Section}
 %------------------------------------------------
 
+
+\subsection{Parallel DES}
+
+%------------------------------------------------
 \begin{frame}
-\frametitle{Table}
-\begin{table}
-\begin{tabular}{l l l}
-\toprule
-\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-\midrule
-Treatment 1 & 0.0003262 & 0.562 \\
-Treatment 2 & 0.0015681 & 0.910 \\
-Treatment 3 & 0.0009271 & 0.296 \\
-\bottomrule
-\end{tabular}
-\caption{Table caption}
-\end{table}
+  \frametitle{Parallel DES}
+  \begin{itemize}
+  \item A Parallel DES preserves spatial decomposition: \\
+    \hspace*{20pt} processes must keep their own perspective of logic time.
+    \vskip 0.6cm
+  \item Communication is \textbf{Synchronization}: \\
+    \hspace*{20pt} a global perspective of logic time is realized \\
+    \hspace*{20pt} through communication.
+  \end{itemize}
 \end{frame}
-
 %------------------------------------------------
 
+
+%------------------------------------------------
 \begin{frame}
-\frametitle{Theorem}
-\begin{theorem}[Mass--energy equivalence]
-$E = mc^2$
-\end{theorem}
-\end{frame}
+  \frametitle{Causality Hazard}
+  \resizebox{0.95\textwidth}{!}{
+    \centering
+    \begin{tikzpicture}[
+        arrow/.style={draw,->,>=stealth},
+        point/.style={circle,fill=black},
+        every node/.style={node distance = 10},
+      ]
 
+      \node (p1) at (0,2) {$p_1$};
+      \node (p2) at (0,1) {$p_2$};
+      \node (p3) at (0,0) {$p_3$};
+
+      \node (p1l) at (0.2,2) {};
+      \node (p2l) at (0.2,1) {};
+      \node (p3l) at (0.2,0) {};
+
+      \node (p1r) at (8,2) {};
+      \node (p2r) at (8,1) {};
+      \node (p3r) at (8,0) {};
+
+      \path[draw] (p1l.center) edge (p3l.center);
+
+      \draw[arrow] (p1l.center) to (p1r);
+      \path[arrow] (p2l.center) to (p2r);
+      \path[arrow] (p3l.center) to (p3r);
+
+      \node[point] (a) at (1,2) {};
+      \node [below of = a] {a};
+      \node[point] (b) at (3.5,2) {};
+      \node [below of = b] {b};
+
+      \node[point] (e) at (3,1) {};
+      \node [below of = e] {e};
+      \node[point] (f) at (4.5,1) {};
+      \node [below of = f] {f};
+
+      \node[point] (c) at (1,0) {};
+      \node [below of = c] {c};
+      \node[point] (d) at (1.75,0) {};
+      \node [below of = d] {d};
+
+      \path[arrow] (b) edge node [right] {} (f);
+      \path[arrow] (d) edge node [right] {} (e);
+    \end{tikzpicture}
+  }
+
+  \vskip 0.6cm
+
+  Event \textbf{$e$} might occur earlier in real time than \textbf{$f$}. \\
+  \vskip 0.2cm
+  Event \textbf{$e$} may causally affect event \textbf{$f$}. \\
+  \vskip 0.2cm
+  How can $p_2$ determine when it is safe to advance its logic time perspective?
+\end{frame}
 %------------------------------------------------
-
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-\frametitle{Verbatim}
-\begin{example}[Theorem Slide Code]
-
-\end{example}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}
-\frametitle{Figure}
-Uncomment the code on this slide to include your own image from the same directory as the template .TeX file.
-%\begin{figure}
-%\includegraphics[width=0.8\linewidth]{test}
-%\end{figure}
-\end{frame}
-
-
-
-
-
 
 
 
