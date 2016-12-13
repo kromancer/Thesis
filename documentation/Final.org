@@ -253,8 +253,10 @@ the feasibility and merits of a "fine-grained" treatment, where parallelism is a
 [fn:bjorn] Björn Runåker works as a Platform Application Engineer for Intel in Stockholm: https://www.linkedin.com/in/runaker
 
 ** Problem Definition
-The analytic description of the SystemC's simulation environment, presented in Section [[SystemC's Discrete Event Simulator]], yields a categorical verdict: if parallel simulation is to be achieved, a new simulation environment must be built, from the ground up.
-
+The analytic presentation of SystemC's simulation environment, 
+presented in Section [[SystemC's Discrete Event Simulator]], 
+yields a categorical verdict: if parallel simulation is to be achieved, 
+a new simulation environment must be built, from the ground up.
 
 ** Purpose
 An increasing amount of an Electronic System's (ES) expected use value is becoming software based.
@@ -274,7 +276,6 @@ The engineering extend of this thesis aims at producing the following artifacts:
 + An MPI realization of the Chandy Misra Bryantt process synchronization algorithm that would be the cornerstone of the proposed Parallel Discrete Event Simulator (PDES).
 + Case Study 1: An airtraffic simulation, as the first evaluation framework for the proposed PDES.
 + Case Study 2: Two versions of a Cache-coherent multiprocessor model: the first expressed in SystemC TLM 2.0 and the second being "manually compiled" from the first, in order to "fit" the proposed PDES.
-
 
 ** Hypothesis
 The \textit{primum movens} of this project can be summarized as follows: there is a healthy amount of parallelism available in the simulation of Electronic Systems, especially in the context of virtual platforms, where hardware and software are co-simulated.
@@ -336,8 +337,6 @@ A further explanation of the figure is imminent:
 + *Inductive*: The hypothesis is tested against the successful implementation of the two case studies. 
 + *Transferability*: The verification of two case studies can only be the basis step of inductive inference.
                      There is still the induction step, that is hoped to be addressed by the proposition of a compiler, that will allow every Loosely-Timed Transaction Level Model to "fit" the proposed Parallel Discrete Event Simulator.
-
-
 
 ** Structure of this thesis
 The chapter assumes familiarity with C++.
@@ -562,7 +561,6 @@ However, one would argue that this is a distortion of reality; in modern multipr
 Given our critical approach on reality, we therefore encourage the reader to question this trend.
 For example, in XMOS' XS1 architecture \cite{May2009}, the separation of concerns has been directly realized in hardware.
 
-
 *** Causality and Concurrency
 The relationship *"causally affects"*, denoted by the symbol $\propto$, is introduced as an irreflexive, antisymmetric and transitive binary relationship on the set $\mathds{E}$.
 *Causality*, as a philosophical assumption about the behaviour of a system, can now be mathematically captured by the following three axioms:
@@ -632,12 +630,12 @@ every node/.style={node distance = 10},
 \path[arrow] (b) edge node [right] {} (c);
 \path[arrow] (d) edge node [right] {} (f);
 \end{tikzpicture}
-\caption{DE space-time decomposition} 
+\caption{DE spacetime decomposition} 
 \label{fig:DE}
 \end{figure}
 #+END_EXPORT
 
-Figure \ref{fig:DE} provides a visual understanding of a DE system, as a space-time diagram.
+Figure \ref{fig:DE} provides a visual understanding of a DE system, as a spaceXtime diagram.
 A discrete perception of space is obtained by process decomposition (y-axis), while the perception of time (x-axis) is obtained by process actions.
 The horizontal arrows indicate process execution, while non-horizontal arrows indicate process communication.
 Events are represented as points in this plane.
@@ -857,7 +855,6 @@ It is this lack of a SystemC TLM 2.0 compatible OoO PDES framework that justifie
 
              
 
-
 *** Causality Hazards 
 The distribution of simulation time opens up Pandora's box.
 Protecting an OoO PDES from *causality hazards* requires:
@@ -960,11 +957,11 @@ TLM as a language, unlike C/C++, VHDL or pure SystemC, is not meant for describi
 Its role is to make these individual IP blocks communicate with each other, as demonstrated in Figure [[fig:tlm_as_wrapper]].
 
 #+BEGIN_SRC ditaa :file Figures/tlm_as_wrapper.png :cmdline -S --font "Times New Roman"
-                                                                           +-----------------------------+
-                                                                           |                             |
- ------------------------------------------------------------------------> | Pure SystemC module for bus |
-         |                         |                          |            |                             |
-         v                         v                          v            +-----------------------------+
+                                                                           +-------------------+
+                                                                           |                   |
+ ------------------------------------------------------------------------> | Memory Mapped Bus |
+         |                         |                          |            |                   |
+         v                         v                          v            +-------------------+
 +--------+----------+     +--------+----------+      +--------+----------+
 |    TLM Wrapper    |     |    TLM Wrapper    |      |    TLM Wrapper    |
 |                   |     |                   |      |                   |
@@ -977,6 +974,7 @@ Its role is to make these individual IP blocks communicate with each other, as d
 |  +-------------+  |     |  +-------------+  |      |  +-------------+  |
 +-------------------+     +-------------------+      +-------------------+
 #+END_SRC
+
 #+CAPTION: TLM 2.0 as a mixed language simulation technology
 #+NAME: fig:tlm_as_wrapper
 [[file:Figures/tlm_as_wrapper.png]]
@@ -1098,7 +1096,6 @@ The following table lists all fields applicable on a \texttt{tlm\_generic\_paylo
 + *DMI hint:* A hint given to the initiator of whether he can bypass the transport interface and access a target's memory directly through a pointer.
 + *Response status:* The initiator must set it to \texttt{TLM\_INCOMPLETE\_RESPONSE} prior to initiating the transaction. The target will set it to an appropriate value indicating the outcome of the transaction. For example for a successful transaction the value is \texttt{TLM\_OK\_RESPONSE} 
 + *Extensions:* The mechanism for allowing the generic payload to carry protocol specific attributes.
-
 
 *** Coding Styles and Transport Interfaces
 TLM defines two coding styles: the *Loosely-Timed* (LT) and the *Approximately-Timed* (AT).
@@ -1305,7 +1302,6 @@ The synchronization algorithm is realized as a process' main event loop.
 [fn:kahn] The system description is quite similar to that of another MoC called \textit{"Kahn process networks"} \cite{Editor2014}, which also uses unbounded FIFOs as a channel communication mechanism.
           The difference is qualitative: the DE MoC incorporates timing semantics.
           A Kahn process network is *untimed* by definition.
-
 
 ** Deadlock Avoidance
 The naive realization of the process' event loop presented in Algorithm \ref{alg:initial_CMB} leads to deadlock situations, like the one depicted in Figure [[fig:deadlock]].
@@ -1553,7 +1549,7 @@ The L1 Data caches are 8-way set associative, their size being parameterizable.
 Coherence amongst the caches is realized through a Modified Shared Invalid (MSI) scheme, by a directory which acts like an inclusive L2 cache.
 Since actual data are not needed, main memory presence is implied by the directory.
 
-#+BEGIN_SRC ditaa :file Figures/tlm_terminology.png :cmdline -S -E --font "Times New Roman"
+#+BEGIN_SRC ditaa :file Figures/case_study_2.png :cmdline -S -E --font "Times New Roman"
 +-----------+                  +--------------+---+              +---+-----------+
 |           |                  | L1 Data Cache| > |------------->| > |           |
 |           +---+          +---+              +---+              +---+           |
@@ -1591,7 +1587,7 @@ Since actual data are not needed, main memory presence is implied by the directo
 #+ATTR_LATEX: :width 0.64\linewidth 
 #+NAME: fig:case2
 #+RESULTS:
-[[file:Figures/tlm_terminology.png]]
+[[file:Figures/case_study_2.png]]
 
 
 
@@ -1745,7 +1741,7 @@ This work is far from complete: The brave Theseus that would like to confront th
 Section [[Reflections]] revisits, in a more specific way, the cui bono question answered in Section [[Purpose]].
 
 ** Contributions
-The following are the main research contributions of this work:
+The following are the main research contributions of +this work:
 + In Section [[The Discrete Event Model of Computation]] a different approach is adopted for presenting the DE MoC, 
   when compared to the reference work in MoCs by the Ptolemy Project [fn:ptolemy].
   It is the fact that time modeling is not included in the description of the DE MoC itself; 
@@ -1754,7 +1750,6 @@ The following are the main research contributions of this work:
   the important concepts emanating (e.g. causality, concurrency and determinism).
 + *Topology mapping* To the best of our knowledge
   One of the major features of MPI's topology interface is that it can easily be used to adapt the MPI process layout to the underlying network and system topology.
-
 
 ** Limitations
 + The theoretical description of the DE MoC in section [[The Discrete Event Model of Computation]] is far from complete.
@@ -1779,8 +1774,6 @@ The following are the main research contributions of this work:
 [fn:engblom] Dr. Jakob Engblom works as a Product Management Engineer at Intel in Uppsala: https://www.linkedin.com/in/jakobengblom.
            His academic research and professional experience with virtual platforms would be a significant source of feedback.
 
-
-
 ** Future Work
 In Section [[Delimitations]], the automatic compilation of a SystemC TLM 2.0 model into our proposed MPI implementation was indicated as a delimitation of this project.
 However, it is the next logical step in progressing this work, since it has been deemed feasible.
@@ -1800,7 +1793,6 @@ Since the syntax follows a structural manner, a compiler for the following backe
 Furthermore, [[http://orgmode.org/][Emacs' Org mode]] could be used for housing the compilation procedure, by unifying the editing of all the above representations of the FSM.
 Emacs Org mode is more than a text editor: it is an ecosystem that enables the symbiosis of source code and document, in an unprecedented way, that follows Donald Knuth concept of literate programming.
 It is an indispensable tool when reproducibility is a desirable feature \cite{Schulte2011}.
-
 
 ** Reflections
 On May the 3\textsuperscript{rd} 2016 the SystemC user community came together at Intel's headquarters in Munich, 
@@ -2607,7 +2599,6 @@ while the updating of the set Sharers is shown in bold italics.
 Because all the stimulus messages are external, all actions are shown in gray.
 Our simplified protocol assumes that some actions are atomic, such as requesting a value and sending
 it to another node; a realistic implementation cannot use this assumption.
-
 
 * Caches :noexport:
 

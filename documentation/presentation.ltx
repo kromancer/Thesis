@@ -1,6 +1,7 @@
 \documentclass{beamer}
 \usepackage{nccmath}
 \usepackage{tikz}
+\usepackage{tikz-uml}
 \usetikzlibrary{arrows,shapes,automata,positioning}
 
 \mode<presentation> {
@@ -10,7 +11,7 @@
 %\usetheme{Bergen}
 %\usetheme{Berkeley}
 %\usetheme{Berlin}
-\usetheme{Boadilla}
+%\usetheme{Boadilla}
 %\usetheme{CambridgeUS}
 %\usetheme{Copenhagen}
 %\usetheme{Darmstadt}
@@ -30,7 +31,7 @@
 %\usetheme{Rochester}
 %\usetheme{Singapore}
 %\usetheme{Szeged}
-%\usetheme{Warsaw}
+\usetheme{Warsaw}
 
 % As well as themes, the Beamer class has a number of color themes
 % for any slide theme. Uncomment each of these in turn to see how it
@@ -66,7 +67,7 @@
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\title[Parallel Simulation of SystemC LT TLMs]{Parallel Simulation of Systemc Loosely-Timed Transaction Level Models }
+\title[Parallel Simulation of SystemC LT TLMs]{Parallel Simulation of SystemC Loosely-Timed Transaction Level Models }
 \subtitle{\small Master of Science Thesis}
 \author{\texorpdfstring{Konstantinos Sotiropoulos \newline\tiny ( \url{kisp@kth.se} )}{Konstantinos Sotiropoulos}}
 \date[\today]{}
@@ -99,8 +100,20 @@ Intel Sweden AB
 
 
 
+
+
+
 \begin{document}
 
+
+
+
+
+
+%TITLE PAGE
+%---------------------------------------------------------------------------------------------------
+{
+\setbeamertemplate{headline}{}
 \begin{frame}
   \titlepage % Print the title page as the first slide
   \centering
@@ -110,6 +123,10 @@ Intel Sweden AB
   \noindent \tiny Academic advisor: 	        & \tiny{PhD student George Ungureanu (KTH)}
 \end{tabular}
 \end{frame}
+}
+%---------------------------------------------------------------------------------------------------
+
+
 
 
 
@@ -132,14 +149,15 @@ Intel Sweden AB
 
 
 
+%\begin{frame}
+%\frametitle{Overview} 
+%\tableofcontents
+%\end{frame}
 
 
 
 
-\begin{frame}
-\frametitle{Overview} 
-\tableofcontents
-\end{frame}
+
 
 %----------------------------------------------------------------------------------------
 %	PRESENTATION SLIDES
@@ -180,7 +198,7 @@ Intel Sweden AB
     \hspace*{17pt} execution and communication.
         \vskip 0.6cm
   \item \textbf{Address the question:} \\
-    \hspace*{20pt} can we transform a SystemC TLM 2.0 LT model simulation \\
+    \hspace*{20pt} can we transform a SystemC TLM 2.0 LT model \\
     \hspace*{20pt} into a parallel application? \\
   \end{itemize}
 \end{frame}
@@ -196,7 +214,8 @@ Intel Sweden AB
     \vskip 0.6cm
   \item From SystemC Evolution Day 2016: \\
     \hspace*{16pt} \textit{"SystemC must embrace true parallelism \\
-    \hspace*{20pt} otherwise it will go down the same path as the dinosaurs"}
+      \hspace*{20pt} otherwise it will go down the same path \\
+      \hspace*{20pt} as the dinosaurs"}
   \end{itemize}
 \end{frame}
 
@@ -231,57 +250,107 @@ Intel Sweden AB
 \end{frame}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %------------------------------------------------
 \section{Background}
 %------------------------------------------------
 
 \subsection{SystemC LT TLMs}
 
+
+%THE ROLE OF SYSTEMC TLM 2.0
 %------------------------------------------------
 \begin{frame}
   \frametitle{The Role of SystemC TLM 2.0}
   \begin{figure}
     \centering
-    \includegraphics[width=.95\textwidth]{Figures/tlm_as_wrapper.png}
+    \includegraphics[width=\textwidth]{Figures/tlm_as_wrapper.png}
   \end{figure}
   \vskip 0.6cm
-  Enabling the reuse of IP components in a "plug and play" fashion.
+  \begin{itemize}
+    \item SystemC TLM 2.0: a communication-centric API  \\
+      meant for \textbf{gluing} IP components
+  \end{itemize}
 \end{frame}
 %------------------------------------------------
 
 
 
+%AN EXAMPLE TLM
 %------------------------------------------------
 \begin{frame}
-  \frametitle{The Role of SystemC TLM 2.0}
+  \frametitle{An example TLM}
+  
   \begin{figure}
     \centering
-    \includegraphics[width=.95\textwidth]{Figures/tlm_as_wrapper.png}
+    \includegraphics[width=\textwidth]{Figures/tlm_terminology.png}
   \end{figure}
-  \vskip 0.6cm
-  Enabling the reuse of IP components in a "plug and play" fashion.
+
+
+  \vskip 0.3cm
+  \begin{itemize}
+  \item  An \textbf{initiator} initiates a transaction which is\\
+         routed through \textbf{interconnect} components and eventually \\
+         reaches the \textbf{target} component.
+  \end{itemize}
+  
 \end{frame}
 %------------------------------------------------
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+%COMMUNICATION IN LT TLM 
+%------------------------------------------------
+\begin{frame}
+  \frametitle{Communication in LT TLM}
+  \resizebox{0.95\textwidth}{!}{
+    \centering
+    \begin{tikzpicture}
+      \begin{umlseqdiag}
+        \umlobject[x=0, class=\texttt{sc\_module}]{Initiator}
+        \umlobject[x=5, class=\texttt{sc\_module}]{Interconnect}
+        \umlobject[x=9, class=\texttt{sc\_module}]{Target}
+        \begin{umlcall}[op={\texttt{b\_transport(...)}}, type=synchron, with return, dt=8]{Initiator}{Interconnect}
+          \begin{umlcall}[op={\texttt{b\_transport(...)}}, type=synchron, with return, dt=2]{Interconnect}{Target}
+            \node (p1) at (0,-3.1) {\texttt{wait(delay)}} ;
+          \end{umlcall}
+        \end{umlcall}
+      \end{umlseqdiag}
+    \end{tikzpicture}
+  }
+  \vskip 1.2cm
+  \begin{itemize}
+    \item Looks like a series of of \textbf{remote function calls} \\
+    No Channels!
+  \end{itemize}
+  
+\end{frame}
+%-----------------------------------------------
 
 
 
 \subsection{The DE Model of Computation}
 
 
+%THE DE MODEL OF COMPUTATION
 %------------------------------------------------
 \begin{frame}
 \frametitle{The DE Model of Computation}
@@ -301,6 +370,7 @@ Intel Sweden AB
 %------------------------------------------------
 
 
+%THE DE MANIFOLD
 %------------------------------------------------
 \begin{frame}
 \frametitle{The DE Manifold}
@@ -346,30 +416,30 @@ Intel Sweden AB
 
 \vskip 0.2cm
 
-\textbf{Execution:} \\
+\begin{itemize}
+\item \textbf{Execution:} \\
 \begin{fleqn}
   \begin{align*}
     b = f(a) \implies a \propto b \implies a \sqsubset b
     \end{align*}
 \end{fleqn}
 
-\vskip 0.4cm
-
-\textbf{Communication:} \\
+\item \textbf{Communication:} \\
 \begin{fleqn}
   \begin{align*}
     c = g(b) \implies b \propto c \implies b \sqsubset c
     \end{align*}
 \end{fleqn}
-
-
-
+\end{itemize}
 
 \end{frame}
 %------------------------------------------------
 
+
+
 \subsection{SystemC's DES}
 
+%SYSTEMC's DES
 %------------------------------------------------
 \begin{frame}
   \frametitle{SystemC's DES}
@@ -390,12 +460,13 @@ Intel Sweden AB
 
 \subsection{Parallel DES}
 
+%PARALLEL DES
 %------------------------------------------------
 \begin{frame}
   \frametitle{Parallel DES}
   \begin{itemize}
   \item A Parallel DES preserves spatial decomposition: \\
-    \hspace*{20pt} processes must keep their own perspective of logic time.
+    \hspace*{20pt} processes keep their own perspective of logic time.
     \vskip 0.6cm
   \item Communication is \textbf{Synchronization}: \\
     \hspace*{20pt} a global perspective of logic time is realized \\
@@ -405,6 +476,7 @@ Intel Sweden AB
 %------------------------------------------------
 
 
+%CAUSALITY HAZARD
 %------------------------------------------------
 \begin{frame}
   \frametitle{Causality Hazard}
@@ -453,24 +525,278 @@ Intel Sweden AB
       \path[arrow] (d) edge node [right] {} (e);
     \end{tikzpicture}
   }
-
   \vskip 0.6cm
-
-  Event \textbf{$e$} might occur earlier in real time than \textbf{$f$}. \\
-  \vskip 0.2cm
-  Event \textbf{$e$} may causally affect event \textbf{$f$}. \\
-  \vskip 0.2cm
-  How can $p_2$ determine when it is safe to advance its logic time perspective?
+  \begin{itemize}
+   \item Event \textbf{$e$} might occur earlier in real time than \textbf{$f$}. \\
+   \vskip 0.2cm
+   \item Event \textbf{$e$} may causally affect event \textbf{$f$}. \\
+   \vskip 0.2cm
+   \item How can $p_2$ determine when it is safe to advance its logic time perspective?
+  \end{itemize}
 \end{frame}
 %------------------------------------------------
 
 
 
 
-\begin{frame}
-\Huge{\centerline{The End}}
-\end{frame}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Methodology}
+
+
+\subsection{Proposed PDES}
+
+%CMB Synchronization algorithm
+%------------------------------------------------
+\begin{frame}
+  \frametitle{The CMB Synchronization Algorithm}
+  \begin{itemize}
+  \item The \textbf{Chandy/Misra/Bryant} synchronization algorithm: \\
+    \hspace*{20pt} at the heart of the proposed PDES.
+    \vskip 0.6cm
+  \item \textbf{Block} a process until: \\
+    \hspace*{20pt} it gathers knowledge about other processes' \\
+    \hspace*{20pt} perspective of time.
+    \vskip 0.6cm
+  \item Implement in MPI: \\
+    \hspace*{20pt} unlimited \textbf{scalabillity}.
+  \end{itemize}
+\end{frame}
+%-----------------------------------------------
+
+\subsection{Proposed PDES Evaluation}
+
+%CMB Synchronization algorithm
+%------------------------------------------------
+\begin{frame}
+  \frametitle{Proposed PDES Evaluation}
+  \begin{itemize}
+  \item Construct \textbf{two case} studies: \\
+    \hspace*{20pt} each with a sequential and parallel version.
+    \vskip 0.6cm
+  \item \textbf{Case Study 1:} airtraffic simulation \\
+    \hspace*{20pt} create a global log of departures/arrivals. \\
+    \vskip 0.6cm
+  \item \textbf{Case Study 2:} cache-coherent multiprocessor: \\
+    \hspace*{20pt} software is emulated by a memory trace.
+  \end{itemize}
+\end{frame}
+%-----------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Analysis}
+
+%Non-Monotonic Communication
+%----------------------------------------------------------------------------------------
+\subsection{Non-Monotonic Communication}
+\begin{frame}
+  \frametitle{Non-Monotonic Communication in Case Study 1}
+
+  \resizebox{0.95\textwidth}{!}{
+  \begin{tikzpicture}[
+      arrow/.style={draw,->,>=stealth},
+      point/.style={circle,fill=black},
+      every node/.style={node distance = 10},
+    ]
+    \node (p1) at (0,2) {$p_1$};
+    \node (p2) at (0,1) {$p_2$};
+    \node (p1l) at (0.2,2) {};
+    \node (p2l) at (0.2,1) {};
+    \node (p1r) at (8,2) {};
+    \node (p2r) at (8,1) {};
+
+    \draw[arrow] (p1l.center) to (p1r);
+    \path[arrow] (p2l.center) to (p2r);
+    \path[draw]  (p1l.center) edge (p2l.center);
+
+    \node[point, label={\small slow dep.}] (a) at (3,2) {};
+    \node[point, label={\small fast dep.}] (b) at (5,2) {};
+    \node[point, label=below:{\small fast arr.}] (c) at (2,1) {};
+    \node[point, label=below:{\small slow arr.}] (d) at (6,1) {};
+
+    %\node[point] (k) at (4,1) {};
+    %\node [below of = k] {a};
+    %\node[point, label=b] (l) at (7,2) {};
+
+    \path[arrow] (b) edge node [right] {} (c);
+    \path[arrow] (a) edge node [right] {} (d);
+    %\path[arrow] (k) edge node [right] {} (l);
+
+  \end{tikzpicture}
+  }
+
+  \vskip 0.6cm
+  \begin{itemize}
+  \item Different airplane velocities
+  \end{itemize}
+
+  
+\end{frame}
+%----------------------------------------------------------------------------------------
+
+
+%Non-monotonic communication in case study 2
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Non-monotonic Communication in Case Study 2}
+  \resizebox{0.95\textwidth}{!}{
+    \centering
+    \begin{tikzpicture}
+      \begin{umlseqdiag}
+        \umlobject[x=0, class=\texttt{}]{cpu0}
+        \umlobject[x=3, class=\texttt{}]{cache0}
+        \umlobject[x=6, class=\texttt{}]{directory}
+        \umlobject[x=11, class=\texttt{}]{cache1}
+        \begin{umlcall}[op={\texttt{WRITE}}, type=synchron, with return, dt=8]{cpu0}{cache0}
+          \begin{umlcall}[op={\texttt{W\_MISS}}, type=synchron, with return, dt=2]{cache0}{directory}
+            \begin{umlcall}[op={\texttt{FETCH\_INV}}, type=synchron, with return, dt=2]{directory}{cache1}
+              \begin{umlcall}[op={\texttt{WRITE\_BACK}}, type=synchron, with return, dt=4]{cache1}{directory}
+                \node (p1) at (0,-4.8) {\texttt{wait(delay)}} ;
+              \end{umlcall}
+            \end{umlcall}
+          \end{umlcall}
+        \end{umlcall}
+      \end{umlseqdiag}
+    \end{tikzpicture}
+  }
+
+    \vskip 0.6cm
+  \begin{itemize}
+  \item A write-miss on an exclusive block
+  \end{itemize}
+\end{frame}
+%----------------------------------------------------------------------------------------
+
+
+\subsection{Verdict}
+
+%Verdict
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Verdict}
+  \begin{itemize}
+  \item \textbf{Recoding} is deamed feasible: \\
+    \hspace*{20pt} but far from being fully automated.
+  \end{itemize}
+\end{frame}
+%----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Conclusion}
+
+%CONTRIBUTION
+%----------------------------------------------------------------------------------------
+\subsection{Contributions}
+\begin{frame}
+  \frametitle{Contributions}
+  \begin{itemize}
+  \item A novel presentation of the DE MoC.
+    \vskip 0.6cm
+  \item An updated CMB implementation with new features introduced in MPI 3.0.
+  \end{itemize}
+\end{frame}
+%----------------------------------------------------------------------------------------
+
+
+%CONTRIBUTION
+%----------------------------------------------------------------------------------------
+\subsection{Future Work}
+\begin{frame}
+  \frametitle{Future Work}
+  \begin{itemize}
+  \item An alpha version of a \textbf{recoding infrastructure}: \\
+    \hspace*{20pt} SystemC LT TLM $\rightarrow$ a parallel MPI application.
+  \end{itemize}
+\end{frame}
+%----------------------------------------------------------------------------------------
+
+
+%QUESTIONS
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Questions?}
+  \centerline{Thank you for your time!} 
+  \vskip 0.6cm
+  \Large{\centerline{\texttt{github.com/kromancer/Thesis}}}
+\end{frame}
 %----------------------------------------------------------------------------------------
 
 \end{document}

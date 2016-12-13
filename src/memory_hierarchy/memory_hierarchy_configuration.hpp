@@ -1,21 +1,27 @@
 #ifndef MEM_HIER_CFG_H
 #define MEM_HIER_CFG_H
 
+#include "tlm.h"
 #include <cstdint>
 #include <cmath>
 
 
-enum Operation {READ, WRITE, INVALIDATE, DATA_REPLY, WRITE_BACK};
+enum Operation {READ, WRITE, INVALIDATE, DATA_REPLY, EVICTION, WRITE_BACK, DOWNGRADE};
 enum Component {CPU, CACHE, DIRECTORY, MEMORY};
 
 
-struct Event
+struct Event: tlm::tlm_extension<Event>
 {
+    Event():timestamp(0){};
+    ~Event();
     uint64_t  timestamp;
     Operation operation;
     uint64_t  address;
     Component destination;
     Component source;
+
+    tlm::tlm_extension_base* clone() const;
+    void copy_from(tlm::tlm_extension_base const &ext);
 };
 
 
@@ -26,6 +32,8 @@ struct Event
 //80: Define number of CPUs in the system
 #define N_CPUS 2
 
+//101: Define arithmetic density
+#define DENSITY 5
 
 /*******************************************************
  * L1 Cache Configuration
@@ -61,11 +69,14 @@ constexpr unsigned int numSets (unsigned int cacheSize, unsigned int blockSize, 
 }
 
 /*******************************************************
- * L2 Cache & Memory Configuration
+ * Directory Configuration
  ******************************************************/
 
 //85: Define memory size in bytes
 #define MEM_SIZE 10485760
+
+//86: Define address offset
+#define OFFSET 6358656
 
 constexpr unsigned int numMemBlocks (unsigned int memSize, unsigned int blockSize)
 {

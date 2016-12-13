@@ -1,8 +1,9 @@
 #include "msi_fsm.hpp"
+#include "utils.hpp"
 #include <iostream>
 
 
-
+using namespace msi_fsm;
 //********************************************************
 // State Machine 
 //**********************************n**********************
@@ -35,6 +36,12 @@ void Msi_machine::setWriteBackFlag(bool *f)
 {
     writeBackFlag = f;
 }
+
+void Msi_machine::setEvictionFlag(bool *f)
+{
+    evictionFlag = f;
+}
+
 void Msi_machine::augmentInvalidList()
 {
     invalidList->push_front(id);
@@ -63,12 +70,17 @@ void Msi_machine::signalWriteBack()
     (*writeBackFlag) = true;
 }
 
+void Msi_machine::signalEviction()
+{
+    (*evictionFlag) = true;
+}
+
 //********************************************************
 // Shared State
 //********************************************************
 Shared::Shared()
 {
-    std::cout << "--Shared--" << std::endl;
+    Debug("Shared");
 }
 
 sc::result Shared::react(const Ev_invalidate &e)
@@ -83,10 +95,9 @@ sc::result Shared::react(const Ev_CPU_read& e)
 {
     if( e.tag == outermost_context().tag )
 	outermost_context().signalHit();
-
+    
     return discard_event();
 }
-
 
 sc::result Shared::react(const Ev_CPU_write &e)
 {
@@ -102,12 +113,14 @@ sc::result Shared::react(const Ev_CPU_write &e)
 sc::result Shared::react(const Ev_insertShared &e)
 {
     outermost_context().setTag(e.tag);
+    outermost_context().signalEviction();
     return discard_event();
 }
 
 sc::result Shared::react(const Ev_insertModified &e)
 {
     outermost_context().setTag(e.tag);
+    outermost_context().signalEviction();
     return transit<Modified>();
 }
 
@@ -116,7 +129,7 @@ sc::result Shared::react(const Ev_insertModified &e)
 //********************************************************
 Modified::Modified()
 {
-    std::cout << "--Modified--" << std::endl;
+    Debug("Modified");
 }
 
 sc::result Modified::react(const Ev_invalidate &e)
@@ -154,14 +167,22 @@ sc::result Modified::react( const Ev_CPU_write &e)
 
 sc::result Modified::react(const Ev_insertModified &e)
 {
-    //outermost_context().signalWriteBack();
+    outermost_context().signalWriteBack();
     return discard_event();
 }
 
 sc::result Modified::react(const Ev_insertShared &e)
 {
-    //outermost_context().signalWriteBack();
+    outermost_context().signalWriteBack();
     return transit<Shared>();
+}
+
+sc::result Modified::react(const Ev_downgrade &e)
+{
+    if( e.tag == outermost_context().tag)
+	return transit<Shared>();	
+    else
+	return discard_event();
 }
 
 //********************************************************

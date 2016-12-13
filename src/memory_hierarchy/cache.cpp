@@ -1,9 +1,12 @@
+#include "utils.hpp"
 #include "cache.hpp"
 #include <iostream>
 #include <list>
 #include "memory_hierarchy_configuration.hpp"
 #include "msi_fsm.hpp"
 
+using namespace msi_fsm;
+namespace sc = boost::statechart;
 
 Set::Set():
     killIndex(0)
@@ -14,13 +17,14 @@ Set::Set():
 	blocks[i].setHitFlag(&hitFlag);
 	blocks[i].setUpgradeFlag(&upgradeFlag);
 	blocks[i].setWriteBackFlag(&writeBackFlag);
+	blocks[i].setEvictionFlag(&evictionFlag);
 	blocks[i].setInvalidList(&invalidBlocks);
 	blocks[i].initiate();	
     }
 
 }
 
-void Set::process(const sc::event_base& e)
+void Set::dispatch(const sc::event_base& e)
 {
     hitFlag = false;
     upgradeFlag = false;
@@ -42,134 +46,141 @@ void Set::insert(Operation op, uint tag)
     }
     else
     {
+	killIndex = (killIndex+1) % N_WAYS;
 	if( op == READ)
-	    blocks[ killIndex++ % N_WAYS ].process_event( Ev_insertShared(tag) );
+	    blocks[ killIndex ].process_event( Ev_insertShared(tag) );
 	else
-	    blocks[ killIndex++ % N_WAYS ].process_event( Ev_insertModified(tag) );
+	    blocks[ killIndex ].process_event( Ev_insertModified(tag) );
     }
 
 }
 
-
-void Cache::compute( Event& e, Event& e2)
+SC_HAS_PROCESS(Cache);
+Cache::Cache(sc_core::sc_module_name _name, uint _id):
+    sc_core::sc_module(_name),
+    id(_id)
 {
+    sets = new Set[numSets(CACHE_SIZE, BLOCK_SIZE, N_WAYS)];
+    cpuSocket.register_b_transport(this, &Cache::serviceCpu);
+    dirTargSocket.register_b_transport(this, &Cache::serviceDir);
+    Debug("Cache " << id << " Size: " << CACHE_SIZE);
+}
+
+void Cache::serviceCpu(tlm::tlm_generic_payload &payload, sc_core::sc_time &delay)
+{
+    // Standard cache access latency
+    // delay += sc_core::sc_time(5, sc_core::SC_NS);
+    wait(5, sc_core::SC_NS);
+
+    Event *e = payload.get_extension<Event>();
     uint setIndex;
     uint blockTag;
-    
-    getSetIndexAndTag(e.address, &setIndex, &blockTag);
+    getSetIndexAndTag(e->address, &setIndex, &blockTag);
 
-    switch (e.operation)
+    
+    switch (e->operation)
     {
     case READ:
     {
 	// Hit
-	sets[setIndex].process(Ev_CPU_read(blockTag));
+	sets[setIndex].dispatch(Ev_CPU_read(blockTag));
 	if ( sets[setIndex].hitFlag )
 	{
-	    e.source      = CACHE;
-	    e.destination = CPU;
-	    e.operation   = DATA_REPLY;
+	    ; // Just Return control to CPU
 	}
 	// Miss
 	else
 	{
-	    e.source      = CACHE;
-	    e.destination = DIRECTORY;
-	    e.operation   = READ;
-	    pending       = READ;
+	    pending = READ;
+	    Debug("Cache " << id << " RMiss on " << e->address);
+	    dirInitSocket->b_transport(payload, delay);
 	}
 	break;
     }
     case WRITE:
     {
 	// Hit
-	sets[setIndex].process(Ev_CPU_write(blockTag));
+	sets[setIndex].dispatch(Ev_CPU_write(blockTag));
 	if (sets[setIndex].hitFlag)
 	{
-	    // Upgrade (shared -> modified)
+	    // Upgrade(shared -> modified) need to inform Directory
 	    if( sets[setIndex].upgradeFlag )
 	    {
-		e.source      = CACHE;
-		e.destination = DIRECTORY;
-		e.operation   = INVALIDATE;
+		e->operation   = INVALIDATE;
+		pending = INVALIDATE;
+		Debug("Cache " << id << "Upgrade on " << e->address);
+		dirInitSocket->b_transport(payload, delay);
 	    }
 	}
 	// Miss
 	else
 	{
-	    e.source      = CACHE;
-	    e.destination = DIRECTORY;
-	    e.operation   = WRITE;
-	    pending       = WRITE;
-	}
-	break;
-    }
-    case INVALIDATE:
-    {
-	sets[setIndex].process(Ev_invalidate(blockTag));
-	if ( sets[setIndex].writeBackFlag )
-	{
-	    e.source = CACHE;
-	    e.destination = DIRECTORY;
-	    e.operation = WRITE_BACK;
-	}
-	break;
-    }
-    case DATA_REPLY:
-    {
-	sets[setIndex].insert(pending, blockTag);
-	if ( pending == READ)
-	{
-	    e.source = CACHE;
-	    e.destination = CPU;
-	    e.operation = DATA_REPLY;
-	}
-	if ( sets[setIndex].writeBackFlag )
-	{
-	    e2.source = CACHE;
-	    e2.destination = DIRECTORY;
-	    e2.operation = WRITE_BACK;
+	    pending = WRITE;
+	    Debug("Cache " << id << " WMiss on " << e->address);
+	    dirInitSocket->b_transport(payload, delay);
 	}
 	break;
     }
     default:
-    {
-	break;
-    }
-    }// End of switch
+	Debug("Cache " << id << " ERROR: Invalid operation from CPU");
+    }// END_SWITCH
 
-    
+    payload.set_response_status(tlm::TLM_OK_RESPONSE);
+    return;
 }
 
-/*
-  int main(int argc, char *argv[])
-  {
-  Cache c;
-  Event e(READ,3);
-  c.compute( e, e );
-    
-  Event e2(DATA_REPLY,3);
-  c.compute(e2, e2);
+void Cache::serviceDir(tlm::tlm_generic_payload &payload, sc_core::sc_time &delay)
+{
+    // Standard cache-directory access latency
+    wait(10, sc_core::SC_NS);
 
-  Event e3(READ,3);
-  c.compute( e3, e3 );
+    Event *e = payload.get_extension<Event>();
+    uint setIndex;
+    uint blockTag;
+    getSetIndexAndTag(e->address, &setIndex, &blockTag);
 
-  Event e4(WRITE,3);
-  c.compute( e4, e4 );
+    switch(e->operation)
+    {
+    case INVALIDATE:
+    {
+	sets[setIndex].dispatch(Ev_invalidate(blockTag));
+	if( sets[setIndex].writeBackFlag )
+	{
+	    e->operation = WRITE_BACK;
+	    dirInitSocket->b_transport(payload, delay);
+	    sets[setIndex].writeBackFlag = false;
+	}
+    }
+    case DOWNGRADE:
+    {
+	sets[setIndex].dispatch(Ev_downgrade(blockTag));
+	e->operation = WRITE_BACK;
+	dirInitSocket->b_transport(payload, delay);
+    }
+    case DATA_REPLY:
+    {
+	sets[setIndex].insert(pending, blockTag);
+	if(sets[setIndex].writeBackFlag)
+	{
+	    e->operation = WRITE_BACK;
+ 	    dirInitSocket->b_transport(payload, delay);
+	    sets[setIndex].writeBackFlag = false;
+	}
+	if(sets[setIndex].evictionFlag)
+	{
+	    e->operation = EVICTION;
+	    dirInitSocket->b_transport(payload, delay);
+	    sets[setIndex].evictionFlag = false;
+	}
+    }
+    default:
+	Debug("Cache " << id <<" ERROR: Invalid operation from Directory");
+    }
 
-  Event e5(READ,3);
-  c.compute( e5, e5 );
+    payload.set_response_status(tlm::TLM_OK_RESPONSE);
+    return;
+}
 
-  Event e6(INVALIDATE,3);
-  Event e7(INVALIDATE,3);
-  c.compute( e6, e7 );
-  if( e6.operation == WRITE_BACK)
-  std::cout << "write back" << std::endl;
 
-    
-
-  return 0;
-  }
-*/
 
 

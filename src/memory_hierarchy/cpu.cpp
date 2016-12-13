@@ -1,42 +1,52 @@
-#include "cpu_configuration.hpp"
-#include "cache.hpp"
-#include <fstream>
+#include "cpu.hpp"
+#include "utils.hpp"
 
-#include <queue>
-#include <string>
 #include <sstream>
-#include <iostream>
+#include <string>
 #include <boost/lexical_cast.hpp>
 
 
 
 
 
-
-class Cpu
+void Cpu::run()
 {
-public:
-    Cpu(int id);
-    Event run();
-private:
-    int id;
-    std::ifstream traceFile;
-    std::queue<Event> memTrace;
-};
+    Event *temp = new Event;
+    tlm::tlm_generic_payload payload;
 
+    while( !memTrace.empty() )
+    {
+	*temp = memTrace.front();
+	memTrace.pop();
 
-Event Cpu::run()
-{
-    Event temp = memTrace.front();
-    memTrace.pop();
-    return temp;
+	payload.set_extension(temp);
+	payload.set_command(tlm::TLM_IGNORE_COMMAND);
+	payload.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+
+	sc_core::sc_time delay = sc_core::SC_ZERO_TIME;
+	socket->b_transport( payload, delay);
+
+	// Now the transaction is completed, check status and proceed
+	tlm::tlm_response_status status = payload.get_response_status();
+	if(status == tlm::TLM_OK_RESPONSE)
+	{
+	    // This is how simulation time progresses
+	    // The process yields to the systemc kernel
+	    sc_core::wait(delay);
+	    //std::cout << sc_core::sc_time_stamp() << " COMPLETED" << std::endl;
+	}
+	else
+	    ;//std::cout << sc_core::sc_time_stamp() << " ERROR" << std::endl;
+    }
+    return; 
 }
 
 
-
 // The constructor is mainly conserned with parsing the data from the trace
-Cpu::Cpu(int id):
-    id(id)
+SC_HAS_PROCESS(Cpu);
+Cpu::Cpu(sc_module_name _name, int id):
+    id(id),
+    sc_core::sc_module(_name)
 {
     traceFile.open("thread_"+ std::to_string(id+1) + ".out");
     std::string line;
@@ -54,36 +64,16 @@ Cpu::Cpu(int id):
 	temp.destination = CACHE;
 	temp.timestamp = time;
 	time += DENSITY;
-	temp.address = boost::lexical_cast<uint64_t>(address);
+	temp.address = boost::lexical_cast<uint64_t>(address) - OFFSET;
 	if( op=="r")
 	    temp.operation = READ;
 	else
 	    temp.operation = WRITE;
 	memTrace.push(temp);
     }
+    SC_THREAD(run);
+    Debug("Processor "  << id << " number of Mem Ops: " << memTrace.size());
 }
-
-
-
-
-
-int main(int argc, char *argv[])
-{
-    Cpu cpu(0);
-    Cache cache;
-
-
-    Event test = cpu.run();
-    Event temp;
-
-    cache.compute(test, temp);
-
-    test.operation = DATA_REPLY;
-    cache.compute(test, temp);
-    
-    return 0;
-}
-
 
 
 
