@@ -1,0 +1,128 @@
+% Created 2016-11-13 sön 16:58
+% Intended LaTeX compiler: pdflatex
+\documentclass[12pt,twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage[paper=a4paper,dvips,top=1.5cm,left=1.5cm,right=1.5cm, foot=1cm,bottom=1.5cm]{geometry}
+\renewcommand{\rmdefault}{ptm}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage[dvipsnames*,svgnames]{xcolor}
+\usepackage{tikz,ifthen,xstring,calc,pgfkeys,pgfopts}
+\usepackage{tikz-uml}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning,calc,shapes}
+\usepackage[utf8]{inputenc}
+
+
+
+
+
+
+
+
+\begin{document}
+
+\begin{figure}[htpb]
+\centering
+\begin{tikzpicture}
+
+
+  \umlbasicstate[name=uncached, fill=white, anchor=north]{uncached}
+  \umlbasicstate[name=shared, right=12cm of uncached-body.north, anchor=north, fill=white]{shared}
+  \umlbasicstate[name=exclusive, below left=4cm and 4.5cm of shared-body.south, fill=white]{exclusive}
+  \umlstateinitial[above=1cm of uncached, name=initial]
+
+  \umltrans{initial}{uncached}
+
+  % uncached transition  
+  \umltrans[arg={read/}, pos=0.7, anchor1=30, anchor2=150]{uncached}{shared}
+  \umlVHtrans[anchor2=150, arg={write/}, pos=1.6]{uncached}{exclusive}
+
+  % Shared transitions
+  \umlVHtrans[anchor1=245, anchor2=30, arg={write/}, pos=1.5]{shared}{exclusive}
+  \umltrans[pos=1.2, arg={read/}, recursive=90|10|3cm, recursive direction=top to right]{shared}{shared}
+
+  % exclusive transitions
+  \umlVHtrans[pos=0.5, arg={read/}, anchor1=90, anchor2=190]{exclusive}{shared}
+  \umlHVtrans[pos=0.75, anchor1=175, anchor2=235, arg={write-back/}]{exclusive}{uncached}
+  \umltrans[pos=1.5, arg={write/}, recursive=260|200|4cm, recursive direction=bottom to left]{exclusive}{exclusive}
+  
+
+
+\end{tikzpicture}
+\end{figure}
+
+
+\clearpage
+
+
+
+
+
+
+
+\begin{figure}[htpb]
+\centering
+\begin{tikzpicture}
+
+
+  \umlbasicstate[name=invalid, fill=white, anchor=north]{invalid}
+  \umlbasicstate[name=shared, right=12cm of invalid-body.north, anchor=north, fill=white]{shared}
+  \umlbasicstate[name=modified, below left=4cm and 4.5cm of shared-body.south, fill=white]{modified}
+  \umlstateinitial[above=1cm of invalid, name=initial]
+
+  \umltrans{initial}{invalid}
+
+  % Invalid transition  
+  \umltrans[arg={CPU\_read/}, pos=0.7, anchor1=30, anchor2=150]{invalid}{shared}
+  \umlVHtrans[anchor2=150, arg={CPU\_write/}, pos=1.6]{invalid}{modified}
+
+  % Shared transitions
+  \umltrans[anchor1=170, anchor2=10, arg={invalidate/}, pos=0.7]{shared}{invalid}
+  \umlVHtrans[anchor1=245, anchor2=30, arg={CPU\_write\_hit/}, pos=1.5]{shared}{modified}
+  \umlVHtrans[anchor1=280, anchor2=5, arg={CPU\_write\_miss/}, pos=1.5]{shared}{modified}
+  \umltrans[pos=1.2, arg={CPU\_read\_miss || CPU\_read\_hit}, recursive=90|10|3cm, recursive direction=top to right]{shared}{shared}
+
+  % Modified transitions
+  \umlVHtrans[pos=0.5, arg={CPU\_read\_miss/}, anchor1=90, anchor2=190]{modified}{shared}
+%  \umlVHtrans[arg={fetch/}, anchor1=70, anchor2=210]{modified}{shared}
+  \umlHVtrans[pos=0.75, anchor1=175, anchor2=245, arg={fetch\_invalidate/}]{modified}{invalid}
+  \umltrans[pos=2.2, arg={CPU\_write\_miss}, recursive=-20|280|2.3cm, recursive direction=right to bottom]{modified}{modified}
+  \umltrans[pos=1.5, arg={CPU\_read\_hit || CPU\_write\_hit}, recursive=260|200|4cm, recursive direction=bottom to left]{modified}{modified}
+  
+
+
+\end{tikzpicture}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

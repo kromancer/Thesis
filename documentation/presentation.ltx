@@ -450,8 +450,8 @@ Intel Sweden AB
   \item SystemC's DES: \\
     \hspace*{20pt} uses \textbf{coroutines} to emulate space dimensionality.
     \vskip 0.6cm
-  \item Enforces a global perspective on logic time: \\
-    \hspace*{20pt} since space is emulated.
+  \item The \textbf{kernel} has a global perspective on logic time: \\
+    \hspace*{20pt} every process implicitly communicates with the kernel.
     \vskip 0.6cm
   \end{itemize}
 \end{frame}
@@ -469,8 +469,8 @@ Intel Sweden AB
     \hspace*{20pt} processes keep their own perspective of logic time.
     \vskip 0.6cm
   \item Communication is \textbf{Synchronization}: \\
-    \hspace*{20pt} a global perspective of logic time is realized \\
-    \hspace*{20pt} through communication.
+    \hspace*{20pt} with communication processes synchronize  their\\
+    \hspace*{20pt} time perspectives.
   \end{itemize}
 \end{frame}
 %------------------------------------------------
@@ -584,7 +584,7 @@ Intel Sweden AB
     \hspace*{20pt} perspective of time.
     \vskip 0.6cm
   \item Implement in MPI: \\
-    \hspace*{20pt} unlimited \textbf{scalabillity}.
+    \hspace*{20pt} unlimited \textbf{scalability}.
   \end{itemize}
 \end{frame}
 %-----------------------------------------------
@@ -711,9 +711,7 @@ Intel Sweden AB
         \begin{umlcall}[op={\texttt{WRITE}}, type=synchron, with return, dt=8]{cpu0}{cache0}
           \begin{umlcall}[op={\texttt{W\_MISS}}, type=synchron, with return, dt=2]{cache0}{directory}
             \begin{umlcall}[op={\texttt{FETCH\_INV}}, type=synchron, with return, dt=2]{directory}{cache1}
-              \begin{umlcall}[op={\texttt{WRITE\_BACK}}, type=synchron, with return, dt=4]{cache1}{directory}
                 \node (p1) at (0,-4.8) {\texttt{wait(delay)}} ;
-              \end{umlcall}
             \end{umlcall}
           \end{umlcall}
         \end{umlcall}
@@ -736,12 +734,11 @@ Intel Sweden AB
 \begin{frame}
   \frametitle{Verdict}
   \begin{itemize}
-  \item \textbf{Recoding} is deamed feasible: \\
+  \item \textbf{Recoding} is deemed feasible: \\
     \hspace*{20pt} but far from being fully automated.
   \end{itemize}
 \end{frame}
 %----------------------------------------------------------------------------------------
-
 
 
 

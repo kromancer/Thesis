@@ -1,0 +1,1777 @@
+#+TITLE: Cheatsheet
+#+STARTUP: overview
+
+
+* OpenRisc 1000 instruction set simulator
+** Compilation flags for re-entrant
+#+BEGIN_SRC sh
+./configure --prefix=/opt/or1ksim_reentrant --enable-debug
+#+END_SRC
+* Linux topics 							   :noexport:
+** Finding Contect
+#+BEGIN_SRC sh
+grep -rnwl '/opt/or1ksim' -e "or1ksim_init"
+#+END_SRC
+
+
+** TODO netstat
+
+
+** ssh
+To create a passworldes access to the mics I did
+#+BEGIN_SRC sh
+rm ./ssh/id*
+ssh-keygen
+ssh-copy-id mic0
+#+END_SRC
+
+
+** awk
+#+BEGIN_SRC sh
+#This is how I created the descriptor file
+ls -la /opt/intel/compilers_and_libraries_2016.2.181/linux/mkl/lib/intel64_lin_mic/ | awk '$1 !~ /d.*/ {print "file /lib64/"$9" /lib64/"$9 " 777 0 0"}' >> ~/MIC/common/descriptor_file
+#+END_SRC
+
+
+** Environment variables
+Do not forget the all time classic
+#+BEGIN_SRC sh
+env | grep I_MPI
+#+END_SRC
+
+
+** Makefiles
+*** Automatic variables
+| $@ | The file name of the target of the rule                                                      |
+| $? | The names of all the prerequisities that are newer than the target, with spaces between them |
+
+
+** source
+Running the command source on a script executes the script within the context of the current process. 
+_This means that environment variables set by the script remain available after it's finished running_. 
+This is in contrast to running a script normally, 
+in which case environment variables set within the newly-spawned process will be lost once the script exits.
+
+You can source any runnable shell script. 
+The end effect will be the same as if you had typed the commands in the script into your terminal. 
+For example, if the script changes directories, when it finishes running, your current working directory will have changed.
+
+
+
+** nm
+Applied to a binary, parses its meta information (e.g. symbol table) and can give you
+valueable information about _un symbols_
+A nice way to get them is
+#+BEGIN_SRC sh
+nm <executable> | awk '$2=="U" {print $3}'
+#+END_SRC
+
+Do not forget about C++'s _name mangling_ strategy.
+(compiler dependent)
+
+The need arises where the language allows different entities to be named with the same identifier 
+as long as they occupy a different namespace 
+(where a namespace is typically defined by a module, class, or explicit namespace directive) 
+or have different signatures (such as function overloading).
+
+For example:
+#+BEGIN_SRC cpp
+namespace wikipedia 
+{
+   class article 
+   {
+   public:
+      std::string format (void); 
+         /* = _ZN9wikipedia7article6formatEv */
+   };
+}
+#+END_SRC
+
+
+** service
+Runs a (?System V?) init script, located in */etc/init.d/* in predictable environment, 
+removing most environment variables and with current working directory set to /.
+All scripts should support at least the start and stop commands.
+
+
+** TODO device node
+
+
+** Process Management
+An Operating System on a single-processor machine is *multitasking* 
+if it can interleave the execution of more than one process, 
+giving the illusion of there being more than one process running at the same time.
+
+Multitasking operating systems come in two variants: *cooperative* and *preemptive*.
+
+*** Threading
+Threads are units of execution within a single process.
+All processes have at least one thread.
+Each thread has its own virtualization of the processor: itw own set of registers, instruction pointer, and processor state.
+
+The Linux kernel has an interesting and unique view of threads.
+*Essentially, the kernel has no such concept.*
+To the Linux kernel, all threads are unique processes.
+*At a broad level, there is no difference between two unrelated processes and two threads inside of a single process.*
+The kernel simply views threads as processes that share resources.
+* C++ 								   :noexport:
+
+** Explicit threading in C++
+#+BEGIN_SRC cpp
+#include <thread>
+#+END_SRC
+
+
+** Introspection vs Reflection
+Super important to check Qt.
+Although it is a GUI thing, it has a DES (maybe PDES, each QThread runs its own event loop) and a Meta Object Compiler.
+
+
+** Iterators
+Iterators connect algorithms to the elements in a container regardless of the type of the container.
+Iterators decouple the algorithm from the data source; an algorithm has no knowledge of the container form which the data originates. 
+
+
+** Named Casts
+1. static_cast: converts between related types 
+                such as one pointer type to another in the same class hierarchy, 
+                an integral type to an enumeration, or a floating-point type to an integral type
+
+2. reinterpret_cast: handles conversions between unrelated types 
+                     such as an integer to a pointer
+                     or a pointer to an unrelated pointer type
+
+3. const_cast:  converts between types that differ only in const and volatile qualifiers
+
+4. dynamic_cast: does run-time checked conversion of pointers and references into a class hierarchy
+
+*** Dynamic Cast
+To use derived classes as more than a convenient shorthand in declarations, 
+we must solve the following problem: 
+
+_Given a pointer of type Base*, to which derived type does the object pointed to really belong?_
+
+There are four fundamental solutions:
+1. Ensure that only objects of a single type are pointed to.
+2. Place a type field in the base class for the functions to inspect.
+3. Use dynamic_cast
+4. Use virtual functions
+
+Consequently, the most obvious and useful operation for inspecting the type of an object at run time
+is *a type conversion operation that returns a valid pointer if the object is of the expected type and a null pointer if it isn’t.* 
+The dynamic_cast operator does exactly that.
+
+
+** DANGER
+#+BEGIN_SRC cpp
+  class Base{
+      void foo(){}
+  };
+  
+  
+  class Derived : public Base{
+      void bar(){}
+  };
+  
+  
+  void dangerous(Base *p, int n){
+      for(int i=0; i!=n; i++)
+          p[i].foo();
+  };
+  
+  
+  void initiate_chaos(){
+      Derived d[10];
+      dangerous(d, 10);
+  }
+#+END_SRC
+
+
+** Inline
+
+*** A questionable interpretation from StackOverflow
+**** Keyword
+Functions declared in the header must be marked *inline*,
+otherwise,
+every *translation unit* which includes the header will contain a definition of the function,
+and
+the linker will complain about multiple definitions (a violation of the One Definition Rule).
+_The inline keyword suppresses this, allowing multiple translation units to contain identical definitions._
+
+
+**** Optimization
+A C++ compiler is free to apply the inlining optimization any time it likes,
+as long as it doesn't alter the observable behavior of the program.
+
+The inline keyword makes it easier for the compiler to apply this optimization, 
+by allowing the function definition to be visible in multiple translation units,
+but _using the keyword doesn't mean the compiler has to inline the function_, 
+and _not using the keyword doesn't forbid the compiler from inlining the function._
+
+
+*** Semantics in C++
+The inline specifier is a hint to the compiler.
+
+
+** Generic Programming
+Generic Programming seeks to explicitly seperate the notion of "algorithm" from that of a "data-structure".
+The motivation is to: promote component-based development, boost productivity, and reduce configuration management.
+As an example, if you wanted to support four data structures (array, binary tree, linked list, and hash table)
+and three algorithms (sort, find and merge), a traditional approach would require four times three permutations to develop
+and maintain. Whereas, a generic programming approach would only require four plus three configuration items.
+
+* C++ topics 							   :noexport:
+** Access specifiers
+Access specifiers are for the compiler, and are not relevant at runtime.
+Accessing a private member outside of scope is a compile error.
+
+
+** Linkage
+The way a program is organized into files can help emphasize its logical structure, 
+help a human reader understand the program, 
+and help the compiler enforce that logical structure.
+
+The result of preprocessing is called a *translation unit*
+*Declarations* help the compiler analyze a translation unit in isolation from the rest of the program.
+
+The linker is the program that binds together the separately compiled parts.
+A linker is sometimes confusingly called a loader.
+
+*** Extern keyword
+The extern keyword applied to a function prototype does absolutely nothing.
+The extern keyword applied to a function definition is, of course, non-sensical. 
+A function prototype is always a declaration and never a definition.
+
+
+*** External linkage and internal linkage
+A *name* that can be used in translation units different from the one in which it was defined 
+is said to have *external linkage*.
+
+#+BEGIN_SRC cpp
+static int x1 = 1;   // internal linkage: not accessible from other translation units
+const char x2 = 'a'; // internal linkage: not accessible from other translation units
+#+END_SRC
+1. When used in namespace scope, the keyword static means "not accessible from other source files"
+2. The keyword const implies default internal linkage, so if you wanted x2 to have external linkage, you need to precede its definitions with extern.
+
+
+
+#+BEGIN_SRC cpp
+int x1 = 1;                // external linkage: accessible from other translation units
+extern const char x2 = 'a';// external linkage: accessible from other translation units
+#+END_SRC
+
+
+*** Linkage Errors
+#+BEGIN_SRC cpp
+  // file1.cpp
+  int x = 1;
+  int b = 1;
+  extern int c;
+
+  // file2.cpp
+  int x;          // means "int x = 0;"
+  extern double b;
+  extern int c;
+#+END_SRC
+Therea are three errors here:
+1. *x* is defined twice
+2. *b* is declared twice with different types
+3. *c* is declared twice but not defined
+
+These errors cannot be detected by a compiler that looks at only one file at a time.
+Many, however, are detectable by the linker. 
+For example, all implementations I know of correctly diagnose the double definition of *x*.
+
+However, the inconsistent declarations of *b* are uncaught on popular implementations,
+and the missing definition of *c* is typically only caught if *c* is used.
+
+
+
+
+*** Extern "C"
+When you state that a function has extern "C" linkage in C++,
+the C++ compiler does not mangle.
+
+Propably because some C binary wants to access this function
+
+To obey C linkage conventions, a C++ function must be declared to have C linkage
+This technique is commonly used to produce a C++ header from a C header.
+Alternatively, conditional compilation can be used to create a common C and C++ header.
+#+BEGIN_SRC cpp
+  #ifdef __cplusplus
+  extern "C" {
+  #endif
+      // ...
+      char* strcpy(char*, const char*);
+      // ...
+  #ifdef __cplusplus
+  }
+  #endif
+#+END_SRC
+
+
+** using keyword
+   
+
+** Initialization
+Initialization using {} _list initialization_ does not allow narrowing.
+
+
+** Structs
+A user-defined type, an aggregate of elements of arbitrary types.
+The size of an struct object is not necessarily the sum of the sizes of its members.
+A struct is simply a class where the members are public by default.
+A struct can have member functions.
+
+
+** Set
+Inside the C++ Standard Library there is the Standard Template Library, which consists of:
+   - Algorithms
+   - Functional
+   - Containers
+
+The containers are further analyzed to:
+   - Sequence containers
+   - Associative containers
+   - Unordered associative containers
+
+*Set* is an associative container
+#+BEGIN_SRC cpp :exports code
+  template < class T,                        // set::key_type/value_type
+             class Compare = less<T>,        // set::key_compare/value_compare
+             class Alloc = allocator<T>      // set::allocator_type
+             > class set;
+#+END_SRC
+
+Internally, the elements in a set are always sorted following a specific *strict weak ordering* criterion indicated by its internal comparison object (of type Compare).
+Weak ordering satisfies the following:
+     1. Irreflexivity: cmp(x,x) is false.
+     2. Antisymmetry: cmp(x,y) implies !cmp(y,x).
+     3. Transitivity: If cmp(x,y) and cmp(y,z), then cmp(x,z).
+     4. Transitivity of equivalence: Define equiv(x,y) to be !(cmp(x,y)||cmp(y,x)).If equiv(x,y) and equiv(y,z), then equiv(x,z).
+
+
+** Rvalue references
+Check out [[http://thbecker.net/articles/rvalue_references/section_01.html][this link]]
+
+R value references facilitate the implementation of these concepts:
+   - Move semantics
+   - Perfect forwarding
+
+*** A Rvalue is
+An expression that refers to a memory location and allows us to take the address of that memory location via the & operator. 
+An rvalue is an expression that is not an lvalue.
+
+
+*** Move semantics
+#+BEGIN_SRC cpp :main no
+  #include <iostream>
+  #include <cstring>
+  using namespace std;
+
+  class X {
+  public:
+      X(int id_): id(id_){
+          pointer = new int[1000];
+          for (int i = 0; i < 1000; i++) {
+              pointer[i] = id;
+          }
+
+      }
+      // Copy assignment operator
+      X& operator=(const X &rhs){
+          cout << "Copying" << endl;
+          memcpy(pointer, rhs.pointer, 1000);        
+          // To allow assignment chaining       
+          return *this;
+      }
+  private:
+      int id;
+      // If the class needs to support assignment do no use references
+      int *pointer;
+  };
+      
+
+
+  int main(int argc, char *argv[])
+  {
+      X x1(1), x2(2);
+
+      return 0;
+  }
+
+
+
+#+END_SRC
+
+#+RESULTS:
+: Copying
+
+
+** Function Pointer
+*** General
+#+BEGIN_SRC cpp
+int (*POINTER_NAME)(int a, int b)
+#+END_SRC
+
+A way to remember how to write one is to do this:
+ _1. Write a normal function declaration_
+ #+BEGIN_SRC cpp
+ int function(int a, int b)
+ #+END_SRC 
+
+ _2. Wrap function name with pointer syntax_
+ #+BEGIN_SRC cpp
+ int (*function)(int a, int b)
+ #+END_SRC
+
+ _3. Change the name_
+ #+BEGIN_SRC cpp
+ int (*function_ptr)(int a, int b)
+ #+END_SRC
+
+
+
+*** typedef a function type
+#+BEGIN_SRC cpp
+typedef int function(int a, int b);
+#+END_SRC
+
+
+** Single and double dispatch
+In most Object-Oriented languages
+the concrete function that is called from a function call in the code depends  
+on the dynamic type of a single object.
+
+This is known as *single dispatch* call, or simply a virtual function call.
+
+*Double dispatch* is useful in situations where the choice of computation depends on the runtime types of its arguments.
+
+
+** Deque Containers
+
+*** A Sequence Container
+The sequence containers store elements in a linear sequence.
+/There's no ordering imposed on the elements./
+
+A ~deque<T>~ container is a variable length sequence that grows automatically.
+You can add or delete elements efficiently at both ends of the sequence.
+Deque = *Double Ended Queue*
+
+
+** Map Containers
+
+*** Associative Container
+A map is an *associative container* (vs sequence containers).
+In an associative container, 
+each object is located based on the value of a key,
+that is associated with the object.
+
+Use case: Find an address based on a name.
+The key in this case is a string representing the name
+
+For a map, elements are typically stored in a *balanced binary tree*.
+The elements in a balanced binary tree are organized so that 
+*the height of the tree is minimized*.
+A binary tree is said to be balanced if
+the height of the left sub-tree of each node never 
+differs by more than one from the height of its right sub-tree.
+
+
+*** Flavors of map
+The elements in a map are objects of type *pair<const K,T>*
+The key is *const* in a pair element in a container
+because allowing the key to be modified would disrupt the sequence of elements in the container.
+
+1. *map<K,T>*
+   The elements in a map are objects of type *pair<const K,T>*
+   Elements are ordered and the order of elements in the container is determined by comparing the keys.
+   Keys are compared using a *less<K>* object by default.
+
+2. *multimap<K,T>*
+   Duplicate keys are allowed
+
+3. *unordered_map<K,T>*
+   Objects are not ordered directly by the key values.
+   Elements are located using *hash values* that are produced by the key values.
+
+4. *unoredered_multimap<K,T>*
+   Same as unordered_map except duplicates are allowed.
+
+Beware, there are two more parameters that have a default value.
+
+
+*** make_pair()
+
+
+*** iterators
+A map offers *bidirectional* and *reverse* iterators.
+
+
+** Destructor
+/Is the ~destructor~ function called automatically/, when an objects goes out of scope?
+Yes. Check this experiment:
+#+BEGIN_SRC cpp :main no :flags -std=c++11
+    #include <iostream>
+    using namespace std;
+
+    class Foo
+    {
+    public:
+        Foo(){ cout << "Hellow from constructor" << endl;}
+
+        ~Foo(){ cout << "Shit, Desctructor is here" << endl;}
+    };
+
+        int main(int argc, char *argv[])
+        {
+            {
+                Foo a;
+            }
+            return 0;
+        }
+#+END_SRC
+ 
+Does the compiler augment the body of a destructor with a destructor 
+for every non-static data member?
+#+BEGIN_SRC cpp :main no :flags -std=c++11 :results output raw
+  #include <iostream>
+  using namespace std;
+
+
+  class Bar
+  {
+  public:
+      Bar(){ cout << "Hello from Bar's constructor" << endl;}
+      ~Bar(){ cout << "Shit, Bar's Destructor is here" << endl;}
+  };
+
+
+  class Foo
+  {
+  public:
+      Foo(){ cout << "Hellow from constructor" << endl;}
+      ~Foo(){ cout << "Shit, Desctructor is here" << endl;}
+  private:
+      Bar bar;
+  };
+
+  int main(int argc, char *argv[])
+  {
+      {
+          Foo a;
+          return 0;
+      }
+  }
+#+END_SRC
+
+#+RESULTS:
+Hello from Bar's constructor
+Hellow from constructor
+Shit, Desctructor is here
+Shit, Bar's Destructor is here
+* The Visitor Pattern in tinyXML
+
+** class TiXmlVisitor
+If you call the *Accept()* method, it requires being passed a TiXmlVisitor class to handle callbacks.
+For nodes that contain other nodes (Document, Element) you will get called with a VisitEnter/VisitExit pair.
+Nodes that are always leaves simply called with Visit().
+
+If you return 'true' from a Visit method, recursive parsing will continue.
+If you return false, no children of this node or its sibilings will be visited.
+
+All flavors of Visit methods have a default implementation that returns 'true' (continue visiting).
+You need to only override methods that are interesting to you.
+
+Generally Accept() is called on the TiXmlDocument, although all nodes suppert Visiting.
+
+You should never change the document from a callback.
+* Monitor the state of the Coprocessor
+#+BEGIN_SRC sh
+micctrl -s
+#+END_SRC
+*Online* - The coprocessor is ready for use. The Linux microkernel has finished booting and access via ssh or minicom should be possible
+
+The coprocessor's crash dump files are placed in */var/crash/mpss*.
+Also there is a GUI for monitoring the state of the coprocessors
+#+BEGIN_SRC sh
+sudo micsmc-gui
+#+END_SRC
+
+* Configuring an Intel Xeon Phi coprocessor
+The directory */etc/mpss/* contains the configuration files for the coprocessors:
+- *default.conf:* configuration items which are the same for all coprocessors regardless of the
+  number of coprocessors installed on the system
+- *mic<n>.conf:*  (where <n> is the coprocessor number) configuration items which change
+  based on the identity of the coprocessor
+- *conf.d/*: - directory containing zero or more configuration files for configuring additional software you want to
+  install on the coprocessors
+
+After initial installation of the Intel MPSS, no files are present in /etc/sysconfig/mic/ until you create
+a default set of files with the command:
+#+BEGIN_SRC sh
+sudo micctrl --initdefaults
+#+END_SRC
+
+Whenever these configuration files change, you need to propagate the changes using:
+#+BEGIN_SRC sh
+sudo micctrl --resetconfig
+#+END_SRC
+
+The current configuration of the mic cards can be displayed with
+#+BEGIN_SRC sh
+sudo micctrl --config
+#+END_SRC
+
+** Root Device & File System
+The configuration parameter for the root device is called *RootDevice*(see for example /etc/mpss/mic0.conf).
+The options are three:
+- Ramfs: the disk image is recreated every time we boot the coprocessor.
+- StaticRamfs: the disk image will not be recreated unless you call *sudo micctrl --updateramfs*
+- NFS
+
+** Adding files to the file system
+There is always the option of ad hoc scp transfer of files.
+This option however is *non persistent*.
+
+Furthermore, we have the *root access problem* to the Xeon Phis (we do not know the root password).
+
+I modified the */etc/mpss/default.conf* file:
+- I *stopped* the mpss daemon (sudo service mpss stop)
+- I added the entry: *CommonDir* /home/kisp/MIC/common/ /home/kisp/MIC/common/descriptor_file
+- Then I copied all the files I want to be transferred to the mic cards in */home/kostis/MIC/common/*
+- To specify where will the files already located in /home/kisp/MIC/common/, will be placed in the mic cards, I created the file */home/kostis/MIC/common/descriptor_file*
+- Finally I *updated the ramfs disk image*.
+- *Restart* the mpss daemon.
+* Running MPI application on Host & Xeon Phis
+I followed this guide: [[https://software.intel.com/sites/default/files/article/336139/using-intel-mpi-on-intel-xeon-phi-coprosessor-systems.pdf][Using the Intel MPILibrary on Intel Xeon Phi Coprocessor Systems]]
+** Prerequisites
+1.I am not sure what these do but they are necessary
+#+BEGIN_SRC sh
+sudo /sbin/sysctl -w net.ipv4.ip_forward=1
+export I_MPI_MIC=enable
+#+END_SRC
+
+2.Make sure that these two commands are already in your .profile and have been executed
+#+BEGIN_SRC sh
+source /opt/intel/bin/compilervars.sh intel64
+source /opt/intel/impi/5.1.3.181/bin64/mpivars.sh
+#+END_SRC
+
+3.Ensure password-less ssh access between mics and host
+
+
+
+
+** Compilation
+You need two executables, one for the host and one for the cards.
+In general the compilation commands look like this (depending on what libraries you use):
+#+BEGIN_SRC sh
+mpiicc -mmic <source> -o <exec.mic> ## For the mic
+mpiicc <source> -o <exec.host>
+#+END_SRC
+
+Do not forget to transfer the mic executables
+#+BEGIN_SRC sh
+scp <executable> <location>
+#+END_SRC
+
+
+** Execution
+To determine the [[https://software.intel.com/en-us/node/535533][communication fabrics]]:
+#+BEGIN_SRC sh
+export I_MPI_FABRICS=shm:dapl
+#+END_SRC
+
+Running from host:
+#+BEGIN_SRC sh
+mpirun -n <#processes> -host <host> <executable> : -n <#processes> -host <host2> <executable2> (and so on)
+#+END_SRC
+
+You can try my MonteCarlo calculation of Pi application:
+#+BEGIN_SRC sh
+cp -r /home/kisp/Pi_MonteCarlo/ .
+cd Pi_MonteCarlo
+make
+make transfer
+mpirun -n 1 -host lovisa ./pi_MonteCarlo : -n 61 -host mic0 -wdir /tmp /tmp/pi_MonteCarlo.mic : -n 61 -host mic1 -wdir /tmp /tmp/pi_MonteCarlo.mic
+#+END_SRC
+
+
+** Debugging application launch
+A first sanity check would be to run the _hostname_ (the default unix utillity) instead of your custom application:
+#+BEGIN_SRC sh
+mpirun -n 1 -host lovisa hostname : -n 1 -host mic0 -wdir /tmp hostname : -n 1 -host mic1 -wdir /tmp hostname
+#+END_SRC
+This may help reveal an environmental problem (such as, the MPI remote access tool is not configured properly), or a connectivity problem (such as, unreachable hosts).
+
+To debug the launch of the application set:
+#+BEGIN_SRC sh
+export I_MPI_DEBUG=4
+export I_MPI_HYDRA_DEBUG=on
+#+END_SRC
+The value of I_MPI_DEBUG can be further increased
+
+Make sure that you have unlimited access to locked memory:
+#+BEGIN_SRC sh
+ulimit -a
+#+END_SRC
+
+Make sure that /opt directory is NFS Mounted on the Xeon Phis
+
+
+** Debugging application run
+Ubuntu does not allow attaching a debugger to a non-child process. 
+In order to use -gdb-ia with mpirun, this must be disabled by setting the sysctl value
+/proc/sys/kernel/yama/ptrace_scope to 0.
+
+
+Do not forget to compile with debugging information
+#+BEGIN_SRC sh
+mpiicpc -g3 -debug all -std=c++11 main.cpp
+#+END_SRC
+
+To attach gdb-ia to process with rank 0 do:
+#+BEGIN_SRC sh
+mpirun -gtool "gdb-ia:0=attach" -n 3 ./a.out
+#+END_SRC
+* Intel Trace Analyzer & Collector
+A Fool list of documentation [https://software.intel.com/en-us/articles/intel-trace-analyzer-and-collector-documentation]
+** Prerequisites
+1.Export the necessary environment (add to your .profile)
+#+BEGIN_SRC sh
+source /opt/intel/parallel_studio_xe_2016.2.062/bin/psxevars.sh
+#+END_SRC
+
+
+** Inspecting your application
+Execute your application by providing the -trace flag to mpirun
+For example:
+#+BEGIN_SRC sh
+mpirun -trace -n 1 -host lovisa ./pi_MonteCarlo : -n 5 -host mic0 -wdir /tmp /tmp/pi_MonteCarlo.mic
+#+END_SRC
+
+This will generate a .stf file on your current directory.
+To open it use:
+#+BEGIN_SRC sh
+traceanalyzer ./pi_MonteCarlo.stf
+#+END_SRC
+* MPI quick reference 						   :noexport:
+** Serializing C++ objects
+*** Type signature
+The type signature controls how data items are interpreted when data is sent of received.
+In other words, it tells MPI how to interpret the bits in a data buffer.
+The *displacements* tell MPI where to find the bits (when sending) or where to put them (when receiving).
+
+
+*** Typemap
+To illustrate how MPI assembles user-defined datatypes we introduce the following terms:
+
+Lower_Bound = min_j (disp_j)
+The location of the first byte described by the datatype
+
+Upper_Bound = max_j (disp_j + sizeof(type_j)) + pad
+The location of the last byte described by the datatype
+
+Extend      = upper_bound - lower_bound
+See *MPI_Type_get_extend*
+
+
+*** Memory Alignment
+One of the most common requirements made by an implementation of C/Fortran languages is that the address of an item in bytes be a multiple of the length of that item in bytes.
+* Intel Parallel Studio XE 2016 				   :noexport:
+** Preparing the environment
+Before you invoke the compiler, 
+you may need to set certain environment variables that define the location of compiler-related components.
+#+BEGIN_SRC sh
+source /opt/intel/bin/compilervars.sh intel64
+source /opt/intel/parallel_studio_xe_2016.2.062/bin
+#+END_SRC
+
+
+** The Intel C++ compiler
+_The compiler's documentation can be opened with:_
+#+BEGIN_SRC sh
+firefox /opt/intel/documentation_2016/en/compiler_c/common/core/index.htm &
+#+END_SRC
+
+_The openmp cheatsheet can be opened with:_
+#+BEGIN_SRC sh
+evince /opt/intel/documentation_2016/en/compiler_c/common/openmp/openmp-4.0-c.pdf &
+#+END_SRC
+
+_This is your friend_
+#+BEGIN_SRC sh
+icpc -help
+#+END_SRC
+
+| Flag | Description                      |
+|------+----------------------------------|
+| -E   | Preporcess to stdout             |
+| -P   | Preprocess to file               |
+| -c   | Produces the object files        |
+| -O2  | Default auto-optimization        |
+| -X   | Remove default include directory |
+| -I   | Add include directory            |
+| -o   | Specify output name              |
+
+*** Specifying Include Files
+The compiler searches directories for include files in the following order:
+1. Directories specified by the -I option
+2. Directories specified in the environment variables
+3. Default include directory
+* Xeon Phi Deprecated? 						   :noexport:
+** Transfering files :noexport:
+
+
+** OpenMP :noexport:
+I follow these instructions: [[https://software.intel.com/en-us/articles/building-a-native-application-for-intel-xeon-phi-coprocessors][Building a Native Application for Intel® Xeon Phi™ Coprocessors]]
+
+*Set the SINK_LD_LIBRARY_PATH* to the location of the Intel compiler runtime
+libraries for Intel Xeon Phi coprocessors and to the location of any other dynamic
+libraries required by the application
+
+#+BEGIN_SRC sh
+export SINK_LD_LIBRARY_PATH=/opt/intel/clck/3.1.2.006/provider/share/common/lib/mic/
+#+END_SRC
+
+*The micnativeloadex utility*, when used with option -l, will list shared library dependency information.
+The utility uses a default path, defined by the environment variable SINK_LD_LIBRARY_PATH, to search for dependencies.
+
+#+BEGIN_SRC sh
+/opt/intel/mic/bin/micnativeloadex <executable> -l
+#+END_SRC
+
+*Quick and dirty way* to execute an application natively on the Xeon Phi is to execute 
+(after you have defined the SINK_LD_LIBRARY_PATH)
+
+#+BEGIN_SRC sh
+sudo -E /opt/intel/mic/bin/micnativeloadex <executable>
+#+END_SRC
+* Compiling the SystemC library 				   :noexport:
+** Host compilation
+Execute the following from within the downloaded folder
+#+BEGIN_SRC sh
+export CXX=icpc
+mkdir objdir
+cd    objdir
+../configure --prefix=/opt/systemc-2.3.1 --enable-pthreads --enable-debug
+
+#+END_SRC
+* Password 							   :noexport:
+123j123j
+
+* Serial Key 							   :noexport:
+2jxl-p796s7fv 
+
+* DPDK 								   :noexport:
+The DPDK is a set of software libraries for accelerating packet processing
+workloads on COTS hardware platforms.
+
+** IP L3 forwarding
+
+** Packet Size 64 bytes
+
+** Use Huge Pages to avoid TLB misses which cripple performance
+
+** Integrated PCIe Controller
+
+** Intel Direct I/O Technology
+
+** DPDK includes a driver in user space
+UIO
+VFIO
+BAR
+* Bernstein 							   :noexport:
+Sounds that have a *notational* tone.
+
+...that was only a description, not a grammatical explanation.
+You have not pointed out the functions and interactions of these tokens.
+
+That would bring us back to musical syntax.
+You would have to know a great deal of technical terminology.
+
+But you may understand the inner syntactic functions of that Mozart
+by analogy with similar functions in language, discoverable by the linguistic method.
+
+All we need is analogous terms in which to articulate them.
+
+Let us make a stub in constructing a quasi scientific analogy between verbal and musical terms.
+
+1) note    = phoneme
+2) motive  = morpheme (minimal meaningfull sound unit)
+3) phrase  = word
+4) section = clause
+5) movement = sentence (What is the german word for movement-sentence?)
+6) piece    = piece
+
+These analogies are not firm.
+
+How about this:
+
+1) motive = noun (see Wagner's leitmotifs)
+2) chord  = adjective (modifies the noun)
+3) rhythm = verb (just like a verb activates the noun, rhytm activates sound)
+
+Now lets stop and think:
+Wagner's Fate + Diminished + 3 quarter beat
+->
+An uncertain fate dances
+
+* TODO Chomsky's Transformational Grammar 			   :noexport:
+* Networking
+** Fundamentals
+A *protocol* is a set of rules governing the communication between two or more hosts.
+The WWW, or the webpages, is only of tens of services provided by the Internet.
+hubs
+switches
+routers
+
+simplex     -> radio
+half-duplex -> walky-talkies
+Open System Interconnection -> OSI
+
+** OSI
+- Application Layer
+- Presentation Layer
+  NO PDU
+  Compression - Encryption - Translation
+- Session Layer
+  NO PDU
+- Transport Layer
+¨ PDU -> segment
+- Network Layer
+  PDU -> packet
+- Data Link Layer
+  PDU -> frame
+- Physical Layer
+  PDU -> bit
+
+*Encapsulation:* The flow of data from the application layer to the physical layer.
+*Decapsulation:* The opposite flow
+
+The unit in which a certain layer handles data 
+is called a *Protocol Data Unit (PDU)*
+
+The osi model works in a *peer-layer strategy*.
+This strategy implies that the control information added to the PDU
+by one layer is meant to reach the peer layer in the receiving entity.
+* XML
+A *metamarkup* language: The set of tags is not predefined.
+A *scheme* defines a XML based language
+* UML
+Investigating the semantics of UML diagrams.
+What does UML notation denotes in terms of code?
+** Class Diagrams
+*** Association
+Association from A to B means that A uses B directrly,
+for example a reference to an instance of B is passed as an argument to method of A.
+
+*** Aggregation
+An object acts a container class of the other.
+**** Shared Aggregation
+**** Composition
+* Computer Science Cheatsheet 					   :noexport:
+_Semantics:_ As a necessary propery of a modeling language whose models are meant to undergo
+             synthesis and refinement. In order to have well-defined semantics, we need to
+             introduce some form of formalism to models and modeling languages.
+
+_NP problem:_ Non-deterministic Polynomial
+              NP problems run in polynomial time on non-deterministic Turing machines
+              A decision problem for which a "yes-answer" can be verified in polynomial time (by a deterministic Turing machine)
+
+_NP hard problem:_    (With respect to the class of NP problems) 
+                      If every NP problem can be *reduced* to it.
+
+_NP complete problem:_ If it is NP and NP hard.
+
+An _Algorithm_ is a finite description of a sequence of steps to be taken to solve a problem.
+Physical processes are rarely structured as a sequence of steps; rather, they are structured as _continuous interactions between concurrent components_.
+
+_Model vs Reality:_ You will never strike oil by drilling through the map (Golomb 1971)
+_Concurrency vs Parallelism:_ Consider two "living" threads. On a multicore machine they might be executed in parallel.
+On a single core the instructions of each thread are arbitrarily interleaved. In both cases the execution is these two 
+threads is characterized as concurrent. Concurrency does not imply simultaneity.
+
+_Chattering Zeno model:_ A moment in the simulation where execution is happening within delta time, not allowing the simulation time to progress.
+
+_Zeno model:_ A model (like Achilles and the Turtle) where simulation time advances slower and slower until it reaches a point where 
+it can not advance further(time increment becomes lower than the resolution) and gets trapped in delta time.
+
+_A simulation_ is defined as the execution of model revealing the behaviour of the system being modeled.
+A system can be analyzed either by being formally verified or simulated.
+Simulation beyond analysis, as a means of constructing a virtual platform.
+
+_A binary file:_ a statically linked library, a dynamically linked library, an object module, a standalone executable.
+All binary files contain  meta information, such as the symbol table.
+
+_False Sharing:_ The silent performance killer.
+When cores communicate using "shared memory", they are often really just communicating through the cache coherence mechanisms.
+A pathological case can occur when two cores access data that happens to lie in the same cache line. 
+Normally, cache coherence protocols assign one core, the one that last modifies a cache line, to be the owner of that cache line. If two cores write to the same cache line repeatedly, they fight over ownership. 
+Importantly, note that this can happen even if the cores are not writing to the same part of the cache line.
+Write contention on cache lines is the single most limiting factor on achieving scalability for parallel threads of execution in an SMP system. \cite{McCool2012}em
+
+_Design Automation_ depends on the high-level modelling and specification of systems.
+
+_Reentrancy (vs Thread Safety):_ A subroutine is called *re-entrant* if it can be interrupted in the middle of its execution and then safely called again (re-entered, for example by the ISR) before its previous invocations complete execution.
+*Recursive subroutines must be re-entrant*. A thread-safe code does not necessarily have to be re-entrant.
+#+BEGIN_SRC C++
+void thread_safe()
+{
+   acquire_lock
+        if interrupted here and the ISR tries to re-enter we are fucked.
+   release_lock
+}
+#+END_SRC
+
+_A computer language:_ can be regarded the medium of communicating an algorithm to a machine.
+We want the language to be expressive (like the greek language), portable (like the english language) and efficient (like the swedish)
+
+_Data Parallelism:_ parallelism determined implicitly by data *independence*.
+
+_Bash & C:_ brick and mortar
+
+* RTL Cheatsheet 						   :noexport:
+_RTL modules are pin-accurate:_ This means that the ports of an RTL module directly correspond to wires in the real-world implementation of the module. 
+
+_RTL_design:_ The basis of RTL design is that circuits can be thought of 
+              as a set of registers and 
+              a set of transfer functions 
+              defining the datapaths between registers.
+
+_Stages of RTL design:_
+(Remeber the dot product example)
+1. Identify Data Operations:
+2. Determine Type & Precision:
+3. Determine Constraints on Data Processing Resources:
+4. Allocation and Scheduling: Allocation reffers to the mappings of data operations onto processing resources.
+                              Scheduling refers to the choice of clock cycle on which an operation will be performed in a multi-cycle operation.
+                              Registers must also be allocated to all values that cross over from one clock cycle to a later one.
+			      The aim is to maximize the resource usage and simultaneously to minimise the registers required to store intermediate results.
+                              It is now possible to design the datapath minus its controller.
+
+5. Controller Design:         Design a controller to sequence the operations over the eight clock cycles.
+                              There are three multiplexers and a register to control in this circuit.
+                              *Normally the controller would be implemented as a state machine*
+                              
+6. Reset Mechanism Design:
+
+#+BEGIN_SRC vhdl
+library ieee;
+use     ieee.std_logic_1164.all, ieee.numeric_std.all;
+
+package dot_product_types is
+   subtype sig8 is signed (7 downto 0);
+   type sig8_vector is array (natural range <>) of sig8;
+end;
+
+library ieee;
+use ieee.std_logic_1164.all, ieee.numeric_std.all;
+use work.dot_product_types.all;
+entity dot_product is
+   port (a, b : in sig8_vector(7 downto 0);
+   ck, reset: in std_logic;
+   result : out signed(15 downto 0));
+end;
+
+architecture behaviour of dot_product is
+   signal i : unsigned(2 downto 0);
+   signal ai, bi : signed (7 downto 0);
+   signal product, add_in, sum, accumulator : signed(15 downto 0);
+begin
+   control: process
+   begin
+     wait until rising_edge(ck);
+     if reset = '1' then
+        i <= (others => '0');
+     else
+        i <= i + 1;
+     end if;
+   end process;
+
+   a_mux: ai <= a(to_integer(i));
+   b_mux: bi <= b(to_integer(i));
+   multiply: product <= ai * bi;
+   z_mux: add_in <= X"0000" when i = 0 else accumulator;
+   add: sum <= product + add_in;
+   
+   accumulate: process
+   begin
+     wait until rising_edge(ck);
+     accumulator <= sum;
+   end process;
+   output: result <= accumulator;
+end;
+#+END_SRC
+
+* More SystemC 							   :noexport:
+_UART:_ The idle, no data state is high-voltage, or powered. 
+This is a historic legacy from telegraphy, in which the line is held high to show that the line and transmitter are not damaged
+
+By distinguishing the declaration of an interface from the implementation of its methods, 
+SystemC promotes a coding style in which communication is separated from behaviour, 
+a key feature to promote refinement from one level of abstraction to another.
+
+* MPI 								   :noexport:
+** Nonblocking Communication
+One can improve performance on many systems by overlapping communication and computation.
+This is especially true on systems where communication can be executed autonomously by an intelligent communication controller.
+
+*Light-weight* threads are one mechanism for achieving such overlap.
+An alternative mechanism that often leads to better performance is to use *nonblocking communication*.
+
+A *non-blocking send start* call initiates the send operation, but does not complete it.
+The send start call can return before the message was *copied out* of the send buffer.
+A seperate send complete call is needed to complete the communication, i.e., to verify that the data has been copied out of the send buffer.
+With suitable hardware, the transfer of data out of the sender memory may proceed concurrently with computations done at the sender after the send was initiated and before
+it completed.
+
+Similarly, a *non-blocking receive start* call initiates the receive operation, but does not complete it.
+The call can return before a message is stored into the receive buffer.
+A separate receive complete call is needed to complete the receive operation and verify that the data has been recived into the receive buffer.
+With suitable hardware, the transfer of data into the receiver memory may proceed concurrently with computations done after the receive was initiated and before it completed.
+_The use of nonblocking receives may also avoid system buffering and memory-to-memory copying, as information is provided early on the location of the receive buffer._
+
+_Nonblocking send start calls can use the same four modes as blocking sends: standard, buffered, synchronous and ready._
+These carry the same meaning.
+
+Sends of all modes, ready excepted, can be started whether a matching receive has been posted or not;
+a nonblocking *ready* send can be started only if a matching receive is posted.
+In all cases, the send start call is local: it returns immediately, irrespective of the status of other processes.
+If the call causes some system resource to be exhausted, then it will fail and return an error code.
+Quality implementations of MPI should ensure that this happens only in "pathological" cases.
+That is, an MPI implementation should be able to support a large number of pending nonblocking operations.
+The send-complete call returns when data has been copied out of the send buffer.
+It may carry additional meaning, depending on the send mode.
+
+If the send mode is *synchronous*, then the send can complete only if a matching receive has started.
+That is, a receive has been posted, and has been matched with the send.
+_In this case, the send-complete call is non-local_
+Note that a synchronous, nonblocking send may complete, if matched by a nonblocking receive, before the receive complete call occurs.
+(It can complete as soon as the sender knows the transfer will complete, but before the receiver knwos the transfer will complete.)
+
+If the send mode is *buffered* then the message must be buffered if there is no pending receive.
+In this case, the send-complete call is local, and must succeed irrespective of the status of a matching receive.
+
+If the send mode is *standard* then the send-complete call _may_ return before a matching receive is posted, if the message is buffered.
+On the other hand, the receive-complete may not complete until a matching receive is posted, and the message was copied into the receive buffer.
+
+_Nonblocking sends can be matched with blocking receives, and vice-versa._
+
+The completion of a send operation may be delayed, for standard mode, and must be delayed, for synchronous mode, until a matching receive is posted.
+The use of nonblocking sends in these two cases allows the sender to proceed ahead of the receiver, so that the computation is more tolerant of fluctuations in the speeds of the two processes.
+
+Nonblocking sends in the buffered and ready modes have a more limited impact, 
+e.g., the blocking version of buffered send is capable of completing regardless of when a matching receive call is made.
+However, separating the start from the completion of these sends still gives some opportunity for optimization within the MPI library.
+For example, starting a buffered send gives an implementation more flexibility in determining if and how the message is buffered.
+There are also advantages for both nonblocking buffered and ready modes when data copying can be done concurrently with computation.
+
+The message-passing model implies that communication is initiated by the sender.
+_The communication will generally have lower overhead if a receive is already posted whene the sender initiates the communication_
+_(data can be moved directly to the receive buffer, and there is no need to queue a pending send request)_
+However, a receive operation can complete only after the matching send has occured.
+The use of nonblocking receives allows one to achieve lower communication overheads without blocking the receiver while it waits for the send.
+
+
+** MPI_Request
+Nonblocking communications use opaque request objects to identify communication operations 
+and match the operation that initiates the communication with the operation that terminates it.
+These are system objects that are accessed via a handle.
+A request object identifies various properties of a communication operation, 
+such as the *send mode*, 
+the *communication buffer* that is associated with it,
+its *context*,
+the *tag* and *destinationa* arguments to be used for a send,
+or the *tag* and *source* arguments to be used for a receive.
+In addition, this object stores information about the status of the pending communication operation.
+
+A *null* handle is a handle with value *MPI_REQUEST_NULL*
+A persistent request and the handle to it are *inactive* if the request is not associated with any ongoing communication.
+A handle is *active* if it is neither null or inactive.
+
+
+** MPI_Status
+An *empty* status is a status which is set to return 
+tag=MPI_ANY_TAG, 
+source=MPI_ANY_SOURCE, 
+error=MPI_SUCCESS, and is also internally configured so that calls to MPI_GET_COUNT, MPI_GET_ELEMENTS, and MPI_GET_ELEMENTS_X return count = 0 and MPI_TEST_CANCELLED returns false.
+We set a status variable to empty when the value returned by it is not significant.
+Status is set in this way so as to prevent errors due to accesses of stale information.
+
+
+** MPI_{TEST|WAIT}{ALL|SOME|ANY}
+#+BEGIN_SRC cpp
+  MPI_Wait(
+      MPI_Request *request,
+      MPI_Status  *status
+      );
+#+END_SRC
+A call to MPI_WAIT returns when the operation identified by request is complete.
+If the request is an active persistent request, it is marked inactive.
+Any other type of request is and the request handle is set to MPI_REQUEST_NULL.
+MPI_WAIT is a non-local operation.
+
+The call returns, in *status* information on the completed operation.
+
+One is allowed to call MPI_WAIT with a null or inactive request argument.
+In this case the operation returns immediately with empty status.
+
+Successful return of MPI_WAIT after a MPI_IBSEND implies that the used send buffer can be reused.
+(data has been sent out or copied into a buffer attached with MPI_BUFFER_ATTACH)
+Note that, at this point, we can no longer cancel the send.
+If a matching receive is never posted, then the buffer cannot be freed.
+This runs somewhat counter to the stated goal of MPI_CANCEL
+(always being able to free program space that was committed to the communication subsystem).
+
+
+** MPI_Status
+The source or tag of a received message may not be known if wildcard values were used in the receive operation. 
+Also, if multiple requests are completed by a single MPI function (see Section 3.7.5), a distinct error code may need to be returned for each request.
+
+The status argument also returns information on the length of the message received.
+However, this information is not directly available as a field of the status variable and a call to MPI_GET_COUNT is required to “decode” this information.
+
+
+** MPI_Irecv
+#+BEGIN_SRC cpp
+  MPI_Irecv(
+      void *buf,
+      int   count,
+      MPI_Datatype datatype,
+      int   source,
+      int   tag,
+      MPI_Comm comm,
+      MPI_Request *request
+  )
+#+END_SRC
+
+* SystemC 							   :noexport:
+** General
+
+*** Parsing the SystemC standard for occurences of the word kernel
+Clause 4 of \cite{OpenSystemCInitiative2009} "_Elaboration and simulation semantics_", defines the behavior of the SystemC kernel
+and is central to an understanding of SystemC.
+
+The _execution_ of a SystemC application consists of _elaboration_ followed by _simulation_.
+Elaboration results in the creation of the module hierarchy.
+Elaboration involves the execution of application code, the public shell of the implementation, and the private kernel of the implementation.
+Simulation involves the execution of the scheduler, part of the kernel, which in turn may execute processes within the application.
+
+The purpose of the process macros is to _register the associated function with the kernel such that the scheduler can call back that member function during simulation_.
+
+When a port is bound to a channel, the kernel shall call the member function register_port of the channel.
+
+Simulation time is initialized to zero at the start of simulation and increases monotonically during simulation.
+The physical significance of the integer value representing time within the kernel is determined by the simulation time resolution.
+
+Since process instances execute without interruption, only a single process instance can be running at any one time,
+and no other process instance can execute until the currently executing process instance has yielded control to the kernel.
+_A process shall not pre-empt or interrupt the execution of another process._
+_This is known as co-routine semantics or co-operative multitasking_
+
+The SystemC sc_module class provides four routines that may be overridden, and they are executed at the boundaries of simulation.
+These routines provide modelers with a place to put initialization and clean-up code that has no place to live.
+For example, checking the environment, reading run-time configuration information and generating summary reports at the end of simulation.
+#+BEGIN_SRC cpp :exports code
+void before_end_of_elaboration(void);
+void end_of_elaboration(void);
+void start_of_simulation(void);
+void end_of_simulation(void);
+#+END_SRC
+
+A thread of clocked thread process instance is said to be resumed when the kernel causes the process to continue execution,
+starting with the statement immediately following the most recent call to function wait.
+
+If the thread or clocked thread process executes the entire function body or executes a return statement and thus returns control to the kernel,
+the associated function shall not be called again for that process instance. The process instance is then said to be terminated.
+
+The function next_trigger does not suspend the method process instance; a method process cannot be suspended but always executes to completion before
+returning control to the kernel.
+
+The distinction between _suspend/resume_ and _disable/enable_ lies in the sensitivity of the target process during the period while it is suspended or disabled.
+With _suspend_ the kernel keeps track of the sensitivity of the target process while it is suspended such that a relevant event notification or time-out 
+while suspended would cause the process to become runnable immediately when resume is called.
+With _disable_ the sensitivity of the target process is nullified while it is suspended such that the process is not made runnable by the call to enable, but only on the next
+relevant event notification or time-out subsequent to the call to enable.
+
+If a process kills itself, the statements following the call to kill shall not be executed again during the current simulation, and control shall return to the kernel.
+
+_STOPPED AT OCCURENCE 44_
+
+
+*** Parsing the SystemC standard for occurences of the phrase set of
+Set of runnable processes
+Set of update requests
+Set of delta notifications
+Set of time-outs
+Set of timed notifications
+
+
+*** Parsing the SystemC standard for occurences of the phrase simulation time
+43/105:
+Synchronization may be strong in the sense that the sequences of communication events
+is precisely determined in advance, or weak in the sense that the sequence of communication events
+is partially determined by the detailed timing of the individual processes.
+
+Strong synchronization is easily implemented in SystemC using FIFOs or semaphores, allowing a completely
+untimed modeling style where in principle simulation can run without advancing simulation time.
+
+Untimed modeling in this sense is outside the scope of TLM 2.0. On the other hand, a fast virtual
+platform model allowing multiple embedded software threads to run in parallel may use either strong or weak
+synchronization. In this standard, the appropriate coding style for such a model is termed loosely-timed.
+
+
+*** Port vs Export
+The purpose of port and export bindings is to enable a port or export to _forward interface method calls made during simulation._
+A port _requires_ the services defined by an interface.
+An export _provides_ the services defined by an interface.
+
+Forward path form initiator to target.
+Backward path from target back to initiator.
+
+
+*** TODO Parsing the SystemC standard for occurences of the phrase update phase 
+
+
+
+
+
+
+
+
+
+
+
+SC_THREADs are not threads. They are coroutines.
+
+Coroutines are subroutines that allow multiple entry points for suspending and resuming execution at certain locations.
+
+SystemC does not offer real concurrency. It simulates concurrency using ...
+
+The SystemC kernel implements cooperative scheduling where each SC_THREAD willingly relinquishes control to allow other SC_THREADs to execute.
+
+In order to implement that cooperative scheduling strategy using coroutines, a threading library is used.
+
+
+The scheduler advances simulation time to the time of the next event, 
+then runs any processes due to run at that time of sensitive to that event.
+
+Computations that take some time are usually modeled by instantaneous computations followed by a SystemC wait.
+
+A _scheduler_ manages the threads by use of queues, such as READY, which contains all those that are ready to execute
+and WAIT which contains threads waiting for events.
+
+_Threads_ switch between READY and WAIT during simulation subject to event notification and time advances.
+
+Events are delivered in an inner loop called _delta-cycle_ and simulation time advances in an outer loop _time-cycle_.
+
+
+** Co-routine semantics
+\cite{OpenSystemCInitiative2012}
+Since process instances execute without interruption, only a single process instance can be running at any one time, 
+and no other process instance can execute until the currently executing process instance has yielded control to the kernel.
+A process shall not pre-empt or interrupt the execution of another process.
+This is known as co-routine semantics or co-operative multitasking
+
+An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
+provided that the behavior appears identical to the co-routine semantics defined in this subclause.
+In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics.
+
+Software modules that interact with one another as if they were performing I/O operations. (Conway 1963)
+
+Co-routine semantics are linked to Kahn process networks.
+
+*** Impediments to speed
+_Context switching:_
+- Every time you see a SC_THREAD -> _wait_ or a SC_METHOD -> _next_trigger() return_
+- Complex bus protocols and lots of processes
+
+
+** Dynamic processes with sc_spawn
+
+
+** sc_elab_and_sim
+sc_elab_and_sim is used to simplify the invocation of SystemC from a user-defined main() function.
+If you do not have your own main(), you do not need sc_elab_and_sim
+
+
+** sc_simcontext::crunch
+This process implements the simulator's execution of processes.
+It is a while(true) thing
+
+sc_simcontext::crunch
+sc_simcontext::simulate
+sc_core::start
+sc_main
+sc_elab_and_sim
+main
+
+
+** sc_export
+An export gives a structured way to express the fact that
+a module provides an interface whose methods may be called from outside the module.
+In a sense, an export is the opposite of a port.
+Whereas a port allows interface method calls "up and out of" a module, an export allows interface method calls "down and into" a module.
+
+An export should be bound to a channel or to another export in the constructor of the module in which it is declared.
+Unlike a multiport, an export cannot be bound to more than one channel.
+
+As for ports, you could create specialized classes derived from sc_export if you wanted to, 
+but unlike sc_port, there are none built in to the SystemC class library.
+
+* TLM 2.0 							   :noexport:
+** General
+A standardized way to connect models described at the untimed or approximately timed transaction level.
+Instead of every vendor of system-level virtual platforms having their own proprietary languages, models and tools
+every major developer of these platforms is now beginning to standardize on the use of TLM 2.0 as the way in which
+to interconnect models or is planning to do so within their next development cycle.
+
+Models developed for one system will be able to work on another, meaning that the problem of model availability and
+true interoperability is now being solved. 
+
+TLM 2.0 provides communications and timing capabilities that enable modeling at various levels of timing accuracy.
+
+This chapter also demonstrates the transition that is going on in the industry: away from proprietary systems
+and interfaces toward open standards.
+
+platform-based development approach
+
+An example of an extension is the TLM 2.0 library which creates additional communications capabilities
+that mimic bus-based semantics. 
+While this still remains within the discrete event MoC, it illustrates how additional semantics can be
+built upon the base.
+
+With the introduction of TLM 2.0 another huge barrier was removed, which was model interoperability.
+SystemC does not define the semantics of communications between models as it only provides the essential primitives
+necessary for communications. Thus there was no agreement in the industry about how these interfaces should
+be constructed.
+
+Several EDA vendors, such as CoWare, attempted to create and proliferate communications libraries,
+but these saw no uptake because of the proprietary nature of them.
+Today we are seeing rapid adoption of TLM 2.0 by the industry with significant support coming from 
+all of the major EDA players.
+
+\cite{Bailey2010}
+
+
+
+
+#+BEGIN_LATEX
+\tikzstyle{block} = [draw, fill=blue!4!white, rectangle, minimum height=3em, minimum width=6em]
+\begin{figure}
+\begin{tikzpicture}[auto, node distance=2cm]
+
+\node [block] (payload) {Generic payload};
+\node [block, right of=payload] (phases)  {Phases};
+\node [block, below of=payload] (sockets) {Initiator and target sockets};
+\node [block, below of=sockets] (tlm)     {TLM-2 core interfaces: 
+                                               \begin{itemize}
+					       \item {Blocking transport interface}
+					       \item {Non-blocking transport interface}
+					       \item {Direct memory interface}
+					       \item {Debug transport interface}
+					       \end{itemize}
+					       };
+
+\draw [->] (payload) -- (sockets);
+\draw [->] (phases)  -- (sockets);
+\draw [->] (sockets) -- (tlm);
+
+\end{tikzpicture}\caption{TLM 2.0 Interoperability layer for bus modeling}
+\end{figure}
+#+END_LATEX
+** Transaction Object
+
+*** Blocking transport interface
+
+1. The lifetime of a given transaction object may extend beyond the return from nb_transport such
+   that _a series of calls to nb_transport may pass a single transaction object_ forward and backward between initiators, interconnect components, and targets.
+
+2. If there are multiple calls to nb_transport associated with a given transaction instance, one and the same transaction object shall be passed as an argument to every such call.
+   _In other words, a given transaction instance shall be represented by a single transaction object._
+
+3. _An initiator may re-use a given transaction object_ to represent more than one transaction instance, or across calls to the transport interfaces, DMI, and the debug transport interface.
+
+4. Since the lifetime of the transaction object may extend over several calls to nb_transport, either the caller or the callee may modify or update the transaction object, 
+   subject to any constraints imposed by the transaction class TRANS.
+   For example, for the generic payload, the target may update the data array of the transaction object in the case of a read command, but shall not update the command field.
+
+** Sockets
+A socket combines a port with an export.
+An _initiator socket_ is derived from class sc_port and has an sc_export. It has the port for the forward path and the export for the backward path.
+An _target_socket_    is derived from class sc_export and has an sc_port ([[~/pSystemC/src/tlm_core/tlm_2/tlm_sockets/tlm_target_socket.h][tlm_base_target_socket]])
+
+Only the most derived classes *tlm_initiator_socket* and *tlm_target_socket* are typically used directly by applications. 
+These two sockets are parameterized with a protocol traits class that defines the types used by the forward and backward interfaces.
+Sockets can only be bound together if they have the identical protocol type.
+
+** Generic Payload
+
+*** Introduction
+
+A specific transation type.
+For *maximum interoperability*, applications should use the default transaction type *tlm_generic_payload* with the base protocol and the default phase type *tlm_phase*.
+Sockets that use interfaces specialized with different transaction types cannot be bound together, providing compile-time checking but restricting interoperability.
+
+It supports the abstract modeling of memory-mapped buses, 
+together with an extension mechanism to support the modeling of specific bus protocols whilst maximizing interoperability.
+
+The main features of the generic payload are:
+- Command 
+  Is it read or write?
+- Address
+  What is the address
+- Data
+  A pointer to the physical data as an array of bytes
+- Byte Enable Mask Pointer
+- Response
+  An indication of whether the transaction was successful, and if not the nature of the error
+
+The generic payload is the class type offered by the TLM-2.0 standard for transaction objects passed through the core interfaces.
+The generic payload is closely related to the the base protocol, which itself defines further rules to ensure interoperability when using the generic payload.
+
+
+*** Streaming Width
+In case of *multi-beat* transactions 
+the ratio of the data length over the streaming width will give the number of beats. 
+
+
+*** Byte Enable Mask Pointer
+The elements in the byte enable array shall be interpreted as follows.
+A value of 0 shall indicate that that corresponding byte is disabled, and a value of 0xff shall indicate that
+the corresponding byte is enabled.
+The meaning of all other values shall be undefined. 
+The value 0xff has been chosen that the byte enable array can be used directly as a mask.
+
+
+*** Generic Payload Memory Management
+From section 7.5 of the TLM 2.0.1 LRM
+
+1. The initiator shall be responsible for setting the data pointer and byte enable pointer atrributes to existing
+   storage, which could be static, automatic (stack) or dynamically allocated (new storage). 
+   The initiator shall not delete this storage before the lifetime of the transaction is complete.
+   _The generic payload destructor does not delete these two arrayes._
+
+3. The generic payload supports two distinct approaches to memory management;
+   reference counting with an explicit memory manager and ad hoc memory management by the initiator.
+   The two approaches can be combined.
+   Any memory management approach should manage both the transaction object itself and any extensions to the transaction object.
+
+4. The construction and destruction of objects of type tlm_generic_payload is expected to be expensive in terms of CPU time due to the implementation of the extension array.
+   As a consequence, repeated construction and destruction of generic payload objects should be avoided.
+   There are two recommended strategies; either use a memory manager that implements a pool of transaction objects, 
+   or if using ad hoc memory management, re-use the very same generic payload object across successive calls to b_transport
+   (effectively a transaction pool with a size of one).
+   _Having a generic payload object constructed and destructed once per call to transport would be prohibitively slow and should be avoided_
+
+5. A memory manager is a user-defined class that implements at least the *free* method of the abstract base class tlm_mm_interface.
+   The intent is that a memory manager would provide a method to allocate a generic payload transaction object from a pool of transactions,
+   would implement the free method to return a transaction object to that same pool, and would implement a destructor to delete the entire pool.
+   The *free* method is called by the *release* method of class tlm_generic_payload when the reference count of a transaction object reaches 0.
+   The free method of class *tlm_mm_interface* would typically call the reset method of class *tlm_generic_payload* in order to delete any extensions marked for automatic deletion.
+
+6. The methods *set_mm*, *acquire*, *release*, *get_ref_count* and *reset* of the generic payload shall only be used in the presence of a memory manager.
+   By default, a generic payload object does not have a memory manager set.
+
+7. Ad hoc memory management by the initiator without a memory manager requires the initiator to allocate memory for the transaction object before the TLM-2.0
+   core interface call, and delete or pool the transaction object and any extension objects after the call.
+
+** Initiators and Targets
+A module's processes may act as either initiators or targets.
+An initiator is responsible for creating a payload and calling the transport function to send it.
+A target receives payloads from the transport function for processing and response.
+In the case of non-blocking interfaces the target may create new transactions backwards in response to a transaction from an initiator.
+Initiator calls are made through initiator sockets, target calls received through target sockets.
+A module may implement both target and initiator sockets, allowing its threads to both generate and receive traffic.
+
+** Blocking, Non-Blocking, Debug and Interfaces/Transport Call
+_How does TLM contribute to performance boost:_ You do 1 wait, rather than many waits.
+
+With the blocking interface you can have wat() on the target code.
+
+Why does the nb_transport_if defines 4 phases?
+- To enable
+
+** Direct Memory Interface
+Characteristics:
+- Allows direct backdoor access into memory
+- Allows un-inhibited ISS execution:
+  (Instead of roaming through the hierarchy of a buss system-Fast software execution)
+
+** Socket
+In order to pass transactions between initiators and targets, TLM-2.0 uses sockets.
+An initiator sends transactions out through an _initiator socket_, and a target receives incoming transactions through a _target socket_.
+A socket is basically a convinience class, wrapping up a port and an export.
+
+[[file:Figures/tlm_socket.png]]
+
+
+
+
+** Blocking interface
+This interface allows only two timing points to be associated with each transaction, 
+corresponding to the call to and return from the blocking transport function.
+
+The b_transport method has a timing annotation argument.
+This single argument is used on both the call to and the return from b_transport to indicate the time of
+the start and end of the transaction, respectively, relative to the current simulation time.
+
+
+*** Class Definition
+#+BEGIN_SRC cpp
+  namespace tlm {
+      template<typename TRANS=tlm_generic_payload>
+      class tlm_blocking_transport_if: public virtual sc_core::sc_interface{
+      public:
+          virtual void b_transport(TRANS& trans, sc_core::sc_time& t)=0;
+      };
+  }
+#+END_SRC
+
+
+
+*** Rules
+1. The b_transport may call wait, directly or indirectly
+2. The b_transport method shall not be called from a method process.
+3. The initiator may *re-use* a transaction object from one cal to the next and across calls to the transport interfaces, DMI, and the debug transport interface
+4. *The call to b_transport marks the first timing point of the transaction. The return from b_transport marks the final timing point of the transaction.*
+5. The timing annotation argument allows the timing points to be offset from the simulation times (value returned by sc_time_stamp()) at which the function call and return are executed.
+6. The callee may modify or update the transaction object, subject to any constraints imposed by the transaction class TRANS.
+7. It is recommmended that the transaction object should not contain timing information. Timing should be annotated using the sc_time argument to b_transport.
+8. Typically, an interconnect component should pass the b_transport call along the forward path from initiator to target. In other words, the implementation of b_transport for the target socket of the interconnect component may call the b_transport method of an initiator socket.
+
+** Loosely Timed Coding Style
+Notes from Video Lecture: [[http://videos.accellera.org/tlm20tutorial/David_Black/player.html][David Black, XtremeEDA USA: TLM Mechanics]]					   
+_FAST-NOT ACCURATE_ (In terms of timing?): Less detail means faster simulation. Less context switching means also faster simulation.
+A fast, loosely-timed model is typically expected to use the _blocking transport interface_ the _DMI_ and _temporal decoupling_.
+_Older terminology:_ UnTimed - Programmer's View
+_Use Cases:_
+- Early Software Development
+_Characteristics:_
+- Only sufficient timing detail to _boot O/S and run multi-core systems. It can express the modeling of _timers and _interrupts_
+- Processes can run ahead of simulation time (_temporal decoupling_)
+- Each transaction has _2 timing points_: begin and end
+- Uses direct memory interface (_DMI_)
+
+_Temporal decoupling:_
+Each process runs ahead up to quantum boundary.
+sc_time_stamp() advances in multiples of the quantum.
+Deterministic communication requires explicit synchronization.
+
+_DMI:_
+When combined with temporal decoupling may lead to completely crappy situations.
+The language neither the simulator do not protect the designer.
+It is like a hole in the legal system.
+
+** Approximately-timed
+_ACCURATE_ (In terms of timing?)
+_Older terminology:_ Cycle Accurate
+_Use cases:_
+- Architectural Analysis, Software Performance Analysis
+- Hardware Verification
+
+** Loosely-timed coding style and temporal decoupling
+*Each process is allowed to run for a certain time slice or quantum before switching to the next, or instead may yield control when it reaches an explicit synchronization point.*
+
+The quantum value represents a tradeoff between simulation speed and accuracy.
+
+For a fine grained model, the overhead of event scheduling and process context switching becomes the dominant factor in simulation speed.
+Therefore allowing a process to run ahead of the simulation time will speed up the simulation.
+Until it needs to interact with another process, for example read or update a variable belonging to another process.
+
+The processs that runs ahead of simulation time creates a time warp
+
+Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
+When a process encounters an external dependency it has two choices: either force synchronization, 
+which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
+
+_DMI:_
+When combined with temporal decoupling may lead to completely crappy situations.
+The language neither the simulator do not protect the designer.
+It is like a hole in the legal system.
+
+Individual SystemC processes are permitted to run ahead in a local "time warp" without actually advancing simulation time
+until they need to synchronize with the rest of the system.
+Temporal decoupling can result in very fast simulation for certain systems because it increases the data and code locality and reduces scheduling overhead of the simulator.
+
+*Each process is allowed to run for a certain time slice or quantum before switching to the next, or instead may yield control when it reaches an explicit synchronization point.*
+
+The quantum value represents a tradeoff between simulation speed and accuracy.
+
+For a fine grained model, the overhead of event scheduling and process context switching becomes the dominant factor in simulation speed.
+Therefore allowing a process to run ahead of the simulation time will speed up the simulation.
+Until it needs to interact with another process, for example read or update a variable belonging to another process.
+
+The processs that runs ahead of simulation time creates a time warp
+
+Each process is responsible for determining whether it can run ahead of simulation time without breaking the functionality of the model.
+When a process encounters an external dependency it has two choices: either force synchronization, 
+which means yielding to allow all other processes to run as normal until simulation time catches up, or sample or update the current value and continue.
+
+** Debuggin the AT 2 phase example
+*** Call stack when calling the constructor of a module
+constructor of current module
+constructor of top module
+sc_main
+sc_elab_and_sim
+main
+
+
+
+
+
+
+
+* Design Patterns 						   :noexport:
+
+Check this website and maybe buy the book
+https://sourcemaking.com/design_patterns
+
+* Graveyard of potentially usefull phrases 			   :noexport:
+Form must follow function - Le Corbusier
+
+Activities that lie in between the time span an idea became a product is design
+
+_This chapter delves_ into the world of hardware-software codesign
+
+something real and tangible
+
+praxis
+
+An MoC for describing the application at the system-level
+
+Like a wagnerian leitmotif
+
+Working in tandem
+
+Often, we use the terms A and B interchangeably and in a haphazard manner.
+
+An implementation running on a machine that provides hardware support for concurrent processes may permit two or more processes to run concurrently
+provided that the behavior appears identical to the co-routine semantics defined in this subclause.
+In other words, the implementation would be obliged to analyze any dependencies between processes and to constrain their execution to match the co-routine semantics.
+
+An important limitation of SystemC regarding performance is that the reference implementation is sequential, 
+and the official semantics, just like any other Discrete Event Simulator (henceforth DES), make parallel execution difficult.
+Most existing work on parallelization of SystemC targets cycle-accurate simulation,
+and would be inefficient on loosely timed systems since they cannot run in parallel processes that do not execute simultaneously \cite{Moy}.
+
+\cite{Moy}
+The SystemC standard allows this, "provided that the behavior appears identical to the co-routine semantics" \cite{OpenSystemCInitiative2012}
+This implies two constraints on a parallel implementation:
+
+- It should not change the order in which processes are allowed to be executed. 
+  In particular, the simulated time imposes an order on the execution of processes.
+  
+An optimistic approach would relax this constraint having a violation detection and rollback mechanism to correct any violations afterwards.
+Although this may seem to work with VHDL, with SystemC this is chaotic, since arbitrary C++ code and system calls.
+
+- It should not introduce new race conditions.
+  For example, two SystemC processes may safely execute x++ on a shared variable, but running two such processes in parallel cannot be allowed.
+  The co-routine semantics of the SystemC kernel guarantee that there will be no race conditions.
+  Evaluate-update paradigm
+
+How to realize the DE MoC on top of completely heterogeneous HPC platform 
+
