@@ -5,8 +5,6 @@
 #+KEYWORDS: parallel discrete event simulation, conservative synchronization algorithms, transaction level models, SystemC TLM 2.0
 #+OPTIONS: toc:nil title:nil date:nil creator:nil email:nil author:nil broken-links:mark tasks:nil
 
-* TODO Spellchecking                                          
-
 * Latex Preamble                                                     :ignore:
 #+LATEX_HEADER: \documentclass[11pt,a4paper,oneside,openright,abstractoff,titlepage,final,BCOR10mm]{scrreprt}
 #+LATEX_HEADER: \usepackage[margin=25mm]{geometry}
@@ -956,28 +954,9 @@ TLM enhances SystemC's expressiveness in order to facilitate the *modular descri
 TLM as a language, unlike C/C++, VHDL or pure SystemC, is not meant for describing individual functional/architectural/system blocks/modules/components (henceforth *Intellectual Property (IP)*).
 Its role is to make these individual IP blocks communicate with each other, as demonstrated in Figure [[fig:tlm_as_wrapper]].
 
-#+BEGIN_SRC ditaa :file Figures/tlm_as_wrapper.png :cmdline -S --font "Times New Roman"
-                                                                           +-------------------+
-                                                                           |                   |
- ------------------------------------------------------------------------> | Memory Mapped Bus |
-         |                         |                          |            |                   |
-         v                         v                          v            +-------------------+
-+--------+----------+     +--------+----------+      +--------+----------+
-|    TLM Wrapper    |     |    TLM Wrapper    |      |    TLM Wrapper    |
-|                   |     |                   |      |                   |
-|  +-------------+  |     |  +-------------+  |      |  +-------------+  |
-|  |    ISS      |  |     |  |             |  |      |  |             |  |
-|  |             |  |     |  |  Algorithm  |  |      |  |             |  |
-|  |+-----------+|  |     |  |             |  |      |  |    VHDL     |  |
-|  ||Object Code||  |     |  |    in C     |  |      |  |             |  |
-|  |+-----------+|  |     |  |             |  |      |  |             |  |
-|  +-------------+  |     |  +-------------+  |      |  +-------------+  |
-+-------------------+     +-------------------+      +-------------------+
-#+END_SRC
-
 #+CAPTION: TLM 2.0 as a mixed language simulation technology
 #+NAME: fig:tlm_as_wrapper
-[[file:Figures/tlm_as_wrapper.png]]
+[[file:Figures/mixedSimulation.pdf]]
 
 Modularity or else IP block *interoperability*, is TLM's niche.
 It enables the reuse of IP components in a "plug and play" fashion.
@@ -1036,30 +1015,10 @@ It goes without saying that an initiator must have at least one initiator socket
 All the above terms are illustrated in Figure [[fig:tlm_terminology]].
 Each initiator-to-target socket connection supports both a forward and a backward path by which interface methods can be called in either direction.
 
-
-#+BEGIN_SRC ditaa :file Figures/tlm_terminology.png :cmdline -S -E --font "Times New Roman"
-+-----------+ Initiator        +--------------+                      +-----------+
-|           | socket           |              |     Forward          |           |
-|           +---+          +---+              +---+ path         +---+           |
-| Initiator | > |--------->| > | Interconnect | > |------------->| > |  Target   |
-|           +---+          +---+              +---+              +---+           |
-|           |           Target |              | ^                  | |           |
-+-----------+           socket +--------------+ |                  | +-----------+
-      :                                :        +------------------+   :
-      |                                |                   Backward    |
-      |                                |                   path        |
-      v                                |                               |
-+------------+                         |                               |
-|            |                         |                               |
-|  Payload   |<:-----------------------+-------------------------------+
-|            |
-+------------+
-#+END_SRC
-
 #+CAPTION: A basic TLM system
 #+NAME: fig:tlm_terminology
 #+RESULTS:
-[[file:Figures/tlm_terminology.png]]
+[[file:Figures/TLMterminology.pdf]]
 
 *** Generic Payload
 The basic argument that is passed, by reference, in communicative method calls is called the *payload*.
@@ -1165,8 +1124,8 @@ The rationale behind this choice can be summarized as follows:
 
 
 *** Semantics of point-to-point Communication in MPI
-MPI is a message passing library interface specification, standardized and maintained by the Message Passing Interface Forum \cite{citation}.
-It is currently available for C/C++, FORTRAN and Java from multiple vendors (Intel, IBM, OpenMPI) \cite{citation}.
+MPI is a message passing library interface specification, standardized and maintained by the Message Passing Interface Forum.
+It is currently available for C/C++, FORTRAN and Java from multiple vendors (Intel, IBM, OpenMPI).
 MPI addresses primarily the message passing parallel programming model, 
 in which data is moved from the address space of one process to that of another process through cooperative operations on each process \cite{MessagePassingInterfaceForum2012}.
 
@@ -1312,36 +1271,10 @@ The presence of a moderator, however, would violate the distributed nature of th
 For the context of this thesis, a distributed mechanism is more favorable.
 What follows is the presentation of a distributed mechanism for overcoming these situations, referred to as the *null-event deadlock avoidance* \cite{Fujimoto1999}.
 
-#+BEGIN_SRC ditaa  :file Figures/deadlock.png :cmdline -S --font "Times New Roman"
-+--------------+
-|ARL           |--------------------------+
-|@2            |                          |
-|              |                          |
-|       arrival|<------------------+      |
-|  ?         @8|                   |      |
-+--------------+                   |      |
-   ^     |                         |      |
-   |     |                         |      |
-   |     |                         |      |
-   |     |                         |      |
-   |     |                         |      |
-   |     |                         |      |
-   |     |                         |      :
-   :     v                         |      v
-+--------------+              +-------------+
-|      arrival |              |           ? |
-|      @5      |------------->|arrival      |
-|              |              |@6           |
-|              |              |             |
-|             ?|<=------------|             |
-|CDG           |              |          SKG|
-|@3            |              |           @5|
-+--------------+              +-------------+
-#+END_SRC
 #+CAPTION: Deadlock scenario justifying the use of Null messages in the CMB
 #+ATTR_LATEX: :width 0.64\linewidth 
 #+NAME: fig:deadlock
-[[file:Figures/deadlock.png]]
+[[file:Figures/deadlockScenario.pdf]]
 
 Figure [[fig:deadlock]] demonstrates an air traffic simulation, where the airports (ARL, CDG and SKG) constitute the simulation processes.
 The events exchanged between the airports represent flights (the time unit being arbitrary).
@@ -1549,45 +1482,11 @@ The L1 Data caches are 8-way set associative, their size being parameterizable.
 Coherence amongst the caches is realized through a Modified Shared Invalid (MSI) scheme, by a directory which acts like an inclusive L2 cache.
 Since actual data are not needed, main memory presence is implied by the directory.
 
-#+BEGIN_SRC ditaa :file Figures/case_study_2.png :cmdline -S -E --font "Times New Roman"
-+-----------+                  +--------------+---+              +---+-----------+
-|           |                  | L1 Data Cache| > |------------->| > |           |
-|           +---+          +---+              +---+              +---+           |
-| Processor | > |--------->| > |              |                      |           |
-|    0      +---+          +---+              +---+              +---+           |
-|           |                  |              | < |<-------------| < |           |
-+-----------+                  +--------------+---+              +---+           |
-                                                                     |           |
-+-----------+                  +--------------+---+              +---+           |  
-|           |                  | L1 Data Cache| > |--------------| > |           |
-|           +---+          +---+              +---+              +---+           |
-| Processor | > |--------->| > |              |                      |           |
-|    1      +---+          +---+              +---+              +---+           |
-|           |                  |              | < |<-------------| < |           |
-+-----------+                  +--------------+---+              +---+ Directory | 
-                                                                     |           |
-+-----------+                  +--------------+---+              +---+           |
-|           |                  | L1 Data Cache| > |------------->| > |           |
-|           +---+          +---+              +---+              +---+           |
-| Processor | > |--------->| > |              |                      |           |
-|    2      +---+          +---+              +---+              +---+           |
-|           |                  |              | < |<-------------| < |           |
-+-----------+                  +--------------+---+              +---+           | 
-                                                                     |           |
-+-----------+                  +--------------+---+              +---|           |  
-|           |                  | L1 Data Cache| > |------------->| > |           |
-|           +---+          +---+              +---+              +---+           |
-| Processor | > |--------->| > |              |                      |           |
-|    3      +---+          +---+              +---+              +---+           |
-|           |                  |              | < |<-------------| < |           |
-+-----------+                  +--------------+---+              +---+-----------+
-                                                                        
-#+END_SRC
 #+CAPTION: Case Study 2: A cache-coherent multiprocessor
 #+ATTR_LATEX: :width 0.64\linewidth 
 #+NAME: fig:case2
 #+RESULTS:
-[[file:Figures/case_study_2.png]]
+[[file:Figures/multiprocessor.pdfno]]
 
 
 
