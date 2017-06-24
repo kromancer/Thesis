@@ -1616,7 +1616,7 @@ For SystemC's DES the situation is quite similar.
 The transformation can be described in many ways, but the core idea remains the same:
 there is a need for an \texttt{sc\_clock} instance, which is nothing more than a predefined process, functioning in the same way as the "time" process.
 
-
+TIME-RECURSION RELATIONSHIP
 
 
 
