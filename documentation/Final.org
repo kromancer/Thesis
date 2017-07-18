@@ -60,7 +60,8 @@
   \huge{Parallel Simulation of SystemC Loosely-Timed Transaction Level Models}
   \vspace{5cm} 
   
-  \Large Master of Science Thesis\\
+  \Large Master Thesis\\
+  \small TRITA-ICT-EX-2016:203\\
   \vspace{2cm}
   
   \today
@@ -70,8 +71,9 @@
   \noindent Author: 	 		& Konstantinos Sotiropoulos \\
   \noindent Supervisor: 		& Björn Runåker (Intel Sweden AB) \\ 
 
-  \noindent Examiner:  	 		& Prof. Ingo Sander (KTH)\\ 
-  \noindent Academic advisor: 	        & PhD student George Ungureanu (KTH)
+  \noindent Examiner:  	 		& Associate Prof. Ingo Sander (KTH)\\ 
+  \noindent Academic advisor: 	        & George Ungureanu (KTH) \\
+  \noindent 
   \end{tabular}
   \vspace{2.5cm}
 
@@ -79,7 +81,7 @@
   \begin{tabular}{l}
   \textsc{KTH Royal Institute of Technology}\\
           School of Information and Communication Technology\\
-          Department of Electronic Systems\\
+          Department of Electronics and Embedded Systems\\
 	  Stockholm, Sweden
   \end{tabular}
   
@@ -96,14 +98,14 @@
 \pagenumbering{roman}
 
 \addcontentsline{toc}{section}{Abstract}
-Parallelizing the development cycles of hardware and software is becoming the industry's norm for reducing electronic devices time to market.
+Parallelizing the development cycles of hardware and software is becoming the industry's norm for reducing time to market for electronic devices.
 In the absence of hardware, software development is based on a virtual platform; 
 a fully functional software model of a system under development, able to execute unmodified code.
 
 A Transaction Level Model, expressed with the SystemC TLM 2.0 language, is one of the many possible ways for constructing a virtual platform.
 Under SystemC's simulation engine, hardware and software is being co-simulated.
 However, the sequential nature of the reference implementation of the SystemC's simulation kernel, is a limiting factor.
-Poor simulation performance often constraints the scope and depth of the design decisions that can be evaluated.
+Poor simulation performance often constrains the scope and depth of the design decisions that can be evaluated.
 
 It is the main objective of this thesis' project to demonstrate the feasibility of parallelizing the co-simulation of hardware and software using Transaction Level Models, outside SystemC's reference simulation environment.
 The major obstacle identified is the preservation of causal relations between simulation events.
@@ -206,6 +208,7 @@ Stockholm, \today
 | *MPI*    | Message Passing Interface               |
 | *MPSoC*: | Multiprocessor System on Chip           |
 | *OoO*:   | Out-of-Order                            |
+| *RBS*:   | Radio Base Station                      |
 | *PDES*:  | Parallel Discrete Event Simulation      |
 | *RISC*   | Recoding Infrastructure for SystemC     |
 | *SLDL*:  | System-Level Design Language            |
@@ -238,17 +241,20 @@ Section [[Research Methodology]] describes the research methodology.
 A synopsis of this document can be found in [[Structure of this thesis]]
 
 ** Overview
-This project follows the work of Björn Runåker[fn:bjorn] \cite{Runaker2015} on his effort to parallelize the simulation of the next generation (5G) of radio base stations.
-Telecom radio base stations are indeed a very heterogeneous system.
-To say the least, a virtual platform describing the system consists of a Network Processing Unit (NPU), Field Programmable Gate Array (FPGA) logic and a group of Digital Signal Processors (DSP).
-For a more pictorial exposition of the situation the reader is encouraged to refer to the work of Björn.
-
+This project follows the work of Björn Runåker \cite{Runaker2015} on his effort to parallelize the simulation of the next generation (5G) of Radio Base Stations (RBSs).
 The approach followed was defined as "coarse-grained";
 parallelism is achieved through multiple instantiations of SystemC's simulation engine, one per major component.
 However, a question is left open;
 the feasibility and merits of a "fine-grained" treatment, where parallelism is achieved within a single instance of the simulation engine.
 
-[fn:bjorn] Björn Runåker works as a Platform Application Engineer for Intel in Stockholm: https://www.linkedin.com/in/runaker
+A radio base station is the "front end" of the telecommunications infrastructure, providing network access to user equipment, such as a mobile phones.
+The major components of a virtual platform, describing an RBS, are Network Processing Units (NPUs), Field Programmable Gate Arrays (FPGAs) and Digital Signal Processors (DSPs).
+Complexity, emanating from heterogeneity, characterizes the platform as a whole and at component level.
+Figure [[fig:axxia]] demonstrates an example NPU that can be found in an RBS.
+
+#+CAPTION: 
+#+NAME: fig:axxia
+
 
 ** Problem Definition
 The analytic presentation of SystemC's simulation environment, 

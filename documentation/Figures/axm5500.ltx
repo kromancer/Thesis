@@ -1,0 +1,28 @@
+\documentclass[margin=10pt]{article}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{intersections}
+\usetikzlibrary{calc}
+\hypersetup{ colorlinks = true, urlcolor = blue, linkcolor = cyan, citecolor = red }
+\listfiles
+\begin{document}
+
+\tikzstyle{block} = [draw, rectangle]
+
+
+\begin{tikzpicture}[node distance=5mm]
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % ARM cluster
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \foreach \y in {1,2}
+  \foreach \x in {1,2,...,8}
+           {
+               \node[block, align=center] (N\x\y) at (\x,\y) {\small ARM \\ \small A15};
+           }
+\end{tikzpicture}
+\end{document}
+
+
+
