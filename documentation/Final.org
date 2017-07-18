@@ -229,12 +229,12 @@ Stockholm, \today
 \pagestyle{scrheadings}
 
 Section [[Overview]], provides an insight to the pragmatics of the project; 
-without disclosing any commercially sensitive information, the reader is exposed to the use case, which became the raison d'être of this project.
+without disclosing any commercially sensitive information, the reader is exposed to the use case, which became the reason for this project.
 The problem definition is then presented in Section [[Problem Definition]].
-Section [[Purpose]] attempts to provide a general answer to the cui bono question. For a specific answer, the reader is encouraged to jump to Section [[Reflections]].
-Section [[Objectives]] and [[Delimitations]] clarify the software engineering extend; what artifacts need to be constructed, in order to address the problem statement.
+Section [[Purpose]] sketches out the domain of human activity for which this thesis can be considered a contribution. For a specific answer, the reader is encouraged to jump to Section [[Reflections]].
+Section [[Objectives]] and [[Delimitations]] clarify the software engineering deliverables; what artifacts need to be constructed, in order to address the problem statement.
 Section [[Hypothesis]] presents the hypothesis; an optimistic assumption that motivated this work.
-Section [[Research Methodology]] describes the research methodology followed.
+Section [[Research Methodology]] describes the research methodology.
 A synopsis of this document can be found in [[Structure of this thesis]]
 
 ** Overview
