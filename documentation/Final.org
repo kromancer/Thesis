@@ -39,7 +39,8 @@
 #+LATEX_HEADER: \usepackage{dsfont}
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usepackage{tikz-uml}
-#+LATEX_HEADER: \usetikzlibrary{arrows,shapes,automata,positioning}
+#+LATEX_HEADER: \usetikzlibrary{arrows,shapes,automata,positioning,intersections,calc}
+#+LATEX_HEADER: \usepackage{standalone}
 #+LATEX_HEADER: \usepackage{algorithm}
 #+LATEX_HEADER: \usepackage{algpseudocode}
 #+LATEX_HEADER: \usepackage[automark,headsepline]{scrlayer-scrpage}	
@@ -250,12 +251,17 @@ the feasibility and merits of a "fine-grained" treatment, where parallelism is a
 A radio base station is the "front end" of the telecommunications infrastructure, providing network access to user equipment, such as a mobile phones.
 The major components of a virtual platform, describing an RBS, are Network Processing Units (NPUs), Field Programmable Gate Arrays (FPGAs) and Digital Signal Processors (DSPs).
 Complexity, emanating from heterogeneity, characterizes the platform as a whole and at component level.
-Figure [[fig:axxia]] demonstrates an example NPU that can be found in an RBS.
+Figure \ref{fig:axm5500} demonstrates an example NPU that can be found in an RBS.
 
-#+CAPTION: 
-#+NAME: fig:axxia
+#+BEGIN_EXPORT latex
+\begin{figure}[htpb]
+\centering
+\includestandalone[scale=1]{./Figures/axm5500}
+\caption{Architecture Diagram of LSI's AXM5500 Communication Processor}
+\label{fig:axm5500}
+\end{figure}
 
-
+#+END_EXPORT
 ** Problem Definition
 The analytic presentation of SystemC's simulation environment, 
 presented in Section [[SystemC's Discrete Event Simulator]], 
@@ -2398,7 +2404,7 @@ Process::Process(int rank)
 }
 #+END_SRC
 
-* Use Case                                                         :noexport:
+* Use Case                                                           :noexport:
 ** Cache Hierarchy Design
 Caching shared data introduces a new problem becauPse 
 the view of memory held by two different processors is through their individual caches

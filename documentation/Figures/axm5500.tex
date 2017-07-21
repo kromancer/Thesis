@@ -1,0 +1,106 @@
+\documentclass{standalone}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{intersections}
+\usetikzlibrary{calc}
+\hypersetup{ colorlinks = true, urlcolor = blue, linkcolor = cyan, citecolor = red }
+\begin{document}
+
+\tikzstyle{pipe} = [draw=green!73!gray, rectangle, line width=1.5pt, rounded corners, inner sep=2mm, node font=\small, scale=0.9, align=center]
+\tikzstyle{cpu}  = [draw, fill=cyan!30!white, rectangle, inner sep=0.8mm, node font=\small, scale=0.9, align=center]
+\tikzstyle{l2}   = [draw, fill=green!73!gray, rectangle, inner sep=1.5mm, node font=\small, scale=0.9, align=center]
+\tikzstyle{accel}= [draw, fill=orange!50,minimum width=2cm,minimum height=1cm,node font=\small]
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\begin{tikzpicture}[node distance=5mm]
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % ARM  clusters
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \node foreach \x [count=\xi] in {0,1.5,3,4.5,6,7.5,9,10.5} foreach \y in {0,1} [cpu] (core\xi\y) at (\x,\y) {ARM \\ A15};
+
+ \foreach \i [count=\ii] in {1,3,5,7}{
+   \pgfmathtruncatemacro\j{\i+1}
+   \coordinate (a\ii) at ($ (core\i0) !.5! (core\j0) $);
+   \coordinate (b\ii) at ($ (a\ii)!2cm!-90:(core10)  $);
+   \node[l2] (cache\ii) at (b\ii) {Shared L2 Cache};
+ y}
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Virtual Pipeline Task Ring
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \coordinate (c) at ($ (cache2)!.5!(cache3)$);
+ \coordinate (d) at ($ (c)!-1.2cm!-90:(cache3)$);
+ \coordinate (e) at ($ (c)!-0.6cm!-90:(cache3)$);
+ \node[pipe]  (pipeline) at (d) {\small Virtual Pipeline Task Ring};
+ \path[draw=green!73!gray, line width=1.5pt] (e) -- (pipeline.south);
+ \foreach \i in {1,2,3,4}{
+   \path[draw=green!73!gray, line width=1.5pt] (cache\i.north) |- (e);
+ }
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Accelerators
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \node[accel, above=2cm of cache1] (acc1) {Packet Processor};
+ \node[accel, above=2cm of cache2] (acc2) {Traffic Manager};
+ \node[accel, above=2cm of cache3] (acc3) {Security Processor};
+ \node[accel, above=2cm of cache4] (acc4) {Packet Switch};
+ \path[draw=green!73!gray, line width=1.5pt] (pipeline.north) -- ([yshift=4mm]pipeline.north);
+ \foreach \i in {1,2,3,4}{
+   \path[draw=green!73!gray, line width=1.5pt] (acc\i.south) |- ([yshift=4mm]pipeline.north);
+ }
+ 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % IO
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \node[draw,fill=gray!20,minimum width=3cm,minimum height=1.5cm,align=center,above=2.5cm of pipeline] (ddr) {\small DDR \\ \small Controller};
+ \node[l2,minimum width=3cm,minimum height=1.5cm, left=of ddr] (l3cache)  {L3 Cache};
+ \node[draw,fill=gray!20,minimum width=3cm,minimum height=1.5cm,align=center,right=of ddr] (IO)  {\small I/O \\ \small Interfaces};
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % CCN-504 Cache Coherent Network
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \begin{pgfonlayer}{background}
+
+   \coordinate (temp) at (core81.south east |- acc4.north east);
+   \coordinate (bl) at ($ (core10.south west) +(-5mm,-5mm) $);
+   \coordinate (tr) at ($ (temp) +(4mm,5mm) $);
+   
+   \path[draw=yellow!79!gray, rounded corners, line width=5pt]
+   (bl)
+   node[below=3mm, anchor=west, text=yellow!60!black] {ARM CCN-504 Cache Coherent Network}
+   rectangle (tr);
+
+
+   \draw[draw=yellow!79!gray, line width=3pt] (l3cache.south) -- +(0, -2cm);
+   \draw[draw=yellow!79!gray, line width=3pt] (ddr.south) -- +(0, -2cm);
+   \draw[draw=yellow!79!gray, line width=3pt] (IO.south) -- +(0, -2cm);
+
+   \path[fill=white, rounded corners]
+   (bl) rectangle (tr);
+
+   \foreach \i in {1,2,3,4}{
+     \coordinate (m\i) at (bl -| a\i);
+     \draw[draw=yellow!79!gray, line width=3pt] (m\i) -- (a\i);
+     \coordinate (n\i) at (tr -| a\i);
+     \draw[draw=yellow!79!gray, line width=3pt] (acc\i.north) -- (n\i);
+   }
+   
+   \foreach \i [count=\ii] in {1,3,5,7}{
+     \coordinate (yl\i) at ($(cache\ii.north east)+(1.3mm,1.3mm)$);
+     \coordinate (yk\i) at ($(cache\ii.north west)+(-1.3mm,-1.3mm)$);
+     \coordinate (ys\i) at ($(core\i0.south)+(0,-1.3mm)$);
+     \coordinate (ym\i) at ( yk\i |- ys\i);
+     \fill[fill=gray!20] (yl\i) rectangle (ym\i);
+   }
+ \end{pgfonlayer}
+
+
+\end{tikzpicture}
+
+
+
+\end{document}
+
+
+
