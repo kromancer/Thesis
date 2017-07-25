@@ -1,0 +1,69 @@
+* General
+Installation instructions for third-party software packages needed for this project.
+Instructions are applicable to the 64-bit version of Ubuntu 16.04.
+In case your OS is not Ubuntu, it is strongly recommended that you use a virtual machine.
+"There is no system but GNU and Linux is one of its kernels" R.Stallman
+
+* SystemC 2.3.1
+Open a terminal window (ctrl+alt+t) and change directory to the '_this repository_'/packages
+
+Make sure you have the GNU build toolchain
+#+BEGIN_SRC sh
+sudo apt-get install build-essentials
+#+END_SRC
+
+Unzip systemc package
+#+BEGIN_SRC sh
+tar  xvf systemc-2.3.1a.tar.gz
+mkdir    systemc-2.3.1a/objdir
+cd       systemc-2.3.1a/objdir
+#+END_SRC
+
+More detailed installation instructions can be seen in the INSTALL file of the systemc's distribution.
+Further configuration options can be seen by running:
+#+BEGIN_SRC sh
+../configure --help
+#+END_SRC
+
+Run the configure script, observe and satisfy unmet dependencies (if any).
+I have chosen to include debug symbols for systemc's libraries.
+All the necessary files will be placed in:
++ Shared objects: /opt/systemc-2.3.1/lib-linux64
++ Headers:        /opt/systemc-2.3.1/include
+#+BEGIN_SRC sh
+sudo mkdir /opt/systemc-2.3.1
+../configure --enable-debug --prefix=/opt/systemc-2.3.1
+#+END_SRC
+
+Compile and install systemc
+#+BEGIN_SRC sh
+make
+sudo make install
+#+END_SRC
+
+To simplify makefiles append the following lines to your ~/.bashrc file
+#+BEGIN_SRC sh
+export CPATH=/opt/systemc-2.3.1/include:$CPATH
+export LIBRARY_PATH=/opt/systemc-2.3.1/lib-linux64:$LIBRARY_PATH
+export LD_LIBRARY_PATH=/opt/systemc-2.3.1/lib-linux64:$LIBRARY_PATH
+#+END_SRC
+
+Reload your ~/.bashrc and you are ready to go!
+#+BEGIN_SRC sh
+source ~/.bashrc
+#+END_SRC
+* Uninstall packages and restore package directory to its initial state
+Open a terminal window (ctrl+alt+t) and change directory to the '_this repository_'/packages
+
+** SystemC
+#+BEGIN_SRC sh
+sudo rm -rf /opt/systemc-2.3.1
+rm -rf systemc-2.3.1a
+#+END_SRC
+
+Optionally, if you do not intend to use systemc again, you might want to remove the following lines from your ~/.bashrc file
+#+BEGIN_SRC sh
+export CPATH=/opt/systemc-2.3.1/include:$CPATH
+export LIBRARY_PATH=/opt/systemc-2.3.1/lib-linux64:$LIBRARY_PATH
+export LD_LIBRARY_PATH=/opt/systemc-2.3.1/lib-linux64:$LIBRARY_PATH
+#+END_SRC

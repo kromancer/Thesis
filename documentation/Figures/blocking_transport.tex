@@ -1,0 +1,31 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usetikzlibrary{arrows,shapes,automata,positioning,intersections,calc}
+
+
+\begin{document}
+\begin{tikzpicture}
+  
+  \begin{umlseqdiag}
+
+    \umlobject[x=0, class=\texttt{sc\_module}]{Initiator}
+    \umlobject[x=6, class=\texttt{sc\_module}]{Interconnect}
+    \umlobject[x=12, class=\texttt{sc\_module}]{Target}
+    \begin{umlcall}[op={\texttt{b\_transport(payload,delay)}}, type=synchron, with return, dt=8]{Initiator}{Interconnect}
+      \begin{umlcall}[op={\texttt{b\_transport(payload,delay)}}, type=synchron, with return, dt=5]{Interconnect}{Target}
+      \end{umlcall}
+    \end{umlcall}
+
+    \node (p1) at (2.25,-0.7) {\texttt{delay=SC\_TIME\_ZERO}} ;
+    \node (p1) at (7.5,-1.5) {\texttt{delay+=...}} ;
+    \node (p2) at (13.4,-2.3) {\texttt{delay+=...}} ;
+    \node (p3) at (0,-3.3) {\texttt{wait(delay)}} ;
+
+  \end{umlseqdiag}
+  
+\end{tikzpicture}
+\end{document}
+
+
+

@@ -249,7 +249,7 @@ However, a question is left open;
 the feasibility and merits of a "fine-grained" treatment, where parallelism is achieved within a single instance of the simulation engine.
 
 A radio base station is the "front end" of the telecommunications infrastructure, providing network access to user equipment, such as a mobile phones.
-The major components of a virtual platform, describing an RBS, are Network Processing Units (NPUs), Field Programmable Gate Arrays (FPGAs) and Digital Signal Processors (DSPs).
+The major computing components found in an RBS, are Network Processing Units (NPUs), Field Programmable Gate Arrays (FPGAs) and Digital Signal Processors (DSPs).
 Complexity, emanating from heterogeneity, characterizes the platform as a whole and at component level.
 Figure \ref{fig:axm5500} demonstrates an example NPU that can be found in an RBS.
 
@@ -260,7 +260,6 @@ Figure \ref{fig:axm5500} demonstrates an example NPU that can be found in an RBS
 \caption{Architecture Diagram of LSI's AXM5500 Communication Processor}
 \label{fig:axm5500}
 \end{figure}
-
 #+END_EXPORT
 ** Problem Definition
 The analytic presentation of SystemC's simulation environment, 
@@ -270,7 +269,7 @@ a new simulation environment must be built, from the ground up.
 
 ** Purpose
 An increasing amount of an Electronic System's (ES) expected use value is becoming software based.
-Companies which neglect this fact face catastrophic results.
+Companies which neglect this fact can face catastrophic results.
 A well identified narrative, for example in \cite{Surowiecki2013}, 
 is how Nokia was marginalized in the "smartphone" market, 
 despite possessing the technological know-how for producing superior hardware.
@@ -288,8 +287,9 @@ The engineering extend of this thesis aims at producing the following artifacts:
 + Case Study 2: Two versions of a Cache-coherent multiprocessor model: the first expressed in SystemC TLM 2.0 and the second being "manually compiled" from the first, in order to "fit" the proposed PDES.
 
 ** Hypothesis
-The \textit{primum movens} of this project can be summarized as follows: there is a healthy amount of parallelism available in the simulation of Electronic Systems, especially in the context of virtual platforms, where hardware and software are co-simulated.
-It all boils down to a simple question; how can the model of a parallel machine not be parallel itself?
+There is a healthy amount of parallelism available in the simulation of ESs, especially in the context of virtual platforms, where hardware and software are co-simulated.
+Modern ESs, multi-core/many-core, are by definition parallel computing machines.
+How can the model of a parallel machine not be parallel itself?
 
 ** Delimitations
 The following list demonstrates a number of artifacts that are not to be expected from this work, mainly due to their implementation complexity, given the limited time scope of a thesis project.
@@ -349,8 +349,8 @@ A further explanation of the figure is imminent:
                      There is still the induction step, that is hoped to be addressed by the proposition of a compiler, that will allow every Loosely-Timed Transaction Level Model to "fit" the proposed Parallel Discrete Event Simulator.
 
 ** Structure of this thesis
-The chapter assumes familiarity with C++.
-+ Chapter [[Background]] wishes to inform the reader about the theoretical constituents of this project. 
+This work assumes some familiarity with C/C++.
++ Chapter [[Background]] informs the reader about the theoretical constituents of this project. 
 + Chapter [[Out of Order PDES with MPI]] presents the process synchronization algorithm that will be applied in the proposed PDES.
 + Chapter [[Methodology]] is a synoptic presentation of the case studies constructed for the evaluation of the proposed PDES.
 + Chapter [[Analysis]] will perform the inductive step.
@@ -949,7 +949,7 @@ Hence, there is an obligation to provide a quick introduction into the subject, 
 
 Section [[The Role of SystemC TLM 2.0]] presents the typical use case of TLM[fn:tlm2].
 Section [[Criticism]] presents the dominant source of criticism for TLM.
-In Sections [[TLM 2.0 Terminology]] and [[Generic Payload]] TLM's basic jargon is presented: transactions, initiator/interconnect/target components, sockets and the generic payload.
+In Sections [[TLM 2.0 Terminology]] and [[Generic Payload]] TLM's basic jargon is presented: transactions, initiators, interconnects, targets, sockets and the generic payload.
 In Section [[Coding Styles and Transport Interfaces]] the Loosely-Timed coding style is defined.
 The chapter is complemented by Appendix \ref{AppendixE}, where the reader can find a simple Loosely-Timed model.
 
@@ -963,14 +963,14 @@ The chapter is complemented by Appendix \ref{AppendixE}, where the reader can fi
 *** The Role of SystemC TLM 2.0
 As stated in unit [[Electronic System-Level Design]], a Transaction Level Model is considered a virtual platform where a software application can be mapped.
 TLM enhances SystemC's expressiveness in order to facilitate the *modular description* and *fast simulation* of virtual platforms.
-TLM as a language, unlike C/C++, VHDL or pure SystemC, is not meant for describing individual functional/architectural/system blocks/modules/components (henceforth *Intellectual Property (IP)*).
+TLM as a language, unlike C/C++, VHDL or pure SystemC, is not meant for describing individual functional blocks (henceforth *Intellectual Property (IP)*).
 Its role is to make these individual IP blocks communicate with each other, as demonstrated in Figure [[fig:tlm_as_wrapper]].
 
 #+CAPTION: TLM 2.0 as a mixed language simulation technology
 #+NAME: fig:tlm_as_wrapper
 [[file:Figures/mixedSimulation.pdf]]
 
-Modularity or else IP block *interoperability*, is TLM's niche.
+Modularity, or else IP block *interoperability*, is TLM's niche.
 It enables the reuse of IP components in a "plug and play" fashion.
 Having a library of verified IP blocks at his disposal, the engineer is able to create new virtual platforms fast and "effortlessly".
 TLM is relevant at every interface where an IP block needs to be plugged into a bus.
@@ -979,25 +979,11 @@ TLM was designed with *memory-mapped* communication in mind.
 To be suitable for productive software development, a virtual platform needs to be fast: it must be able to boot operating systems in seconds.
 It also needs to be accurate enough such that, code developed using standard tools on the virtual platform, will run unmodified on real hardware \cite{Leupers2010}. 
 Compared to a standard RTL simulation, a TLM achieves a significant speed up by replacing communication through pin-level events with a single function call.
-The logic is quite simple: less events \rightarrow less context switches.
+The logic is quite simple: less events means less context switches between the simulation kernel and the application software.
 This is exactly what makes simulations faster, but at the same time being TLM's major source of criticism.
 
-*** Criticism
-System level designers consider TLM 2.0 a step towards the wrong direction \cite{Liu2015}.
-The root problem with TLM lies in the elimination of explicit channels, which were a key contribution in the early days of research on system-level design \cite{Liu2015}.
-Communication in TLM looks like a remote function call\cite{Ecker2009}: a process, encapsulated in a module, executes a method of another module, in its own context.
-The term *transaction* in TLM indicates exactly this remote function call, while the term *payload* indicates its most important argument.
-
-Time for contemplation.
-First and foremost, the principle of "Separation of concerns between execution and communication" has been scrapped; execution obfuscates communication.
-The RISC project (see Section [[Prior Art]]) has not (yet) supported the TLM API for this exact reason.
-The need for *recoding* SystemC TLM 2.0 models, in order to allow parallel execution, has manifested. 
-Recoding must reconstitute the separation of concerns between computation and communication.
-However, due to its simplicity, TLM could still serve as a front end language.
-Furthermore, due to the overhead parallelism may add to a simulation, it would be useful to keep a sequential option for models not "sufficiently large".
-
 *** TLM 2.0 Terminology
-TLM 2.0 classifies IP blocks as initiator, target and interconnect component.
+TLM 2.0 classifies IP blocks as initiator, target and interconnect components.
 The terms initiator and target come forth as a replacement for the anachronistic terms master and slave.
 
 An *initiator* is a component that initiates new transactions.
@@ -1035,7 +1021,7 @@ Each initiator-to-target socket connection supports both a forward and a backwar
 *** Generic Payload
 The basic argument that is passed, by reference, in communicative method calls is called the *payload*.
 The choice of \texttt{tlm\_generic\_payload} as the type of the payload is a necessary condition for enabling interoperability between IP blocks from different vendors.
-\texttt{tlm\_generic\_payload} is a *structure* that encapsulates generic attributes relevant to a generic memory mapped bus communication.
+The \texttt{tlm\_generic\_payload} is a *structure* that encapsulates generic attributes relevant to a generic memory mapped bus communication.
 
 The structure possesses an extensions mechanism, the designer can use to define more specific memory mapped bus architectures (e.g. ARM's AMBA).
 An *interoperable* TLM 2.0 component must depend only on the generic attributes of the generic payload.
@@ -1044,7 +1030,7 @@ In such a case, the extensions mechanism carries simulation metadata like pointe
 
 The following table lists all fields applicable on a \texttt{tlm\_generic\_payload}:
 
-| Attribute           | Type                                  | Modifiable        |
+| Attribute           | Type                                  | Modifiable by     |
 |---------------------+---------------------------------------+-------------------|
 | Command             | \texttt{tlm\_command} (enum)          | Initiator only    |
 | Address             | \texttt{uint64}                       | Interconnect only |
@@ -1053,15 +1039,15 @@ The following table lists all fields applicable on a \texttt{tlm\_generic\_paylo
 | Byte enable pointer | \texttt{unsigned char*}               | Initiator only    |
 | Byte enable length  | \texttt{unsigned int}                 | Initiator only    |
 | Streaming width     | \texttt{unsigned int}                 | Initiator only    |
-| DMI hint            | \texttt{bool}                         | Yes               |
+| DMI hint            | \texttt{bool}                         | Any               |
 | Response status     | \texttt{tlm\_response\_status} (enum) | Target only       |
-| Extensions          | \texttt{(tlm\_extension\_base*)[]}    | Yes               |
+| Extensions          | \texttt{(tlm\_extension\_base*)[]}    | Any               |
 
 + *Command:* Set to either \texttt{TLM\_READ} for read, \texttt{TLM\_WRITE} for write or \texttt{TLM\_IGNORE} to indicate that the command is set in the extensions mechanism.
 + *Address:* Can be modified by interconnects since by definition an interconnect must bridge different address spaces.
 + *Data pointer:* A pointer to the actual data being transferred.                                                                                                                                                                                                                                                                                                                                      
-+ *Data length:* Related to the data pointer, indicates the number of bytes that are being transfer-ed.
-+ *Byte enable pointer:* A pointer to a byte enable mask that can be applied on the data (0xFF for data byte enabled, 0X00 for disabled).
++ *Data length:* Related to the data pointer, indicates the number of bytes that are being transferred.
++ *Byte enable pointer:* A pointer to a byte enable mask that can be applied on the data (0xFF for data byte enabled, 0x00 for disabled).
 + *Byte enable length:* Only relevant when the byte enable pointer is not null. If this number is less than the data length, the byte enable mask is applied repeatedly.
 + *Streaming width:* Must be greater than 0. If the data length $\neq$ streaming width, then a streaming transaction is implied. Largest address defined by the transaction is (address + streaming width - 1), at which point the address wraps around. 
 + *DMI hint:* A hint given to the initiator of whether he can bypass the transport interface and access a target's memory directly through a pointer.
@@ -1074,42 +1060,70 @@ Coding styles are not syntactically enforced: they are just guidelines that impr
 LT is suited for describing virtual platforms intended for software development.
 However, where additional timing accuracy is required, usually in architectural analysis, the AT style is employed.
 Virtual platforms typically do not contain many cycle-accurate models of complex components because of the performance impact. 
-The two coding styles are distinguished by the *transport interface* components realize.
+The two coding styles are distinguished by the *transport interface* which components realize.
+*** The Loosely-Timed coding style
+The LT coding style uses the *blocking transport interface*, distinguished by the forward path method \texttt{b\_transport(PAYLOAD&, sc\_time&)}.
+It is the simplest of the transport interfaces, in which *each transaction is required to complete in a single interface method call*.
+The method, apart from the payload, takes a timing annotation argument.
+
+The purpose of the timing annotation argument is to notify components that a particular transaction should occur at \texttt{sc\_time\_stamp() + delay}, where \texttt{delay} is the timing annotation argument.
+Whether the semantics of the timing annotation argument are respected, is coding style dependent.
+In the LT coding style the timing annotations may be disregarded.
+Typically, components execute transactions in the order which they are received.
+By definition, the blocking transport method *may block*, that is call \texttt{wait}, somewhere along the forward path from initiator to target.
 
 #+BEGIN_EXPORT latex
 \begin{figure}[htpb]
-\begin{center}
-\begin{tikzpicture}
-\begin{umlseqdiag}
-\umlobject[x=0, class=\texttt{sc\_module}]{Initiator}
-\umlobject[x=5, class=\texttt{sc\_module}]{Interconnect}
-\umlobject[x=9, class=\texttt{sc\_module}]{Target}
-\begin{umlcall}[op={\texttt{b\_transport(...)}}, type=synchron, with return, dt=8]{Initiator}{Interconnect}
-\begin{umlcall}[op={\texttt{b\_transport(...)}}, type=synchron, with return, dt=2]{Interconnect}{Target}
-\node (p1) at (0,-3.1) {\texttt{wait(delay)}} ;
-\end{umlcall}
-\end{umlcall}
-\end{umlseqdiag}
-\end{tikzpicture}
-\end{center}
-\caption{Blocking interface sequence} 
-\label{fig:sequence}
+\centering
+\includestandalone{./Figures/temporal_decoupling}
+\caption{Temporal Decoupling with the Loosely-Timed coding style} 
+\label{fig:temporal_decoupling}
 \end{figure}
 #+END_EXPORT
 
-LT uses the *blocking transport interface*, distinguished by the forward path method \texttt{b\_transport(PAYLOAD&, sc\_time&)}.
-It is the simplest of the transport interfaces, in which each transaction is required to complete in a single interface method call.
-The method, apart from the payload, takes a timing annotation argument.
-By definition, the blocking transport method *may block*, that is call \texttt{wait}, somewhere along the forward path from initiator to target.
-However, LT advises the designer to make the actual call to \texttt{wait} upon completion of the transaction, in the initiator.
+Figure \ref{fig:temporal_decoupling} illustrates the interaction between one LT initiator and one LT target component.
+For the first two transactions both components disregard the timing annotation, and run ahead of simulation time.
+This phenomenon, which applies in the LT coding style, is called *temporal decoupling*.
+It is evident by the increasing value of the timing annotation argument.
+In the third transaction, the target chooses to synchronize by calling \texttt{wait}, and thus allows simulation time to progress.
+After synchronization, the timing annotation is being reset.
+
+*** Temporal Decouping using the Quantum Keeper 
+Appendix \ref{AppendixE} demonstrates the simplest TLM model that can be constructed: a system with one initiator (e.g. a processor) and one target (e.g. a memory).
+
+*** The Approximately-Timed coding style
+An approximately-timed component would typically schedule all incoming transactions to be executed at \texttt{sc\_time\_stamp() + delay}.
+
+*** Criticism
+Some System level designers consider TLM 2.0 a step towards the wrong direction \cite{Liu2015}.
+The root problem with TLM lies in the elimination of explicit channels, which were a key contribution in the early days of research on system-level design \cite{Liu2015}.
+Communication in TLM looks like a remote function call \cite{Ecker2009}: a process, encapsulated in a module, executes a method of another module, in its own context.
+The term *transaction* in TLM indicates exactly this remote function call, while the term *payload* indicates its most important argument.
+
+First and foremost, the principle of "Separation of concerns between execution and communication" has been abandoned; execution obfuscates communication.
+The RISC project (see Section [[Prior Art]]) has not (yet) supported the TLM API for this exact reason.
+The need for *recoding* SystemC TLM 2.0 models, in order to allow parallel execution, has been manifested. 
+Recoding must reconstitute the separation of concerns between computation and communication.
+However, due to its simplicity, TLM could still serve as a front end language.
+Furthermore, due to the overhead parallelism may add to a simulation, it would be useful to keep a sequential option for "smaller" models.
+
+Finally temporal decoupling - causality hazards
+
+make the actual call to \texttt{wait} upon completion of the transaction, in the initiator.
 Interconnect components and the target need only to increment the timing annotation argument.
 The timing annotation argument would then reflect the accumulated delay of the transaction.
 The initiator can then call \texttt{wait(sc\_time)} to register this delay with the simulation environment.
 Figure \ref{fig:sequence} visualizes the interaction between components, during a blocking transport.
 
-Appendix \ref{AppendixE} demonstrates the simplest TLM model that can be constructed: a system with one initiator (imagine a processor) and one target (imagine a memory).
+#+BEGIN_EXPORT latex
+\begin{figure}[htpb]
+\centering
+\includestandalone{./Figures/blocking_transport}
+\caption{Loosely Timed coding style: Blocking interface sequence} 
+\label{fig:sequence}
+\end{figure}
+#+END_EXPORT
 \clearpage
-  
 ** Message Passing Interface
 In any Message Passing Interface, the concept of communication is (obviously) modeled as message passing.
 The DE MoC concept of an event is associated with either a message transmission or a message reception statement.
@@ -2127,7 +2141,7 @@ Upon return, the transaction has been completed and delay may be accumulated.
       }
   }
 #+END_SRC
-The initiator inherits \texttt{tlm\_bw\_transport\_if<>}, so he must realize the following methods.
+The initiator inherits \texttt{tlm\_bw\_transport\_if<>}, so it must realize the following methods.
 These methods are defined on the backward path (may be called by an interconnect or target component) and are only applicable with the AT coding style.
 #+BEGIN_SRC cpp
     // TLM-2 backward non-blocking transport method
@@ -2250,11 +2264,11 @@ int sc_main(int argc, char *argv[])
 
 Much like an assembly line, 
 the pipeline pattern is useful when the problem at hand can be understood/modeled as a series of chained actions.
-The magic happens by overlapping execution and communication.
+Parallelism is achieved by overlapping execution and communication.
 Just think of how cars are manufactured.
-The following example simulates the daily routine of an assembly line worker in a car factory.
+The following example "simulates" the daily routine of an assembly line worker in a car factory.
 
-As with any MPI program, the reader must keep in mind that, unless explicitly specified, all of the processes will get a copy of the *same executable*.
+As with any MPI program, the reader must keep in mind that, unless explicitly specified, all of the processes will run a copy of the *same executable file*.
 So as to differentiate control flow, the process must acquire its unique ID from the MPI runtime environment.
 #+BEGIN_SRC cpp
 #include "mpi.h"
@@ -2270,16 +2284,16 @@ int main(int argc, char *argv[])
 
     // Register with the factory's administration
     MPI_Init(&argc, &argv);
-    // What is my id
+    // What is my id?
     MPI_Comm_rank(MPI_COMM_WORLD, &myId);
-    // How many workers in the factory
+    // How many workers are there in the factory?
     MPI_Comm_size(MPI_COMM_WORLD, &numWorkers);
 
 #+END_SRC
 
 Each assembly line worker must know who is on the left and who is on the right.
 #+BEGIN_SRC cpp
-    // Who is on my left
+    // Who is on my left?
     if( myId != 0)
 	workerLeft = myId - 1;
     else
@@ -2290,7 +2304,7 @@ Each assembly line worker must know who is on the left and who is on the right.
 	nextTask = 0;
     }
 
-    // Who is on my right
+    // Who is on my right?
     if( myId != numWorkers-1)
 	workerRight = myId + 1;
     else
@@ -2301,9 +2315,9 @@ Each assembly line worker must know who is on the left and who is on the right.
 #+END_SRC
 
 
-For each worker there is a task at hand, a new task coming from its left and the task he completed.
-The communication is carried out by the conveyor belt, so it is not her/his concern.
-She/He just places the completed task on the belt, takes the next task and continues working.
+For each worker there is a task at hand, a new task coming from its left and the task he has completed.
+The communication is carried out by the conveyor belt, so it is not the worker's concern.
+The worker just places the completed task on the belt, takes the next task and continues working.
 While the task at hand is being computed, communication is happening on the background.
 
 After some initial delay, proportional to the size of the pipeline (the number of workers), cars are produced at a constant rate!
@@ -2313,6 +2327,7 @@ After some initial delay, proportional to the size of the pipeline (the number o
     {
 	MPI_Request signals[2];
 	MPI_Status  statuses[2];
+
 	// Communicate but don't block
 	if (!isLast)
 	    MPI_Isend(&completedTask, 1, MPI_INT, workerRight, 1, MPI_COMM_WORLD, &signals[0]);
