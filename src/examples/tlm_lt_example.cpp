@@ -1,8 +1,8 @@
 #include "systemc"
 #include "tlm.h"
 #define BASE_ADDRESS 400
-#define NUM_MEM_OPS  128      
-#define MEM_SIZE     256
+#define NUM_MEM_OPS  128 // How many transactions will the Initiator generate
+#define MEM_SIZE     256 // The Target acts like a memory
 
 using namespace std;
 using namespace sc_core;
@@ -20,48 +20,53 @@ struct Initiator: sc_module, tlm_bw_transport_if<>
 	    SC_THREAD(run);
 	}
 
-    void run()
-	{
-	    tlm::tlm_generic_payload trans;
-	    sc_time delay;
+void run()
+{
+    tlm::tlm_generic_payload trans;
+    sc_time delay=SC_ZERO_TIME;
 
-	    for(int i=0; i<NUM_MEM_OPS; i+=4)
-	    {
-		// Generate 4-byte aligned addresses
-		int address = BASE_ADDRESS + i;
-		tlm_command cmd = static_cast<tlm_command>(rand()%2);
-		if (cmd == TLM_WRITE_COMMAND) data = address;
-		trans.set_command(cmd);
-		trans.set_address( address );
-		trans.set_data_ptr( reinterpret_cast<unsigned char*>(&data) );
-		trans.set_data_length( 4 );
-		trans.set_streaming_width( 4 );
-		trans.set_byte_enable_ptr( 0 );
-		trans.set_dmi_allowed( false );
-		trans.set_response_status( tlm::TLM_INCOMPLETE_RESPONSE );
+    for(int i=0; i<NUM_MEM_OPS; i+=4)
+    {
+	// Generate 4-byte aligned addresses
+	int address = BASE_ADDRESS + i;
+	// Generate a random command (either read or write)
+	tlm_command cmd = static_cast<tlm_command>(rand()%2);
+	// If write then put some junk data
+	if (cmd == TLM_WRITE_COMMAND) data = address;
+	// Set payload's fields
+	trans.set_command(cmd);
+	trans.set_address( address );
+	trans.set_data_ptr( reinterpret_cast<unsigned char*>(&data) );
+	trans.set_data_length( 4 );
+	trans.set_streaming_width( 4 ); // not used
+	trans.set_byte_enable_ptr( 0 ); // not used
+	trans.set_dmi_allowed( false ); // not used
+	trans.set_response_status( tlm::TLM_INCOMPLETE_RESPONSE );
 
-		// Initiate Transaction
-		delay = SC_ZERO_TIME;
-		socket->b_transport( trans, delay );
-		// Transaction is completed
+// Initiate Transaction
+	socket->b_transport( trans, delay );
+	// Transaction is completed
 
-		// Check if everything went good
-		if (trans.is_response_error())
-		    SC_REPORT_ERROR("TLM-2", trans.get_response_string().c_str());
+	// Check if everything went well
+	if (trans.is_response_error())
+	    SC_REPORT_ERROR("TLM-2", trans.get_response_string().c_str());
 
-		// Display payload
-		cout << name() << " completed " << (cmd ? "write" : "read") << ", addr = " << hex << i
-		     << ", data = " << hex << data << ", time " << sc_time_stamp()
-		     << " delay = " << delay << endl;
+	// Display payload
+	cout << name() << " completed " << (cmd ? "write" : "read") 
+             << ", addr = " << hex << i
+	     << ", data = " << hex << data << ", time " << sc_time_stamp()
+	     << " delay = " << delay << endl;
 
-		// Yield!
-		wait(delay);
-	    }
-	}
+	// Syncrhonize with simulation time
+	wait(delay);
+	delay = SC_ZERO_TIME;
+    }
+}
 
-    // TLM-2 backward non-blocking transport method
-    virtual tlm_sync_enum nb_transport_bw( tlm_generic_payload& trans,
-					   tlm_phase& phase, sc_time& delay )
+// TLM-2 backward non-blocking transport method
+    virtual tlm::tlm_sync_enum nb_transport_bw( tlm::tlm_generic_payload& trans,
+						tlm::tlm_phase& phase, 
+                                                sc_time& delay )
 	{
 	    // Dummy method
 	    return tlm::TLM_ACCEPTED;
@@ -73,9 +78,7 @@ struct Initiator: sc_module, tlm_bw_transport_if<>
 	{
 	    // Dummy method
 	}
-
-};
-
+}; //END_INITIATOR_DEFINITION
 
 struct Memory: sc_module, tlm::tlm_fw_transport_if<>
 {
@@ -94,40 +97,42 @@ struct Memory: sc_module, tlm::tlm_fw_transport_if<>
 		mem[i] = rand() % 256;
 	}
 
-    // TLM-2 blocking transport method
-    virtual void b_transport( tlm_generic_payload& trans, sc_time& delay )
-	{
-	    tlm::tlm_command cmd = trans.get_command();
-	    sc_dt::uint64    adr = trans.get_address();
-	    unsigned char*   ptr = trans.get_data_ptr();
-	    unsigned int     len = trans.get_data_length();
-	    unsigned char*   byt = trans.get_byte_enable_ptr();
-	    unsigned int     wid = trans.get_streaming_width();
+// TLM-2 blocking transport method
+virtual void b_transport( tlm_generic_payload& trans, sc_time& delay )
+    {
+	tlm::tlm_command cmd = trans.get_command();
+	sc_dt::uint64    adr = trans.get_address();
+	unsigned char*   ptr = trans.get_data_ptr();
+	unsigned int     len = trans.get_data_length();
+	unsigned char*   byt = trans.get_byte_enable_ptr();
+	unsigned int     wid = trans.get_streaming_width();
 
-	    // Obliged to check address range and check for unsupported features,
-	    //   i.e. byte enables, streaming, and bursts
-	    // Can ignore DMI hint and extensions
-	    // Using the SystemC report handler is an acceptable way of signalling an error
+	// Obliged to check address range and check for unsupported features,
+	//   i.e. byte enables, streaming, and bursts
+	// Can ignore DMI hint and extensions
+	// SystemC's report handler is an acceptable way of signalling an error
+	if (adr >= sc_dt::uint64(MEM_SIZE) * 4 
+            || adr % 4 || byt != 0 
+            || len > 4 || wid < len)
+	    SC_REPORT_ERROR("TLM-2", "Target does not support this transaction");
 
-	    if (adr >= sc_dt::uint64(MEM_SIZE) * 4 || adr % 4 || byt != 0 || len > 4 || wid < len)
-		SC_REPORT_ERROR("TLM-2", "Target does not support given generic payload transaction");
+	// Obliged to implement read and write commands
+	if ( cmd == tlm::TLM_READ_COMMAND )
+	    memcpy(ptr, &mem[adr/4], len);
+	else if ( cmd == tlm::TLM_WRITE_COMMAND )
+	    memcpy(&mem[adr/4], ptr, len);
 
-	    // Obliged to implement read and write commands
-	    if ( cmd == tlm::TLM_READ_COMMAND )
-		memcpy(ptr, &mem[adr/4], len);
-	    else if ( cmd == tlm::TLM_WRITE_COMMAND )
-		memcpy(&mem[adr/4], ptr, len);
+	// Memory access time
+	delay = delay + sc_time(100, SC_NS);
 
-	    // Memory access time
-	    delay = delay + sc_time(100, SC_NS);
+	// Obliged to set response status to indicate successful completion
+	trans.set_response_status( tlm::TLM_OK_RESPONSE );
+    }
 
-	    // Obliged to set response status to indicate successful completion
-	    trans.set_response_status( tlm::TLM_OK_RESPONSE );
-	}
-
-    // TLM-2 forward non-blocking transport method
+// TLM-2 forward non-blocking transport method
     virtual tlm::tlm_sync_enum nb_transport_fw( tlm::tlm_generic_payload& trans,
-						tlm::tlm_phase& phase, sc_time& delay )
+						tlm::tlm_phase& phase, 
+                                                sc_time& delay )
 	{
 	    // Dummy method (not TLM-2.0 compliant)
 	    return tlm::TLM_ACCEPTED;
@@ -147,7 +152,7 @@ struct Memory: sc_module, tlm::tlm_fw_transport_if<>
 	    // Dummy method
 	    return 0;
 	}
-};
+}; // END_TARGET_DEFINITION
 
 int sc_main(int argc, char *argv[])
 {
