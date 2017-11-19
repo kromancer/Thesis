@@ -517,7 +517,7 @@ Two approaches to semantics have evolved: denotational and operational.
 *Operational semantics*, which dates back to Turing machines, give the meaning of a language in terms of actions taken by some abstract machine. 
 The word "machine" indicates a system that can be set in "motion" through "space" and time.
 
-With operational semantics it is implied that a language can not determine computation by itself \cite{Jantsch2005}. 
+With operational semantics it is implied that a language can not determine computation by itself \cite{JanSan2005}. 
 Computation is an epiphenomenon of the "motion" of the underlying abstract machine, just like time indication in a mechanical watch is a byproduct of gear motion.
 Consider the language of regular expressions.
 A linguistic artifact in this language describes a pattern that is either matched or not by a string of symbols.
@@ -532,8 +532,8 @@ The dominant MoC related to an ESLDL is called the *Discrete Event (DE)* MoC, an
 First things first: why is this MoC called discrete?
 The system is mathematically represented as a set of variables $\mathds{V}$.
 The system's *state* is a mapping from $\mathds{V}$ to a value domain $\mathds{U}$.
-The system changes states in a *discrete* fashion; 
-the set $\mathds{A}$ of all possible system states can be enumerated by natural numbers ($|\mathds{A}| = \aleph_0$).
+The system changes states in a *discrete* fashion.
+The term discrete means that the set $\mathds{A}$ of all possible system states can be enumerated by natural numbers ($|\mathds{A}| = \aleph_0$).
 
 Now let us proceed to the event part.
 The components of a DE MoC are called *processes*.
@@ -772,7 +772,7 @@ Although, as demonstrated in Appendix \ref{AppendixB}, there is an implied third
 The first co-ordinate of a logic time vector is meant for modeling real time.
 *Modeled real time values* are used as timing annotations the designer injects into the system in order to describe the duration of communication and execution in the physical system.
 The choice of using the term "superdense" for this logic time modeling technique can now be understood: 
-between any two events $e_1, e_2$, with modeled real time values $t_1, t_2$, $\exists e_3$, such that $timestamp(e_1) < timestamp(e_3) < timestamp(t_2)$.
+between any two events $e_1, e_2$, with modeled real time values $t_1, t_2$, $\exists e_3$, such that $timestamp(e_1) < timestamp(e_3) < timestamp(e_2)$.
 Two events $e_1, e_2$ associated with the timestamps $(t_1,n_1), (t_2, n_2)$ are said to be *simultaneous* if $t_1 = t_2$.
 If both $t_1 = t_2$ and $n_1 = n_2$ they are *strongly simultaneous*.
 
@@ -1522,7 +1522,7 @@ Since actual data are not needed, main memory presence is implied by the directo
 #+ATTR_LATEX: :width 0.64\linewidth 
 #+NAME: fig:case2
 #+RESULTS:
-[[file:Figures/multiprocessor.pdfno]]
+[[file:Figures/multiprocessor.pdf]]
 
 
 
@@ -1652,10 +1652,6 @@ For SystemC's DES the situation is quite similar.
 The transformation can be described in many ways, but the core idea remains the same:
 there is a need for an \texttt{sc\_clock} instance, which is nothing more than a predefined process, functioning in the same way as the "time" process.
 
-TIME-RECURSION RELATIONSHIP
-
-
-
 \clearpage
 
 [fn:magic] Handling non-monotonic communication, while having $\mathcal{O}(f(|\mathdbs{\mathds{E}}|))$ time complexity, is an interesting property, a DES might possess.
@@ -1671,12 +1667,12 @@ Unfortunately, the proposed OoO PDES was not able to outperform SystemC's DES, m
 
 * Conclusion and Future Work
 The major contributions of this work can be found in Section [[Contributions]].
-Section [[Limitations]] provides a list of actions that the author believes that should have been performed
+Section [[Limitations]] provides a list of actions that the author believes that should have been performed.
 This work is far from complete: The brave Theseus that would like to confront the Minotaur can find Ariadne's thread in Section [[Future Work]]
 Section [[Reflections]] revisits, in a more specific way, the cui bono question answered in Section [[Purpose]].
 
 ** Contributions
-The following are the main research contributions of +this work:
+The following are the main research contributions of this work:
 + In Section [[The Discrete Event Model of Computation]] a different approach is adopted for presenting the DE MoC, 
   when compared to the reference work in MoCs by the Ptolemy Project [fn:ptolemy].
   It is the fact that time modeling is not included in the description of the DE MoC itself; 
